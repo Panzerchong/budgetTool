@@ -25,6 +25,9 @@ class BoM(models.Model):
 class Service(models.Model):
     total_service_cost=models.IntegerField()
 
+class Sales(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
 
 
 
