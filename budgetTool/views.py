@@ -16,9 +16,9 @@ def home(request):
             return redirect('home')
         else:
             messages.success(request,"There was an error log in. Please try again...")
-            return redirect('home')
+            return redirect('index')
     else:
-        return render(request, 'home.html',{})
+        return render(request, 'index.html',{})
 
 def login_user(request):
     pass
@@ -26,7 +26,7 @@ def login_user(request):
 def logout_user(request):
     logout(request)
     messages.success(request,"You have been logged out...")
-    return redirect('home')
+    return redirect('index')
 
 def rate_table(request):
     table=RateTable.objects.all()
