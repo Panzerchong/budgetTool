@@ -16,14 +16,25 @@ class RateTable(models.Model):
 class Project(models.Model):
     created_at=models.DateTimeField(auto_now_add=True)
     name=models.CharField(max_length=100)
+    quote=models.IntegerField()
     bom=models.ForeignKey("BoM",on_delete=models.CASCADE)
     service=models.ForeignKey("Service",on_delete=models.CASCADE)
+    
+    def __str__(self):
+        return (f"{self.name}| BOM: {self.bom}| Service: {self.service}")
 
 class BoM(models.Model):
     total_bom_cost=models.IntegerField()
 
+    def __str__(self):
+        return (f"{self.total_bom_cost}")
+
 class Service(models.Model):
     total_service_cost=models.IntegerField()
+    
+    def __str__(self):
+        return (f"{self.total_service_cost}")
+
 
 class Sales(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

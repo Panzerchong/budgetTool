@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Budget Tool</title>
+    
+  </head>
+  <body>
+    <h1>Budget Tool</h1>
+    <h2>Project lists</h2>
+      {% for project in projects %}
+        <div class="project">
+            <a href="/budgetTool/{{project.pk}}">{{project.name}}</a>
+        </div>
+      {% endfor %}
+
+      <hr>
+
+      <a href="/budgetTool/create" target="_blank">
+        <button>Create a new project</button>
+      </a>
+      
+  </body>
+</html>
