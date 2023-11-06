@@ -10,7 +10,27 @@
       <a href="/budgetTool/">Go back to Project lists</a>
       <hr>
       <h1>{{project.name}}</h1>
-      <p>Quote: {{project.quote|intcomma }} BOM: {{project.bom}} Service: {{project.service}}</p>
+      <table>
+        <tr>
+          <td>Quote</td>
+          <td>BOM</td>
+          <td>Service</td>
+        </tr>
+        <tr>
+          <td>{{project.quote|intcomma }}</td>
+          <td>{{project.bom.total_bom_cost|intcomma }}</td>
+          <td>{{project.service.total_service_cost|intcomma }}</td>
+        </tr>
+
+        <!-- {% for line in rate_table %}
+          <tr>
+            <td>{{ line.type }}</td>
+            <td>{{ line.list }}</td>
+            <td>{{ line.cost }}</td>
+          </tr>
+        {% endfor %} -->
+      </table>
+
 
   </body>
 </html>

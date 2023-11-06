@@ -24,16 +24,18 @@ class Project(models.Model):
         return (f"{self.name}| BOM: {self.bom}| Service: {self.service}")
 
 class BoM(models.Model):
+    name=models.CharField(max_length=100)
     total_bom_cost=models.IntegerField()
 
     def __str__(self):
-        return (f"{self.total_bom_cost}")
+        return (f"{self.name}")
 
 class Service(models.Model):
+    name=models.CharField(max_length=100)
     total_service_cost=models.IntegerField()
     
     def __str__(self):
-        return (f"{self.total_service_cost}")
+        return (f"{self.name}")
 
 
 class Sales(models.Model):

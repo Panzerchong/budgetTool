@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .models import RateTable, Project,BoM,Service,Sales
-from .forms import ProjectForm
+from .forms import ProjectForm, ProjectModelForm
 
 
 def budget_list(request):
@@ -12,6 +12,13 @@ def budget_list(request):
         "projects": projects,
     }
     return render(request, 'budgetTool/budget_list.html',context)
+
+def rate_table(request):
+    rate_table=RateTable.objects.all()
+    context={
+        "rate_table": rate_table,
+    }
+    return render(request,'budgetTool/rate_table.html',context)
 
 def budget_detail(request,pk):
     project=Project.objects.get(id=pk)
@@ -22,29 +29,24 @@ def budget_detail(request,pk):
 
 
 def create_project(request):
-    form=ProjectForm()
+    form=ProjectModelForm()
     if request.method =="POST":
         print("received")
-        form=ProjectForm(request.POST)
+        form=ProjectModelForm(request.POST)
         if form.is_valid():
-            name=form.cleaned_data['name']
-            quote=form.cleaned_data['quote']
-            bom=BoM.objects.first()
-            service=Service.objects.first()
-
-            Project.objects.create(
-                name=name,
-                quote=quote,
-                bom=bom,
-                service=service
-            )
+            form.save()
             print("created a new project")
             return redirect("/budgetTool")
 
     context={
-        "form":ProjectForm()
+        "form":ProjectModelForm()
     }
     return render(request,"budgetTool/create_project.html",context)
+
+
+
+
+
 
 # def home(request):
 #     if request.method == 'POST':
