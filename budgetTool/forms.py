@@ -8,8 +8,8 @@ class ProjectModelForm(forms.ModelForm):
         fields={
             'name',
             'quote',
-            'bom',
-            'service',
+            # 'bom',
+            # 'service',
         }
 
 class ProjectForm(forms.Form):

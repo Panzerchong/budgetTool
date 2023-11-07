@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from .models import RateTable, Project,BoM,Service,Sales
+from .models import RateTable, Project,BoM,Service,Sales,BillOfMaterials
 from .forms import ProjectForm, ProjectModelForm
 
 
@@ -20,11 +20,28 @@ def rate_table(request):
     }
     return render(request,'budgetTool/rate_table.html',context)
 
+# def budget_detail(request,pk):
+#     project=Project.objects.get(id=pk)
+#     context={
+#         "project":project
+#     }
+#     return render(request, 'budgetTool/budget_detail.html',context)
 def budget_detail(request,pk):
     project=Project.objects.get(id=pk)
+    custom=BillOfMaterials.objects.filter(project_id=pk,category="CUSTOM HARDWARE")
+    uma=BillOfMaterials.objects.filter(project_id=pk,category="UMA SOLUTION")
+    controls=BillOfMaterials.objects.filter(project_id=pk,category="CONTROLS")
+    software=BillOfMaterials.objects.filter(project_id=pk,category="SOFTWARE")
+    protection=BillOfMaterials.objects.filter(project_id=pk,category="PROTECTION PLANS")
     context={
-        "project":project
+        "project":project,
+        "custom":custom,
+        "uma":uma,
+        "controls":controls,
+        "software":software,
+        "proection":protection
     }
+    print(bom)
     return render(request, 'budgetTool/budget_detail.html',context)
 
 
@@ -42,6 +59,20 @@ def create_project(request):
         "form":ProjectModelForm()
     }
     return render(request,"budgetTool/create_project.html",context)
+
+def bom(request,pk):
+    bom=BillOfMaterials.objects.get(id=pk)
+    context={
+        "bom": bom,
+    }
+    return render(request,'budgetTool/bom.html',context)
+
+def service(request):
+    rate_table=RateTable.objects.all()
+    context={
+        "rate_table": rate_table,
+    }
+    return render(request,'budgetTool/rate_table.html',context)
 
 
 

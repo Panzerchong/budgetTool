@@ -16,18 +16,18 @@
   <body>
       <a href="/budgetTool/">Go back to Project lists</a>
       <hr>
-      <h1>Rate table</h1>
+      <h1>Bill of Materials</h1>
       <table>
         <tr>
           <th>Type</th>
           <th>List</th>
           <th>Cost</th>
         </tr>
-        {% for line in rate_table %}
+        {% for line in bom %}
           <tr>
-            <td>{{ line.type }}</td>
-            <td>{{ line.list }}</td>
-            <td>{{ line.cost }}</td>
+            <td>{{ line.name }}</td>
+            <td>{{ line.category }}</td>
+            <td>{{ line.quantity }}</td>
           </tr>
         {% endfor %}
       </table>
