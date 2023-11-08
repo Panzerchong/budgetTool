@@ -29,6 +29,8 @@ class Project(models.Model):
     created_at=models.DateTimeField(auto_now_add=True)
     name=models.CharField(max_length=100)
     quote=models.IntegerField()
+    adjust_service=models.IntegerField()
+    adjust_bom=models.IntegerField()
     # bom=models.ForeignKey("BoM",on_delete=models.CASCADE)
     # service=models.ForeignKey("Service",on_delete=models.CASCADE)
     
@@ -53,7 +55,7 @@ class BillOfMaterials(models.Model):
     actual_cost=models.IntegerField()
     Responsible=models.CharField(max_length=300,blank=True)
     description=models.CharField(max_length=300,blank=True)
-    Notes=models.CharField(max_length=300,blank=True)
+    notes=models.CharField(max_length=300,blank=True)
     quote_one=models.IntegerField(null=True,blank=True)
     vender_one=models.CharField(max_length=200,blank=True)
     quote_two=models.IntegerField(null=True,blank=True)
@@ -72,7 +74,7 @@ class Service(models.Model):
         ("GENERAL PROJECT", "GENERAL PROJECT"),
         ("HARDWARE DEVELOPMENT", "HARDWARE DEVELOPMENT"),
         ("SOFTWARE DEVELOPMENT", "SOFTWARE DEVELOPMENT"),
-        ("IMPLEMENTATION ", "IMPLEMENTATION "),
+        ("IMPLEMENTATION", "IMPLEMENTATION"),
         ("FACTORY ACCEPTANCE TEST", "FACTORY ACCEPTANCE TEST"),
         ("SHIPPING", "SHIPPING"),
         ("INSTALLATION", "INSTALLATION"),
@@ -90,15 +92,15 @@ class Service(models.Model):
         ("Admin", "Admin"),
     ]
 
+    index=models.IntegerField(null=True,blank=True)
     name=models.CharField(max_length=100)
-    category=models.CharField(max_length=100,choices=SERVICE_CATEGORY,default="GENERAL PROJECT")
-    type=models.CharField(max_length=100,choices=SERVICE_TYPES,default="Admin")
+    category=models.CharField(max_length=100,choices=SERVICE_CATEGORY)
+    type=models.CharField(max_length=100,choices=SERVICE_TYPES)
     hours_estimated=models.IntegerField()
     hours_worked=models.IntegerField()
     travel_actual=models.IntegerField()
+    notes=models.CharField(max_length=300,blank=True)
 
-    total_service_cost=models.IntegerField()
-    
     project=models.ForeignKey(Project,on_delete=models.CASCADE,related_name='project_service')
     def __str__(self):
         return (f"{self.name}")
@@ -106,15 +108,6 @@ class Service(models.Model):
 
 class Sales(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-
-class CustomHardware(models.Model):
-    name=models.CharField(max_length=100)
-    quantity=models.IntegerField()
-    actual_cost=models.IntegerField(null=True)
-    bom=models.ForeignKey(BoM,on_delete=models.CASCADE)
-
-    def __str__(self):
-        return (f"{self.name}")
 
 
 

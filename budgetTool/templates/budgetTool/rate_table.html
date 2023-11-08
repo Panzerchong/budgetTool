@@ -17,78 +17,29 @@
       <a href="/budgetTool/">Go back to Project lists</a>
       <hr>
       <h1>Rate table</h1>
-      <table>
-        <tr>
-          <th>Type</th>
-          <th>List</th>
-          <th>Cost</th>
-        </tr>
-        {% for line in rate_table %}
-          <tr>
-            <td>{{ line.type }}</td>
-            <td>{{ line.list }}</td>
-            <td>{{ line.cost }}</td>
-          </tr>
-        {% endfor %}
-      </table>
-
 
 
       <table class="table table-hover table-bordered">
         <thead>
           <tr>
-            <th class="table-primary" scope="col">#</th>
-            <th class="table-primary" scope="col">First</th>
-            <th class="table-primary" scope="col">Last</th>
-            <th class="table-primary" scope="col">Handle</th>
-            <th class="table-primary" scope="col">Handle</th>
-            <th class="table-primary" scope="col">Handle</th>
-            <th class="table-primary" scope="col">Handle</th>
-            <th class="table-primary" scope="col">Handle</th>
-            <th class="table-primary" scope="col">Handle</th>
-            <th class="table-primary" scope="col">Handle</th>
-            <th class="table-primary" scope="col">Handle</th>
-            <th class="table-primary" scope="col">Handle</th>
+            <th class="table-primary" scope="col">Type</th>
+            <th class="table-primary" scope="col">List</th>
+            <th class="table-primary" scope="col">Cost</th>
           </tr>
         </thead>
         <tbody>
+
+          {% for line in table %}
           <tr>
-            <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
+            <td>{{line.type}}</td>
+            <td>{{line.list}}</td>
+            <td>{{line.cost}}</td>
           </tr>
-          <tr>
-            <th scope="row">2</th>
-            <td>Jacob</td>
-            <td>Thornton</td>
-            <td>@fat</td>
-          </tr>
-          <tr>
-            <th scope="row">3</th>
-            <td colspan="2">Larry the Bird</td>
-            <td>@twitter</td>
-          </tr>
-        
+          {% endfor %}
           
         </tbody>
       </table>
 
-      <div>
-        <div>
-            <input onclick="add_row('table')" type="button" class="btn btn-info" value="+ 添加">
-        </div>
-        <table id="table" class="table"></table>
-        <div>
-            <input id="save" type="button" class="btn btn-info" value="点我提交">
-        </div>
-      </div>
       
 
   </body>

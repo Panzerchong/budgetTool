@@ -1,0 +1,36 @@
+<!doctype html>
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% load static %}
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="{% static 'main.js'%}"></script>
+  </head>
+  
+
+  <body>
+    <!-- <div class="btn-group">
+      <a href="/budgetTool/{{project.pk}}"class="btn btn-primary active" aria-current="page">Go back</a>
+    </div>
+      <hr> -->
+      <h1>Update the Project</h1>
+
+        <form method="post" autocomplete="off">
+        {% csrf_token %}
+        {{form.as_p}}
+        <button type="submit">Submit</button>
+        <button type="button" onclick="cancelFunction()">Cancel</button>
+
+        <script>
+        function cancelFunction() {
+            window.location.href="/budgetTool/{{project.pk}}";
+        }
+        </script>
+        </form>
+     
+  </body>
+</html>
