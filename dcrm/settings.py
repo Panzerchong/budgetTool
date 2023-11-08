@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'budgetTool',
     'bootstrap5',
+    'mathfilters',
 ]
 
 MIDDLEWARE = [

@@ -22,7 +22,7 @@ def rate_table(request):
 
 def budget_detail(request,pk):
     project=Project.objects.get(id=pk)
-    #bom
+    table=RateTable.objects.all()
     custom=BillOfMaterials.objects.filter(project_id=pk,category="CUSTOM HARDWARE")
     uma=BillOfMaterials.objects.filter(project_id=pk,category="UMA SOLUTION")
     controls=BillOfMaterials.objects.filter(project_id=pk,category="CONTROLS")
@@ -40,7 +40,9 @@ def budget_detail(request,pk):
     site_test_service=Service.objects.filter(project_id=pk,category="SITE ACCEPTANCE TEST")
     training_service=Service.objects.filter(project_id=pk,category="TRAINING")
 
+
     context={
+        "table":table,
         "project":project,
         "custom":custom,
         "uma":uma,
@@ -106,6 +108,7 @@ def create_bom(request,pk):
         print(project.name)
         form=BillModelForm(request.POST)
         if form.is_valid():
+            print(form.cleaned_data['name'])
             form.save()
             print("created a new BOM")
             return redirect(f'/budgetTool/{project.pk}')
@@ -164,8 +167,6 @@ def service_update(request,pk,fk):
         "form":form,
     }
     return render(request,"budgetTool/service_update.html",context)
-
-
 
 
 

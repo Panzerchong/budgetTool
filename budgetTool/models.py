@@ -29,8 +29,8 @@ class Project(models.Model):
     created_at=models.DateTimeField(auto_now_add=True)
     name=models.CharField(max_length=100)
     quote=models.IntegerField()
-    adjust_service=models.IntegerField()
-    adjust_bom=models.IntegerField()
+    adjust_service=models.FloatField()
+    adjust_bom=models.FloatField()
     # bom=models.ForeignKey("BoM",on_delete=models.CASCADE)
     # service=models.ForeignKey("Service",on_delete=models.CASCADE)
     
@@ -49,7 +49,8 @@ class BillOfMaterials(models.Model):
     category=models.CharField(max_length=100,choices=BOM_CATEGORY)
     index=models.IntegerField(null=True,blank=True)
     name=models.CharField(max_length=100)
-    
+    estimate_cost=models.IntegerField()
+    sales_price=models.IntegerField()
     quantity=models.IntegerField()
     supplier=models.CharField(max_length=300,blank=True)
     actual_cost=models.IntegerField()
@@ -98,6 +99,8 @@ class Service(models.Model):
     type=models.CharField(max_length=100,choices=SERVICE_TYPES)
     hours_estimated=models.IntegerField()
     hours_worked=models.IntegerField()
+    rate_list=models.IntegerField()
+    rate_cost=models.IntegerField()
     travel_actual=models.IntegerField()
     notes=models.CharField(max_length=300,blank=True)
 
