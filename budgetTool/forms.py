@@ -25,7 +25,7 @@ class BillModelForm(forms.ModelForm):
 class ServiceModelForm(forms.ModelForm):
     class Meta:
         model = Service
-        exclude=['index']
+        exclude=['index','rate_list','rate_cost']
 
 
 

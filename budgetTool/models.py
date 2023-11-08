@@ -99,8 +99,8 @@ class Service(models.Model):
     type=models.CharField(max_length=100,choices=SERVICE_TYPES)
     hours_estimated=models.IntegerField()
     hours_worked=models.IntegerField()
-    rate_list=models.IntegerField()
-    rate_cost=models.IntegerField()
+    rate_list=models.IntegerField(null=True,blank=True)
+    rate_cost=models.IntegerField(null=True,blank=True)
     travel_actual=models.IntegerField()
     notes=models.CharField(max_length=300,blank=True)
 

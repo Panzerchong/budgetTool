@@ -137,30 +137,103 @@ def bom_update(request,pk,fk):
 
 def create_service(request,pk):
     project=Project.objects.get(id=pk)
+    rate_table=RateTable.objects.all()
     form=ServiceModelForm()
     if request.method =="POST":
         print(project.name)
         form=ServiceModelForm(request.POST)
         if form.is_valid():
-            form.save()
-            print("created a new service")
+            data=form.cleaned_data
+            name=data['name']
+            category=data['category']
+            type=data['type']
+            hours_estimated=data['hours_estimated']
+            hours_worked=data['hours_worked']
+            rate_list=0
+            rate_cost=0
+            travel_actual=data['travel_actual']
+            notes=data['notes']
+
+            for item in rate_table:
+                if type == item.type:
+                   
+                    rate_list=item.list
+                    rate_cost=item.cost
+
+            Service.objects.create(
+                name=name,
+                category=category,
+                type=type,
+                hours_estimated=hours_estimated,
+                hours_worked=hours_worked,
+                rate_list=rate_list,
+                rate_cost=rate_cost,
+                travel_actual=travel_actual,
+                notes=notes,
+                project=project
+            )
             return redirect(f'/budgetTool/{project.pk}')
     context={
         "form":ServiceModelForm(initial={'project': project})
     }
     return render(request,"budgetTool/create_service.html",context)
 
+# def create_service(request,pk):
+#     project=Project.objects.get(id=pk)
+#     form=ServiceModelForm()
+#     if request.method =="POST":
+#         print(project.name)
+#         form=ServiceModelForm(request.POST)
+#         if form.is_valid():
+#             rate_list=500
+#             rate_cost=159
+#             form.save()
+#             print("created a new service")
+#             return redirect(f'/budgetTool/{project.pk}')
+#     context={
+#         "form":ServiceModelForm(initial={'project': project})
+#     }
+#     return render(request,"budgetTool/create_service.html",context)
+
 
 def service_update(request,pk,fk):
     item=Service.objects.get(id=pk,project_id=fk)
     form=ServiceModelForm(instance=item)
+    rate_table=RateTable.objects.all()
 
     if request.method =="POST":
         print("received")
         form=ServiceModelForm(request.POST,instance=item)
         if form.is_valid():
-            form.save()
-            print("edit a item")
+            data=form.cleaned_data
+            name=data['name']
+            category=data['category']
+            type=data['type']
+            hours_estimated=data['hours_estimated']
+            hours_worked=data['hours_worked']
+            rate_list=0
+            rate_cost=0
+            travel_actual=data['travel_actual']
+            notes=data['notes']
+
+            for service in rate_table:
+                if type == service.type:
+                   
+                    rate_list=service.list
+                    rate_cost=service.cost
+
+            Service.objects.update(
+                name=name,
+                category=category,
+                type=type,
+                hours_estimated=hours_estimated,
+                hours_worked=hours_worked,
+                rate_list=rate_list,
+                rate_cost=rate_cost,
+                travel_actual=travel_actual,
+                notes=notes,
+                )
+            print("edit an item")
             return redirect(f'/budgetTool/{item.project_id}')
     context={
         "item":item,
