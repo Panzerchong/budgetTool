@@ -8,6 +8,19 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     pass
 
+class ServiceCategory(models.Model):
+    index=models.IntegerField()
+    name=models.CharField(max_length=300)
+    def __str__(self):
+        return (f"{self.name}")
+
+class BOMCategory(models.Model):
+    index=models.IntegerField()
+    name=models.CharField(max_length=300)
+    def __str__(self):
+        return (f"{self.name}")
+
+
 class RateTable(models.Model):
     created_at=models.DateTimeField(auto_now_add=True)
     type=models.CharField(max_length=100)
@@ -17,20 +30,14 @@ class RateTable(models.Model):
     def __str__(self):
         return (f"{self.type} {self.list} {self.cost}")
     
-
-class BoM(models.Model):
-    name=models.CharField(max_length=100)
-    total_bom_cost=models.IntegerField()
-
-    def __str__(self):
-        return (f"{self.name}")
-    
 class Project(models.Model):
     created_at=models.DateTimeField(auto_now_add=True)
     name=models.CharField(max_length=100)
-    quote=models.IntegerField()
-    adjust_service=models.FloatField()
-    adjust_bom=models.FloatField()
+    quote_BOM=models.IntegerField()
+    quote_Service=models.IntegerField()
+    adjust_Service=models.FloatField()
+    adjust_BOM=models.FloatField()
+    travel_weekly=models.IntegerField()
     # bom=models.ForeignKey("BoM",on_delete=models.CASCADE)
     # service=models.ForeignKey("Service",on_delete=models.CASCADE)
     
@@ -38,50 +45,38 @@ class Project(models.Model):
         return (f"{self.name}")
 
 class BillOfMaterials(models.Model):
-    BOM_CATEGORY = [
-        ("CUSTOM HARDWARE", "Custom Hardware"),
-        ("UMA SOLUTION", "UMA Solution"),
-        ("CONTROLS", "Controls"),
-        ("SOFTWARE", "Software"),
-        ("PROTECTION PLANS", "Protection Plans"),
-    ]
 
-    category=models.CharField(max_length=100,choices=BOM_CATEGORY)
     index=models.IntegerField(null=True,blank=True)
     name=models.CharField(max_length=100)
     estimate_cost=models.IntegerField()
     sales_price=models.IntegerField()
     quantity=models.IntegerField()
     supplier=models.CharField(max_length=300,blank=True)
-    actual_cost=models.IntegerField()
+    actual_cost=models.FloatField()
     Responsible=models.CharField(max_length=300,blank=True)
     description=models.CharField(max_length=300,blank=True)
     notes=models.CharField(max_length=300,blank=True)
-    quote_one=models.IntegerField(null=True,blank=True)
-    vender_one=models.CharField(max_length=200,blank=True)
-    quote_two=models.IntegerField(null=True,blank=True)
-    vender_two=models.CharField(max_length=200,blank=True)
-    quote_three=models.IntegerField(null=True,blank=True)
-    vender_three=models.CharField(max_length=200,blank=True)
     
+    bom_category=models.ForeignKey(BOMCategory,on_delete=models.SET_NULL, null=True,related_name='project_BOM_category')
     project=models.ForeignKey(Project,on_delete=models.CASCADE,related_name='project_bom')
 
     def __str__(self):
         return (f"{self.name}")
+    
 
 
 class Service(models.Model):
-    SERVICE_CATEGORY = [
-        ("GENERAL PROJECT", "GENERAL PROJECT"),
-        ("HARDWARE DEVELOPMENT", "HARDWARE DEVELOPMENT"),
-        ("SOFTWARE DEVELOPMENT", "SOFTWARE DEVELOPMENT"),
-        ("IMPLEMENTATION", "IMPLEMENTATION"),
-        ("FACTORY ACCEPTANCE TEST", "FACTORY ACCEPTANCE TEST"),
-        ("SHIPPING", "SHIPPING"),
-        ("INSTALLATION", "INSTALLATION"),
-        ("SITE ACCEPTANCE TEST", "SITE ACCEPTANCE TEST"),
-        ("TRAINING", "TRAINING"),
-    ]
+    # SERVICE_CATEGORY = [
+    #     ("GENERAL PROJECT", "GENERAL PROJECT"),
+    #     ("HARDWARE DEVELOPMENT", "HARDWARE DEVELOPMENT"),
+    #     ("SOFTWARE DEVELOPMENT", "SOFTWARE DEVELOPMENT"),
+    #     ("IMPLEMENTATION", "IMPLEMENTATION"),
+    #     ("FACTORY ACCEPTANCE TEST", "FACTORY ACCEPTANCE TEST"),
+    #     ("SHIPPING", "SHIPPING"),
+    #     ("INSTALLATION", "INSTALLATION"),
+    #     ("SITE ACCEPTANCE TEST", "SITE ACCEPTANCE TEST"),
+    #     ("TRAINING", "TRAINING"),
+    # ]
 
     SERVICE_TYPES = [
         ("Project Management", "Project Management"),
@@ -93,24 +88,45 @@ class Service(models.Model):
         ("Admin", "Admin"),
     ]
 
+    # category=models.CharField(max_length=100,choices=SERVICE_CATEGORY)
     index=models.IntegerField(null=True,blank=True)
     name=models.CharField(max_length=100)
-    category=models.CharField(max_length=100,choices=SERVICE_CATEGORY)
     type=models.CharField(max_length=100,choices=SERVICE_TYPES)
     hours_estimated=models.IntegerField()
     hours_worked=models.IntegerField()
-    rate_list=models.IntegerField(null=True,blank=True)
-    rate_cost=models.IntegerField(null=True,blank=True)
+    
+    rate_list=models.FloatField(default=-1)
+    rate_cost=models.FloatField(default=-1)
     travel_actual=models.IntegerField()
     notes=models.CharField(max_length=300,blank=True)
 
+    #calculated field
+    hours_adjusted=models.FloatField(default=0)
+    travel_estimate=models.FloatField(default=0)
+    sub_total_list=models.IntegerField(default=0)
+    sub_total_adjusted_list=models.IntegerField(default=0)
+    sub_total_cost_est=models.IntegerField(default=0)
+    sub_total_adjusted_cost_est=models.IntegerField(default=0)
+    cost_actual=models.IntegerField(default=0)
+
+
+    category=models.ForeignKey(ServiceCategory,on_delete=models.SET_NULL, null=True,related_name='project_service_category')
     project=models.ForeignKey(Project,on_delete=models.CASCADE,related_name='project_service')
     def __str__(self):
-        return (f"{self.name}")
+        return (f"{self.name}--- {self.category}")
 
 
 class Sales(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+class BoM(models.Model):
+    name=models.CharField(max_length=100)
+    total_bom_cost=models.IntegerField()
+
+    def __str__(self):
+        return (f"{self.name}")
+
+
 
 
 

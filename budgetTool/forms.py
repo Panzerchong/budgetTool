@@ -7,9 +7,11 @@ class ProjectModelForm(forms.ModelForm):
         # exclude = ['created_at']
         fields=[
             'name',
-            'quote',
-            'adjust_bom',
-            'adjust_service',
+            'quote_BOM',
+            'quote_Service',
+            'adjust_BOM',
+            'adjust_Service',
+            'travel_weekly',
         ]
 
 class BillModelForm(forms.ModelForm):
@@ -25,7 +27,15 @@ class BillModelForm(forms.ModelForm):
 class ServiceModelForm(forms.ModelForm):
     class Meta:
         model = Service
-        exclude=['index','rate_list','rate_cost']
+        exclude=[
+            'hours_adjusted',
+            'travel_estimate',
+            'sub_total_list',
+            'sub_total_adjusted_list',
+            'sub_total_cost_est',
+            'sub_total_adjusted_cost_est',
+            'cost_actual',
+        ]
 
 
 
@@ -34,6 +44,7 @@ class ServiceModelForm(forms.ModelForm):
 
 class ProjectForm(forms.Form):
     name=forms.CharField()
-    quote=forms.IntegerField()
+    quote_BOM=forms.IntegerField()
+    quote_Service=forms.IntegerField()
     adjusted_bom=forms.IntegerField()
     adjusted_service=forms.IntegerField()

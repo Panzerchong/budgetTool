@@ -1,143 +1,82 @@
-{% load humanize %}
-<!doctype html>
-{% load bootstrap5 %}
-{% bootstrap_css %}
-{% bootstrap_javascript %}
-{% load static %}
-
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    
-  </head>
-  <script type="text/javascript" src="{% static 'main.js'%}"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drag and Drop Table Rows with Order Storage</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
 
-  <body>
-      <a href="/budgetTool/">Go back to Project lists</a>
-      <hr>
-      <h1>Rate table</h1>
+        table, th, td {
+            border: 1px solid #ddd;
+        }
 
+        th, td {
+            padding: 15px;
+            text-align: left;
+        }
 
-      <table class="table table-sm table-hover table-bordered w-auto">
-        <thead>
-          <tr>
-            <th class="table-primary" scope="col">Type</th>
-            <th class="table-primary" scope="col">List</th>
-            <th class="table-primary" scope="col">Cost</th>
-          </tr>
-        </thead>
-        <tbody>
+        tr:hover {
+            background-color: #f5f5f5;
+        }
 
-          {% for line in table %}
-          <tr>
-            <td>{{line.type}}</td>
-            <td>{{line.list}}</td>
-            <td>{{line.cost}}</td>
-          </tr>
-          {% endfor %}
-          
-        </tbody>
-      </table>
+        .drag-handle {
+            cursor: grab;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
 
-      
-
-      <!-- <table>
+<table id="sortable-table">
+    <thead>
         <tr>
-            <td><input type="number" id="num1"></td>
-            <td>+</td>
-            <td><input type="number" id="num2"></td>
-            <td>=</td>
-            <td><span id="result"></span></td>
+            <th></th>
+            <th>Name</th>
+            <th>Age</th>
         </tr>
-        <tr>
-            <td><input type="number" id="num3"></td>
-            <td>*</td>
-            <td><input type="number" id="num4"></td>
-            <td>=</td>
-            <td><span id="result2"></span></td>
+    </thead>
+    <tbody>
+        <tr data-book-id="1">
+            <td class="drag-handle">&#9776;</td>
+            <td>John Doe</td>
+            <td>25</td>
         </tr>
-    </table>
-    
-    <script>
-    function calculate() {
-        var num1 = parseFloat(document.getElementById('num1').value);
-        var num2 = parseFloat(document.getElementById('num2').value);
-        var result = num1 + num2;
-    
-        var num3 = parseFloat(document.getElementById('num3').value);
-        var num4 = parseFloat(document.getElementById('num4').value);
-        var result2 = num3 * num4;
-    
-        document.getElementById('result').textContent = result;
-        document.getElementById('result2').textContent = result2;
-    }
-    
-    // Call the calculate function when input values change
-    document.getElementById('num1').addEventListener('input', calculate);
-    document.getElementById('num2').addEventListener('input', calculate);
-    document.getElementById('num3').addEventListener('input', calculate);
-    document.getElementById('num4').addEventListener('input', calculate);
-    </script>
-
-
-<table id="myTable">
-  <thead>
-      <tr>
-          <th>Item</th>
-          <th>Quantity</th>
-          <th>Price</th>
-      </tr>
-  </thead>
-  <tbody>
-      <tr>
-          <td>Item 1</td>
-          <td>5</td>
-          <td>10</td>
-      </tr>
-      <tr>
-          <td>Item 2</td>
-          <td>3</td>
-          <td>5</td>
-      </tr>
-      <tr>
-          <td>Item 3</td>
-          <td>2</td>
-          <td>8</td>
-      </tr>
-  </tbody>
+        <tr data-book-id="2">
+            <td class="drag-handle">&#9776;</td>
+            <td>Jane Doe</td>
+            <td>30</td>
+        </tr>
+        <!-- Add more rows as needed -->
+    </tbody>
 </table>
 
-<p>Total Quantity: <span id="totalQuantity"></span></p>
-<p>Total Price: <span id="totalPrice"></span></p>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
 
 <script>
-  function calculateColumnSum(columnIndex) {
-      var table = document.getElementById("myTable");
-      var sum = 0;
+    $(document).ready(function () {
+        const sortableTable = document.getElementById('sortable-table').getElementsByTagName('tbody')[0];
 
-      for (var i = 1; i < table.rows.length; i++) {
-          var cell = table.rows[i].cells[columnIndex];
-          var cellValue = parseFloat(cell.innerHTML);
-
-          if (!isNaN(cellValue)) {
-              sum += cellValue;
-          }
-      }
-
-      return sum;
-  }
-
-  var totalQuantity = calculateColumnSum(1); // Assuming Quantity is in column index 1
-  var totalPrice = calculateColumnSum(2); // Assuming Price is in column index 2
-
-  document.getElementById("totalQuantity").innerText = totalQuantity;
-  document.getElementById("totalPrice").innerText = totalPrice;
+        new Sortable(sortableTable, {
+            handle: '.drag-handle',
+            animation: 150,
+            onEnd: function (evt) {
+                const rows = Array.from(sortableTable.children);
+                const bookIdsInNewOrder = rows.map(row => row.dataset.bookId);
+                console.log("changed")
+                // Send the updated order to the server
+                $.post('/update_book_order/', { new_order: bookIdsInNewOrder }, function (data) {
+                    console.log(data.message);  // Log the response from the server
+                    console.log("changed")
+                });
+            }
+        });
+    });
 </script>
- -->
 
-
-
-
-  </body>
+</body>
 </html>

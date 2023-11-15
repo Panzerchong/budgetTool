@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from .models import RateTable, Project,BoM,Service,Sales,BillOfMaterials
+from .models import RateTable, Project,BoM,Service,Sales,BillOfMaterials,ServiceCategory,BOMCategory
 from .forms import ProjectForm, ProjectModelForm,BillModelForm,ServiceModelForm
 
 
@@ -23,42 +23,31 @@ def rate_table(request):
 def budget_detail(request,pk):
     project=Project.objects.get(id=pk)
     table=RateTable.objects.all()
-    custom=BillOfMaterials.objects.filter(project_id=pk,category="CUSTOM HARDWARE")
-    uma=BillOfMaterials.objects.filter(project_id=pk,category="UMA SOLUTION")
-    controls=BillOfMaterials.objects.filter(project_id=pk,category="CONTROLS")
-    software=BillOfMaterials.objects.filter(project_id=pk,category="SOFTWARE")
-    protection=BillOfMaterials.objects.filter(project_id=pk,category="PROTECTION PLANS")
+    bom=BillOfMaterials.objects.filter(project_id=pk)
+    # custom=BillOfMaterials.objects.filter(project_id=pk,category="CUSTOM HARDWARE")
+    # uma=BillOfMaterials.objects.filter(project_id=pk,category="UMA SOLUTION")
+    # controls=BillOfMaterials.objects.filter(project_id=pk,category="CONTROLS")
+    # software=BillOfMaterials.objects.filter(project_id=pk,category="SOFTWARE")
+    # protection=BillOfMaterials.objects.filter(project_id=pk,category="PROTECTION PLANS")
+    bom_category=BOMCategory.objects.filter(project_BOM_category__isnull=False).distinct().order_by('index')
 
     #service
-    general_service=Service.objects.filter(project_id=pk,category="GENERAL PROJECT")
-    hardware_service=Service.objects.filter(project_id=pk,category="HARDWARE DEVELOPMENT")
-    software_service=Service.objects.filter(project_id=pk,category="SOFTWARE DEVELOPMENT")
-    implementation=Service.objects.filter(project_id=pk,category="IMPLEMENTATION")
-    factory_test_service=Service.objects.filter(project_id=pk,category="FACTORY ACCEPTANCE TEST")
-    shipping=Service.objects.filter(project_id=pk,category="SHIPPING")
-    installation=Service.objects.filter(project_id=pk,category="INSTALLATION")
-    site_test_service=Service.objects.filter(project_id=pk,category="SITE ACCEPTANCE TEST")
-    training_service=Service.objects.filter(project_id=pk,category="TRAINING")
-
+    service=Service.objects.filter(project_id=pk)
+    #filter out category not used
+    service_category=ServiceCategory.objects.filter(project_service_category__isnull=False).distinct().order_by('index')
 
     context={
         "table":table,
         "project":project,
-        "custom":custom,
-        "uma":uma,
-        "controls":controls,
-        "software":software,
-        "protection":protection,
-
-        'general_service':        general_service,
-        'hardware_service':        hardware_service,
-        'software_service':        software_service,
-        'implementation' :       implementation,
-        'factory_test_service':        factory_test_service,
-        'shipping':        shipping,
-        'installation':        installation,
-        'site_test_service' :       site_test_service,
-        'training_service':      training_service,
+        "service": service,
+        "bom":bom,
+        "service_category": service_category,
+        "existing_bom_category":bom_category,
+        # "custom":custom,
+        # "uma":uma,
+        # "controls":controls,
+        # "software":software,
+        # "protection":protection,
     }
     return render(request, 'budgetTool/budget_detail.html',context)
 
@@ -99,7 +88,6 @@ def project_delete(request,pk):
     project=Project.objects.get(id=pk)
     project.delete()
     return redirect("/budgetTool")
-
 
 def create_bom(request,pk):
     project=Project.objects.get(id=pk)
@@ -149,18 +137,33 @@ def create_service(request,pk):
             type=data['type']
             hours_estimated=data['hours_estimated']
             hours_worked=data['hours_worked']
-            rate_list=0
-            rate_cost=0
+            rate_list=data['rate_list']
+            rate_cost=data['rate_cost']
             travel_actual=data['travel_actual']
             notes=data['notes']
+            
+            if rate_list == -1:
+                for item in rate_table:
+                    if type == item.type:                  
+                        rate_list=item.list
+            if rate_cost == -1:
+                 for item in rate_table:
+                    if type == item.type:
+                        rate_cost=item.cost
 
-            for item in rate_table:
-                if type == item.type:
-                   
-                    rate_list=item.list
-                    rate_cost=item.cost
+            #calculated field value
+            print(rate_cost+rate_list)
+            hours_adjusted=hours_estimated*(1+project.adjust_Service)
+            travel_estimate=hours_estimated*project.travel_weekly/40
+            sub_total_list=hours_estimated*rate_list+travel_estimate
+            sub_total_adjusted_list=hours_adjusted*rate_list+travel_estimate
+            sub_total_cost_est=hours_estimated*rate_cost+travel_estimate
+            sub_total_adjusted_cost_est=hours_adjusted*rate_cost+travel_estimate
+            cost_actual=hours_worked*rate_cost+travel_actual
 
+            print(f'rate_list: {rate_cost}')
             Service.objects.create(
+                
                 name=name,
                 category=category,
                 type=type,
@@ -170,7 +173,14 @@ def create_service(request,pk):
                 rate_cost=rate_cost,
                 travel_actual=travel_actual,
                 notes=notes,
-                project=project
+                project=project,
+                hours_adjusted=hours_adjusted,
+                travel_estimate=travel_estimate,
+                sub_total_list=sub_total_list,
+                sub_total_adjusted_list=sub_total_adjusted_list,
+                sub_total_cost_est=sub_total_cost_est,
+                sub_total_adjusted_cost_est=sub_total_adjusted_cost_est,
+                cost_actual=cost_actual,
             )
             return redirect(f'/budgetTool/{project.pk}')
     context={

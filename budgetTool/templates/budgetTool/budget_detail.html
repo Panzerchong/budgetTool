@@ -11,8 +11,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
-  <div id="quoteValue" data-quote="{{ project.quote }}"></div>
-  <div id="adjustValue" adjustValue="{{project.adjust_bom}}"></div>
+  <div id="quoteValue" data-quote="{{ project.quote_BOM }}"></div>
+  <div id="quoteService" quoteService="{{project.quote_Service}}"></div>
+  <div id="adjustComplexityBOM" adjustComplexityBOM="{{project.adjust_BOM}}"></div>
+  <div id="adjustComplexityService" adjustComplexityService="{{project.adjust_Service}}"></div>
+  
 
   <body>
     <div class="btn-group">
@@ -24,13 +27,130 @@
       <hr>
       <h1>{{project.name}}</h1>
 
-          <!-- <td>{{project.bom.total_bom_cost|intcomma }}</td>
-          <td>{{project.service.total_service_cost|intcomma }}</td> -->
+      <!-- Project summry -->
+      <div>
+        <table class="table table-hover table-bordered table-bordered border-primary w-auto">
+          <thead>
+            <tr>
+              <th class="table-dark text-center" colspan="7">Summary</th>
+            </tr>
+
+            <tr>
+              <th class="table-primary" scope="col"></th>
+              <th class="table-primary" scope="col">Cost Est</th>
+              <th class="table-primary" scope="col">Cost Adjusted</th>
+              <th class="table-primary" scope="col">List</th>
+              <th class="table-primary" scope="col">List Adjusted</th>
+              <th class="table-primary" scope="col">Quoted</th>
+              <th class="table-primary" scope="col">Actual</th>
+            </tr>
+          </thead>
+
+            <tbody>
+              <tr>
+                <td><strong>Bom</strong></td>
+                <td>$<span id="totalCostEstimate1"></span></td>
+                <td>$<span id="totalCostEstimate2"></span></td>
+                <td>$<span id="totalSale1"></span></td>
+                <td>$<span id="listAdjusted1"></span></td>
+                <td>${{project.quote_BOM|intcomma}}</td>
+                <td>$<span id="totalCostActual1"></span></td>
+              </tr>
+
+              <tr>
+                <td><strong>Service</strong></td>
+                <td>$<span id="costEst1"></span></td>
+                <td>$<span id="costAdjustedEst1"></span></td>
+                <td>$<span id="labor1"></span></td>
+                <td>$<span id="laborAdjusted1"></span></td>
+                <td>${{project.quote_Service|intcomma}}</td>
+                <td>$<span id="costAct1"></span></td>
+              </tr>
+
+              <tr>
+                <td colspan="7"></td>
+              </tr>
+
+              <tr>
+                <td><strong>Total</strong></td>
+                <td>$<span id="costEstSummry"></span></td>
+                <td>$<span id="costAdjustedEstSummry"></span></td>
+                <td>$<span id="listSummry"></span></td>
+                <td>$<span id="listAdjustedSummry"></span></td>
+                <td>$<span id="totalQuote"></span></td>
+                <td>$<span id="costActSummry"></span></td>
+              </tr>
+
+              <tr>
+                <td><strong>Margin</strong></td>
+                <td></td>
+                <td></td>
+                <td><span id="listMarginSummry"></span>%</td>
+                <td><span id="listAdjustedMarginSummry"></span>%</td>
+                <td><span id="quotedMarginSummry"></span>%</td>
+                <td><span id="actualMarginSummry"></span>%</td>
+
+               
+
+            </tbody>
+        </table>
+      </div>
+
+
+
+            <!-- summry table for bom -->
+      <div>
+        <table class="table table-hover table-bordered table-bordered border-primary w-auto text-center">
+          <thead>
+            <tr>
+              <th class="table-primary text-center" colspan="9">Total BoM</th>
+            </tr>
+
+            <tr>
+              <th class="table-primary" scope="col"></th>
+              <th class="table-primary" scope="col"></th>
+              <th class="table-primary" scope="col">Cost Estimate</th>
+              <th class="table-primary" scope="col">Actual Cost</th>
+              <th class="table-primary" scope="col">List</th>
+              <th class="table-primary" scope="col">List Adjusted</th>
+              <th class="table-primary" scope="col">Margin Est</th>
+              <th class="table-primary" scope="col">Margin Adj</th>
+              <th class="table-primary" scope="col">Margin Actual</th>
+            </tr>
+          </thead>
+
+            <tbody>
+              <tr>
+                <td>Adjusted for Complexity</td>
+                <td>{{project.adjust_BOM|mul:100}}% </td>
+                <td>$<span id="totalCostEstimate"></span></td>
+                <td>$<span id="totalCostActual"></span></td>
+                <td>$<span id="totalSale"></span></td>
+                <td>$<span id="listAdjusted"></span></td>
+                <td><span id="marginEst"></span>%</td>
+                <td><span id="marginAdj"></span>%</td>
+                <td><span id="marginActual"></span>%</td>
+              </tr>
+
+              <tr>
+                <td>Quoted</td>
+                <td>${{project.quote_BOM|intcomma}}</td>
+                <td colspan="7"></td>
+              </tr>
+            </tbody>
+        </table>
+      </div>
+
+
+
      
       
       <div>
-      <table class="table table-hover table-bordered text-nowrap" id="billTable">
+      <table class="table table-hover table-bordered border-primary" id="billTable">
         <thead>
+          <tr>
+            <th class="table-primary text-center" colspan="12">Bill of Materials</th>
+          </tr>
           <tr>
             <th class="table-primary" scope="col">#</th>
             <th class="table-primary" scope="col">Part/Item</th>
@@ -44,256 +164,110 @@
             <th class="table-primary" scope="col">Responsible</th>
             <th class="table-primary" scope="col">Description</th>
             <th class="table-primary" scope="col">Notes</th>
-            <th class="table-primary" scope="col">Quote 1</th>
-            <th class="table-primary" scope="col">Vender 1</th>
-            <th class="table-primary" scope="col">Quote 2</th>
-            <th class="table-primary" scope="col">Vender 2</th>
-            <th class="table-primary" scope="col">Quote 3</th>
-            <th class="table-primary" scope="col">Vender 3</th>
           </tr>
         </thead>
 
-          
           <tbody>
-            <tr>
-              <td></td>
-              <td class="text-nowrap"><strong>CUSTOM HARDWARE</strong></td>
-            </tr>
-            
+              {% for categ in existing_bom_category %}
+                <tr>
+                  <td>{{categ.index}}</td>
+                  <td class="text-nowrap"><strong>{{categ.name}}</strong></td>
+                </tr>
 
-            {% for line in custom %}
-            
-            <tr>
-              <td></td>
-              <td><a href="/budgetTool/{{project.pk}}/{{line.pk}}/bom">{{ line.name }}</a></td>
-              <td> {{line.estimate_cost|intcomma }}</td>
-              <td> {{line.sales_price|intcomma }}</td>
-              <td>{{ line.quantity }}</td>
-              <td id="lineCost">
-                  {%with totalCost=line.quantity|mul:line.estimate_cost %}
-                    {{totalCost|intcomma}}
-                  {%endwith%}
-              </td>
-              <td>
-                {%with totalSale=line.quantity|mul:line.sales_price %}
-                    {{totalSale|intcomma}}
-                {%endwith%}
-              </td>
-              <td>{{ line.supplier }}</td>
-              <td>{{ line.actual_cost|intcomma }}</td>
-              <td>{{ line.responsible }}</td>
-              <td>{{ line.description }}</td>
-              <td>{{ line.notes }}</td>
-              <td>{{ line.quote_one }}</td>
-              <td>{{ line.vender_one }}</td>
-              <td>{{ line.quote_two}}</td>
-              <td>{{ line.vender_two }}</td>
-              <td>{{ line.quote_three }}</td>
-              <td>{{ line.vender_three }}</td>
-            </tr>
+                {% for line in bom %}
+                  {% if line.bom_category == categ %}
+                  <tr>
+                    <td></td>
+                    <td><a href="/budgetTool/{{project.pk}}/{{line.pk}}/bom">{{ line.name }}</a></td>
+                    <td>${{line.estimate_cost|intcomma }}</td>
+                    <td>${{line.sales_price|intcomma }}</td>
+                    <td class="text-center">{{ line.quantity }}</td>
+                    <td id="lineCost">
+                        {%with totalCost=line.quantity|mul:line.estimate_cost %}
+                        ${{totalCost|intcomma}}
+                        {%endwith%}
+                    </td>
+                    <td>
+                      {%with totalSale=line.quantity|mul:line.sales_price %}
+                      ${{totalSale|intcomma}}
+                      {%endwith%}
+                    </td>
+                    <td>{{ line.supplier }}</td>
+                    <td>${{ line.actual_cost|intcomma }}</td>
+                    <td>{{ line.responsible }}</td>
+                    <td>{{ line.description }}</td>
+                    <td>{{ line.notes }}</td>
+                  </tr>
+                  {%endif%}
+              {%endfor%}
             {% endfor %}
-
-            <tr>
-              <td></td>
-              <td class="text-nowrap"><strong>UMA SOLUTION</strong></td>
-            </tr>
-            {% for line in uma %}
-            <tr>
-              <td></td>
-              <td><a href="/budgetTool/{{project.pk}}/{{line.pk}}/bom">{{ line.name }}</a></td>
-              <td> {{line.estimate_cost|intcomma }}</td>
-              <td> {{line.sales_price|intcomma }}</td>
-              <td>{{ line.quantity }}</td>
-              <td>
-                  {%with totalCost=line.quantity|mul:line.estimate_cost %}
-                    {{totalCost|intcomma}}
-                  {%endwith%}
-              </td>
-              <td>
-                {%with totalSale=line.quantity|mul:line.sales_price %}
-                    {{totalSale|intcomma}}
-                {%endwith%}
-              </td>
-              <td>{{ line.supplier }}</td>
-              <td>{{ line.actual_cost|intcomma }}</td>
-              <td>{{ line.responsible }}</td>
-              <td>{{ line.description }}</td>
-              <td>{{ line.notes }}</td>
-              <td>{{ line.quote_one }}</td>
-              <td>{{ line.vender_one }}</td>
-              <td>{{ line.quote_two}}</td>
-              <td>{{ line.vender_two }}</td>
-              <td>{{ line.quote_three }}</td>
-              <td>{{ line.vender_three }}</td>
-            </tr>
-            {% endfor %}
-
-            <tr>
-              <td></td>
-              <td class="text-nowrap"><strong>CONTROLS</strong></td>
-            </tr>
-            {% for line in controls %}
-            <tr>
-              <td></td>
-              <td><a href="/budgetTool/{{project.pk}}/{{line.pk}}/bom">{{ line.name }}</a></td>
-              <td> {{line.estimate_cost|intcomma }}</td>
-              <td> {{line.sales_price|intcomma }}</td>
-              <td>{{ line.quantity }}</td>
-              <td>
-                  {%with totalCost=line.quantity|mul:line.estimate_cost %}
-                    {{totalCost|intcomma}}
-                  {%endwith%}
-              </td>
-              <td>
-                {%with totalSale=line.quantity|mul:line.sales_price %}
-                    {{totalSale|intcomma}}
-                {%endwith%}
-              </td>
-              <td>{{ line.supplier }}</td>
-              <td>{{ line.actual_cost|intcomma }}</td>
-              <td>{{ line.responsible }}</td>
-              <td>{{ line.description }}</td>
-              <td>{{ line.notes }}</td>
-              <td>{{ line.quote_one }}</td>
-              <td>{{ line.vender_one }}</td>
-              <td>{{ line.quote_two}}</td>
-              <td>{{ line.vender_two }}</td>
-              <td>{{ line.quote_three }}</td>
-              <td>{{ line.vender_three }}</td>
-            </tr>
-            {% endfor %}
-
-            <tr>
-              <td></td>
-              <td class="text-nowrap"><strong>SOFTWARE</strong></td>
-            </tr>
-            {% for line in software %}
-            <tr>
-              <td></td>
-              <td><a href="/budgetTool/{{project.pk}}/{{line.pk}}/bom">{{ line.name }}</a></td>
-              <td> {{line.estimate_cost|intcomma }}</td>
-              <td> {{line.sales_price|intcomma }}</td>
-              <td>{{ line.quantity }}</td>
-              <td>
-                  {%with totalCost=line.quantity|mul:line.estimate_cost %}
-                    {{totalCost|intcomma}}
-                  {%endwith%}
-              </td>
-              <td>
-                {%with totalSale=line.quantity|mul:line.sales_price %}
-                    {{totalSale|intcomma}}
-                {%endwith%}
-              </td>
-              <td>{{ line.supplier }}</td>
-              <td>{{ line.actual_cost|intcomma }}</td>
-              <td>{{ line.responsible }}</td>
-              <td>{{ line.description }}</td>
-              <td>{{ line.notes }}</td>
-              <td>{{ line.quote_one }}</td>
-              <td>{{ line.vender_one }}</td>
-              <td>{{ line.quote_two}}</td>
-              <td>{{ line.vender_two }}</td>
-              <td>{{ line.quote_three }}</td>
-              <td>{{ line.vender_three }}</td>
-            </tr>
-            {% endfor %}
-
-            <tr>
-              <td></td>
-              <td class="text-nowrap"><strong>PROTECTION PLANS</strong></td>
-            </tr>
-            {% for line in protection %}
-            <tr>
-              <td></td>
-              <td><a href="/budgetTool/{{project.pk}}/{{line.pk}}/bom">{{ line.name }}</a></td>
-              <td> {{line.estimate_cost|intcomma }}</td>
-              <td> {{line.sales_price|intcomma }}</td>
-              <td>{{ line.quantity }}</td>
-              <td>
-                  {%with totalCost=line.quantity|mul:line.estimate_cost %}
-                    {{totalCost|intcomma}}
-                  {%endwith%}
-              </td>
-              <td>
-                {%with totalSale=line.quantity|mul:line.sales_price %}
-                    {{totalSale|intcomma}}
-                {%endwith%}
-              </td>
-              <td>{{ line.supplier }}</td>
-              <td>{{ line.actual_cost|intcomma }}</td>
-              <td>{{ line.responsible }}</td>
-              <td>{{ line.description }}</td>
-              <td>{{ line.notes }}</td>
-              <td>{{ line.quote_one }}</td>
-              <td>{{ line.vender_one }}</td>
-              <td>{{ line.quote_two}}</td>
-              <td>{{ line.vender_two }}</td>
-              <td>{{ line.quote_three }}</td>
-              <td>{{ line.vender_three }}</td>
-            </tr>
-            {% endfor %}
-
 
           </tbody>
       </table>
 
         <a href="/budgetTool/{{project.pk}}/createbom" target="_blank">
-          <button>Create a new bom item</button>
+          <button>Create a new BOM item</button>
         </a>       
       <hr>
       </div>
 
 
-
-<!-- summry table for bom -->
-
-<table class="table table-hover table-bordered w-auto">
-  <thead>
-    <tr>
-      <th class="table-primary text-center" colspan="9">Total BOM</th>
-    </tr>
-
-    <tr>
-      <th class="table-primary" scope="col"></th>
-      <th class="table-primary" scope="col"></th>
-      <th class="table-primary" scope="col">Cost Estimate</th>
-      <th class="table-primary" scope="col">Actual Cost</th>
-      <th class="table-primary" scope="col">List</th>
-      <th class="table-primary" scope="col">List Adjusted</th>
-      <th class="table-primary" scope="col">Margin Est</th>
-      <th class="table-primary" scope="col">Margin Adj</th>
-      <th class="table-primary" scope="col">Margin Actual</th>
-    </tr>
-  </thead>
-
-    <tbody>
-      <tr>
-        <td>Adjusted for Complexity</td>
-        <td>{{project.adjust_bom|mul:100}}% </td>
-        <td>$<span id="totalCostEstimate"></span></td>
-        <td>$<span id="totalCostActual"></span></td>
-        <td>$<span id="totalSale"></span></td>
-        <td>$<span id="listAdjusted"></span></td>
-        <td><span id="marginEst"></span>%</td>
-        <td><span id="marginAdj"></span>%</td>
-        <td><span id="marginActual"></span>%</td>
-      </tr>
-
-      
-      <tr>
-        <td>Quoted</td>
-        <td>{{project.quote|intcomma}}</td>
-      </tr>
-
-
-
-
-
-
-
       <!-- service part -->
-      <table class="table table-hover table-bordered">
+
+      <div>
+        <table class="table table-hover table-bordered table-bordered border-primary w-auto">
+          <thead>
+            <tr>
+              <th class="table-primary text-center" colspan="9">Total System Integration Services</th>
+            </tr>
+
+            <tr>
+              <th class="table-primary" scope="col">Adjusted for Complexity; Unknown</th>
+              <th class="table-primary" scope="col">{{project.adjust_Service|mul:100}}%</th>
+              <th class="table-primary" scope="col">Hours</th>
+              <th class="table-primary" scope="col">Risk Hours</th>
+              <th class="table-primary" scope="col">Labor</th>
+              <th class="table-primary" scope="col">Labor Adjusted</th>
+              <th class="table-primary" scope="col">Cost Est</th>
+              <th class="table-primary" scope="col">Cost Adjusted Est</th>
+              <th class="table-primary" scope="col">Cost Act</th>
+            </tr>
+          </thead>
+
+            <tbody>
+              <tr>
+                <td><strong>Quoted</strong></td>
+                <td>${{project.quote_Service|intcomma}}</td>
+                <td class="text-center"><span id="hours"></span></td>
+                <td class="text-center"><span id="riskHours"></span></td>
+                <td>$<span id="labor"></span></td>
+                <td>$<span id="laborAdjusted"></span></td>
+                <td>$<span id="costEst"></span></td>
+                <td>$<span id="costAdjustedEst"></span></td>
+                <td>$<span id="costAct"></span></td>
+              </tr>
+
+              <tr>
+                <td><strong>Travel Weekly</strong></td>
+                <td>${{project.travel_weekly|intcomma}}</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><strong>Margin</strong></td>
+                <td><span id="costMargin"></span>%</td>
+                <td><span id="costAdjustedMargin"></span>%</td>
+                <td><span id="actualMargin"></span>%</td>
+              </tr>
+            </tbody>
+        </table>
+      </div>
+
+
+      <table class="table table-hover table-bordered border-primary" id="serviceTable">
         <thead>
+          <tr>
+            <th class="table-primary text-center" colspan="15">Estimated Labor Hours</th>
+          </tr>
           <tr>
             <th class="table-primary" scope="col">#</th>
             <th class="table-primary" scope="col">Task</th>
@@ -314,263 +288,39 @@
         </thead>
 
           <tbody>
-            <tr>
-              <td></td>
-              <td class="text-nowrap"><strong>GENERAL PROJECT</strong></td>
-            </tr>
-
-            {% for line in general_service %}
-            <tr>
-              <td></td>
-              <td><a href="/budgetTool/{{project.pk}}/service/{{line.pk}}">{{ line.name }}</a></td>
-              <td>{{ line.type }}</td>
-              <td>{{ line.hours_estimated }}</td>
-              <td></td>
-              <td>{{ line.hours_worked }}</td>
-              <td></td>
-              <td>{{ line.travel_actual }}</td>
-              <td>{{line.rate_list}}</td>
-              <td></td>
-              <td></td>
-              <td>{{line.rate_cost}}</td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-            {% endfor %}
-
-
-            <tbody>
+            {% for categ in service_category %}
               <tr>
-                <td></td>
-                <td class="text-nowrap"><strong>HARDWARE DEVELOPMENT</strong></td>
+                <td>{{categ.index}}</td>
+                <td class="text-nowrap"><strong>{{categ.name}}</strong></td>
               </tr>
-              
-              {% for line in hardware_service %}
-              <tr>
-                <td></td>
-                <td><a href="/budgetTool/{{project.pk}}/service/{{line.pk}}">{{ line.name }}</a></td>
-                <td>{{ line.type }}</td>
-                <td>{{ line.hours_estimated }}</td>
-                <td></td>
-                <td>{{ line.hours_worked }}</td>
-                <td></td>
-                <td>{{ line.travel_actual }}</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-              </tr>
-              {% endfor %}
-
-              <tbody>
-                <tr>
-                  <td></td>
-                  <td class="text-nowrap"><strong>SOFTWARE DEVELOPMENT</strong></td>
-                </tr>
-                
-                {% for line in software_service %}
-                <tr>
-                  <td></td>
-                  <td><a href="/budgetTool/{{project.pk}}/service/{{line.pk}}">{{ line.name }}</a></td>
-                  <td>{{ line.type }}</td>
-                  <td>{{ line.hours_estimated }}</td>
-                  <td></td>
-                  <td>{{ line.hours_worked }}</td>
-                  <td></td>
-                  <td>{{ line.travel_actual }}</td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                {% endfor %}
-
-                <tbody>
-                  <tr>
-                    <td></td>
-                    <td class="text-nowrap"><strong>IMPLEMENTATION</strong></td>
-                  </tr>
-                  
-                  {% for line in implementation %}
+              {% for line in service %}
+                {% if line.category == categ%}
                   <tr>
                     <td></td>
                     <td><a href="/budgetTool/{{project.pk}}/service/{{line.pk}}">{{ line.name }}</a></td>
                     <td>{{ line.type }}</td>
-                    <td>{{ line.hours_estimated }}</td>
-                    <td></td>
-                    <td>{{ line.hours_worked }}</td>
-                    <td></td>
-                    <td>{{ line.travel_actual }}</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td class="text-center">{{ line.hours_estimated }}</td>
+                    <td class="text-center">{{line.hours_adjusted|floatformat:2}}</td>
+                    <td class="text-center">{{ line.hours_worked }}</td>
+                    <td>${{ line.travel_estimate|intcomma}}</td>
+                    <td>${{ line.travel_actual|intcomma }}</td>
+                    <td>${{line.rate_list}}</td>
+                    <td>${{line.sub_total_list|intcomma}}</td>
+                    <td>${{line.sub_total_adjusted_list|intcomma}}</td>
+                    <td>${{line.rate_cost|intcomma}}</td>
+                    <td>${{line.sub_total_cost_est|intcomma}}</td>
+                    <td>${{line.sub_total_adjusted_cost_est|intcomma}}</td>
+                    <td>${{line.cost_actual|intcomma}}</td>
                   </tr>
-                  {% endfor %}
+                {%endif%}
+              {%endfor%}
+            {% endfor %}
 
-                  <tbody>
-                    <tr>
-                      <td></td>
-                      <td class="text-nowrap"><strong>FACTORY ACCEPTANCE TEST</strong></td>
-                    </tr>
-                    
-                    {% for line in factory_test_service %}
-                    <tr>
-                      <td></td>
-                      <td><a href="/budgetTool/{{project.pk}}/service/{{line.pk}}">{{ line.name }}</a></td>
-                      <td>{{ line.type }}</td>
-                      <td>{{ line.hours_estimated }}</td>
-                      <td></td>
-                      <td>{{ line.hours_worked }}</td>
-                      <td></td>
-                      <td>{{ line.travel_actual }}</td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                    </tr>
-                    {% endfor %}
-
-                    <tbody>
-                      <tr>
-                        <td></td>
-                        <td class="text-nowrap"><strong>SHIPPING</strong></td>
-                      </tr>
-                      
-                      {% for line in shipping %}
-                      <tr>
-                        <td></td>
-                        <td><a href="/budgetTool/{{project.pk}}/service/{{line.pk}}">{{ line.name }}</a></td>
-                        <td>{{ line.type }}</td>
-                        <td>{{ line.hours_estimated }}</td>
-                        <td></td>
-                        <td>{{ line.hours_worked }}</td>
-                        <td></td>
-                        <td>{{ line.travel_actual }}</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                      </tr>
-                      {% endfor %}
-
-                      <tbody>
-                        <tr>
-                          <td></td>
-                          <td class="text-nowrap"><strong>INSTALLATION</strong></td>
-                        </tr>
-                        
-                        {% for line in installation %}
-                        <tr>
-                          <td></td>
-                          <td><a href="/budgetTool/{{project.pk}}/service/{{line.pk}}">{{ line.name }}</a></td>
-                          <td>{{ line.type }}</td>
-                          <td>{{ line.hours_estimated }}</td>
-                          <td></td>
-                          <td>{{ line.hours_worked }}</td>
-                          <td></td>
-                          <td>{{ line.travel_actual }}</td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </tr>
-                        {% endfor %}
-
-                        <tbody>
-                          <tr>
-                            <td></td>
-                            <td class="text-nowrap"><strong>SITE ACCEPTANCE TEST</strong></td>
-                          </tr>
-                          
-                          {% for line in site_test_service %}
-                          <tr>
-                            <td></td>
-                            <td><a href="/budgetTool/{{project.pk}}/service/{{line.pk}}">{{ line.name }}</a></td>
-                            <td>{{ line.type }}</td>
-                            <td>{{ line.hours_estimated }}</td>
-                            <td></td>
-                            <td>{{ line.hours_worked }}</td>
-                            <td></td>
-                            <td>{{ line.travel_actual }}</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                          </tr>
-                          {% endfor %}
-
-                          <tbody>
-                            <tr>
-                              <td></td>
-                              <td class="text-nowrap"><strong>TRAINING</strong></td>
-                            </tr>
-                            
-                            {% for line in training_service %}
-                            <tr>
-                              <td></td>
-                              <td><a href="/budgetTool/{{project.pk}}/service/{{line.pk}}">{{ line.name }}</a></td>
-                              <td>{{ line.type }}</td>
-                              <td>{{ line.hours_estimated }}</td>
-                              <td></td>
-                              <td>{{ line.hours_worked }}</td>
-                              <td></td>
-                              <td>{{ line.travel_actual }}</td>
-                              <td>
-                                {% for item in table %}
-                                {% if line.type == item.type%}
-                                {% with list=item.list|div:5 %}
-                                {{list}}
-                                {%endwith%}
-                                {% endif %}
-                            {% endfor %}
-                              </td>
-                              <td>
-                                
-                              </td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                            </tr>
-                            {% endfor %}
           </tbody>
-        </table>
+      </table>
 
         <a href="/budgetTool/{{project.pk}}/createservice" target="_blank">
-          <button>Create a new service item</button>
+          <button>Create a new Service item</button>
         </a>
         <hr>
 
