@@ -1,9 +1,10 @@
 from django.shortcuts import render,redirect
-from django.http import HttpResponse
+from django.http import HttpResponse,JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .models import RateTable, Project,BoM,Service,Sales,BillOfMaterials,ServiceCategory,BOMCategory
 from .forms import ProjectForm, ProjectModelForm,BillModelForm,ServiceModelForm
+import json
 
 
 def budget_list(request):
@@ -24,17 +25,22 @@ def budget_detail(request,pk):
     project=Project.objects.get(id=pk)
     table=RateTable.objects.all()
     bom=BillOfMaterials.objects.filter(project_id=pk)
-    # custom=BillOfMaterials.objects.filter(project_id=pk,category="CUSTOM HARDWARE")
-    # uma=BillOfMaterials.objects.filter(project_id=pk,category="UMA SOLUTION")
-    # controls=BillOfMaterials.objects.filter(project_id=pk,category="CONTROLS")
-    # software=BillOfMaterials.objects.filter(project_id=pk,category="SOFTWARE")
-    # protection=BillOfMaterials.objects.filter(project_id=pk,category="PROTECTION PLANS")
     bom_category=BOMCategory.objects.filter(project_BOM_category__isnull=False).distinct().order_by('index')
 
     #service
     service=Service.objects.filter(project_id=pk)
     #filter out category not used
     service_category=ServiceCategory.objects.filter(project_service_category__isnull=False).distinct().order_by('index')
+
+
+    bomForm=BillModelForm()
+    if request.method =="POST":
+        print("received")
+        bomForm=BillModelForm(request.POST)
+        if bomForm.is_valid():
+            bomForm.save()
+            print("created a new project")
+            return redirect("/budgetTool")
 
     context={
         "table":table,
@@ -43,11 +49,7 @@ def budget_detail(request,pk):
         "bom":bom,
         "service_category": service_category,
         "existing_bom_category":bom_category,
-        # "custom":custom,
-        # "uma":uma,
-        # "controls":controls,
-        # "software":software,
-        # "protection":protection,
+        "bomForm":BillModelForm(),
     }
     return render(request, 'budgetTool/budget_detail.html',context)
 
@@ -106,6 +108,8 @@ def create_bom(request,pk):
     return render(request,"budgetTool/create_bom.html",context)
 
 
+
+
 def bom_update(request,pk,fk):
     item=BillOfMaterials.objects.get(id=pk,project_id=fk)
     form=BillModelForm(instance=item)
@@ -153,8 +157,10 @@ def create_service(request,pk):
 
             #calculated field value
             print(rate_cost+rate_list)
+            if "ite" in type:
+                travel_estimate=hours_estimated*project.travel_weekly/40
+
             hours_adjusted=hours_estimated*(1+project.adjust_Service)
-            travel_estimate=hours_estimated*project.travel_weekly/40
             sub_total_list=hours_estimated*rate_list+travel_estimate
             sub_total_adjusted_list=hours_adjusted*rate_list+travel_estimate
             sub_total_cost_est=hours_estimated*rate_cost+travel_estimate
@@ -250,6 +256,35 @@ def service_update(request,pk,fk):
         "form":form,
     }
     return render(request,"budgetTool/service_update.html",context)
+
+def bomSave(request,pk):
+    project=Project.objects.get(id=pk)
+    
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        form = BillModelForm(data)
+
+        if form.is_valid():
+            new_item = form.save()
+            return JsonResponse({'id': new_item.id})
+        else:
+            return JsonResponse({'error': 'Invalid form data'}, status=400)
+    else:
+        return JsonResponse({'error': 'Invalid request method'})
+
+
+    if request.method =="POST":
+        print(project.name)
+        form=BillModelForm(request.POST)
+        if form.is_valid():
+            print(form.cleaned_data['name'])
+            form.save()
+            print("created a new BOM")
+            return redirect(f'/budgetTool/{project.pk}')
+    context={
+        "form":BillModelForm(initial={'project': project})
+    }
+    return render(request,"budgetTool/create_bom.html",context)
 
 
 

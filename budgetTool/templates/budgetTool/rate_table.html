@@ -1,82 +1,45 @@
-<!DOCTYPE html>
+{% load humanize %}
+<!doctype html>
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% load static %}
+
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drag and Drop Table Rows with Order Storage</title>
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+  </head>
+  <script type="text/javascript" src="{% static 'main.js'%}"></script>
 
-        table, th, td {
-            border: 1px solid #ddd;
-        }
+  <body>
+      <a href="/budgetTool/">Go back to Project lists</a>
+      <hr>
+      <h1>Rate table</h1>
 
-        th, td {
-            padding: 15px;
-            text-align: left;
-        }
 
-        tr:hover {
-            background-color: #f5f5f5;
-        }
+      <table class="table table-sm table-hover table-bordered w-auto">
+        <thead>
+          <tr>
+            <th class="table-primary" scope="col">Type</th>
+            <th class="table-primary" scope="col">List</th>
+            <th class="table-primary" scope="col">Cost</th>
+          </tr>
+        </thead>
+        <tbody>
 
-        .drag-handle {
-            cursor: grab;
-            user-select: none;
-        }
-    </style>
-</head>
-<body>
+          {% for line in table %}
+          <tr>
+            <td>{{line.type}}</td>
+            <td>{{line.list}}</td>
+            <td>{{line.cost}}</td>
+          </tr>
+          {% endfor %}
+          
+        </tbody>
+      </table>
 
-<table id="sortable-table">
-    <thead>
-        <tr>
-            <th></th>
-            <th>Name</th>
-            <th>Age</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr data-book-id="1">
-            <td class="drag-handle">&#9776;</td>
-            <td>John Doe</td>
-            <td>25</td>
-        </tr>
-        <tr data-book-id="2">
-            <td class="drag-handle">&#9776;</td>
-            <td>Jane Doe</td>
-            <td>30</td>
-        </tr>
-        <!-- Add more rows as needed -->
-    </tbody>
-</table>
-
-<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
-
-<script>
-    $(document).ready(function () {
-        const sortableTable = document.getElementById('sortable-table').getElementsByTagName('tbody')[0];
-
-        new Sortable(sortableTable, {
-            handle: '.drag-handle',
-            animation: 150,
-            onEnd: function (evt) {
-                const rows = Array.from(sortableTable.children);
-                const bookIdsInNewOrder = rows.map(row => row.dataset.bookId);
-                console.log("changed")
-                // Send the updated order to the server
-                $.post('/update_book_order/', { new_order: bookIdsInNewOrder }, function (data) {
-                    console.log(data.message);  // Log the response from the server
-                    console.log("changed")
-                });
-            }
-        });
-    });
-</script>
-
-</body>
+    
+  </body>
 </html>

@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import budget_list,budget_detail,create_project,rate_table,project_update,project_delete,create_bom,bom,bom_update,create_service,service_update
+from .views import budget_list,budget_detail,create_project,rate_table,project_update,project_delete,create_bom,bom,bom_update,create_service,service_update,bomSave
 
 app_name="budgetTool"
 
@@ -14,6 +14,7 @@ urlpatterns = [
     path('<int:pk>/createservice/',create_service),
     path('<int:fk>/<int:pk>/bom/',bom_update),
     path('<int:fk>/service/<int:pk>/',service_update),
+    path('<int:pk>/bomSave/',bomSave),
 
     # path('', views.home, name='home'),
     # path('login/', views.login_user, name='login'),

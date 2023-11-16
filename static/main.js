@@ -125,3 +125,87 @@ document.getElementById("listAdjustedMarginSummry").innerText = listAdjustedMarg
 document.getElementById("quotedMarginSummry").innerText = quotedMarginSummry.toFixed(0);
 document.getElementById("actualMarginSummry").innerText = actualMarginSummry.toFixed(0);
 
+
+
+//create new row and add item
+function addRow() {
+  var table = document.getElementById('billTable');
+  var newRow = table.insertRow(table.rows.length);
+
+  var cell1 = newRow.insertCell(0);
+  var cell2 = newRow.insertCell(1);
+  var cell3 = newRow.insertCell(2);
+  var cell4 = newRow.insertCell(3);
+  var cell5 = newRow.insertCell(4);
+  var cell6 = newRow.insertCell(5);
+  var cell7 = newRow.insertCell(6);
+  var cell8 = newRow.insertCell(7);
+  var cell9 = newRow.insertCell(8);
+  var cell10 = newRow.insertCell(9);
+  var cell11 = newRow.insertCell(10);
+  var cell12 = newRow.insertCell(11);
+  var cell13 = newRow.insertCell(12);
+
+  cell1.innerHTML = '<input type="number" placeholder="#">';
+  cell2.innerHTML = '<input type="text" placeholder="Part/Item">';
+  cell3.innerHTML = '<input type="number" placeholder="Cost(Estimate)">';
+  cell4.innerHTML = '<input type="number" placeholder="Sales Price">';
+  cell5.innerHTML = '<input type="number" placeholder="Quantity">';
+  cell6.innerHTML = '<input type="number" placeholder="Total Cost(Estimate)">';
+  cell7.innerHTML = '<input type="number" placeholder="Total Sale">';
+  cell8.innerHTML = '<input type="number" placeholder="Supplier">';
+  cell9.innerHTML = '<input type="number" placeholder="Cost (Actual)">';
+  cell10.innerHTML = '<input type="number" placeholder="Responsible">';
+  cell11.innerHTML = '<input type="number" placeholder="Description">';
+  cell12.innerHTML = '<input type="number" placeholder="Notes">';
+  cell13.innerHTML = '<button onclick="deleteRow(this)">Delete</button>';
+}
+
+function deleteRow(button) {
+  var row = button.parentNode.parentNode;
+  row.parentNode.removeChild(row);
+}
+
+function saveNewRow() {
+  var table = document.getElementById('billTable');
+  var newRow = table.rows[table.rows.length - 1];
+
+  var index = newRow.cells[0].querySelector('input').value;
+  var name = newRow.cells[1].querySelector('input').value;
+  var costEstimate = newRow.cells[2].querySelector('input').value;
+  var price = newRow.cells[3].querySelector('input').value;
+  var quantity = newRow.cells[3].querySelector('input').value;
+
+  console.log(index)
+
+  var pk=document.getElementById('projectPk').getAttribute('projectPk')
+  var bomUrl = `/budgetTool/${pk}/bomSave/`;
+
+  console.log(bomUrl)
+  // Use the Fetch API to send data to the Django backend
+  fetch(bomUrl, {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': '{{ csrf_token }}',
+      },
+      body: JSON.stringify({
+          name: name,
+          quantity: quantity,
+          price: price,
+      }),
+  })
+  .then(response => response.json())
+  .then(data => {
+      // Handle the response from the Django backend, if needed
+      console.log('Response from Django:', data);
+  })
+  .catch(error => {
+      console.error('Error:', error);
+  });
+
+  // Optionally, clear the inputs or perform further actions
+  newRow.cells[0].querySelector('input').value = '';
+  newRow.cells[1].querySelector('input').value = '';
+  newRow.cells[2].querySelector('input').value = '';
+}
