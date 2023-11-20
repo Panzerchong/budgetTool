@@ -6,10 +6,12 @@
 {% load static %}
 {% load mathfilters %}
 
+
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
   </head>
   <div id="quoteValue" data-quote="{{ project.quote_BOM }}"></div>
   <div id="quoteService" quoteService="{{project.quote_Service}}"></div>
@@ -17,7 +19,7 @@
   <div id="adjustComplexityService" adjustComplexityService="{{project.adjust_Service}}"></div>
   <div id="projectPk" projectPk="{{project.pk}}"></div>
 
-  <body>
+  <body style="margin-left: 30px">
     <div class="btn-group">
       <a href="/budgetTool/"class="btn btn-primary active" aria-current="page">Go back to Project lists</a>
       <a href="/budgetTool/{{project.pk}}/update" class="btn btn-primary">Update</a>
@@ -148,6 +150,8 @@
       <div>
       <table class="table table-hover table-bordered border-primary" id="billTable">
         <thead>
+          <tr>test title</tr>
+
           <tr>
             <th class="table-primary" scope="col">#</th>
             <th class="table-primary" scope="col">Part/Item</th>
@@ -161,6 +165,8 @@
             <th class="table-primary" scope="col">Responsible</th>
             <th class="table-primary" scope="col">Description</th>
             <th class="table-primary" scope="col">Notes</th>
+            <th class="table-primary" scope="col"></th>
+            <th class="table-primary" scope="col"></th>
           </tr>
         </thead>
 
@@ -195,15 +201,130 @@
                     <td>{{ line.description }}</td>
                     <td>{{ line.notes }}</td>
                   </tr>
+
+                  
                   {%endif%}
               {%endfor%}
             {% endfor %}
 
+                
+          
+          <div id="billDiv" style="display: none;" >
+            <form method="post" id="billForm">
+            {% csrf_token %}
+            <tr>
+              <td>{{bomForm.index}}</td>
+              <td>{{ bomForm.name }}</td>
+              <td>{{ bomForm.estimate_cost }}</td>
+              <td>{{ bomForm.sales_price }}</td>
+              <td>{{ bomForm.quantity }}</td>
+              <td></td>
+              <td></td>
+              <td>{{ bomForm.supplier }}</td>
+              <td>{{ bomForm.actual_cost }}</td>
+              <td>{{ bomForm.Responsible }}</td>
+              <td>{{ bomForm.description }}</td>
+              <td>{{ bomForm.notes }}</td>
+              <td>{{bomForm.bom_category}}</td>
+              <td>{{ bomForm.project }}</td>
+              <td><button type="submit" onclick="submitBill()">Save</button></td>
+              <td>
+                <button onclick="deleteRow(this)">delete Form</button>
+              </td>
+            </tr>
+          </form>
+          </div>
+
           </tbody>
       </table>
+
+        <button onclick="hideRow()">Hide</button>
+
+
+      <button onclick="addBill()">Add New Row</button>
+
+    <script>
+    function addBill() {
+      var table = document.getElementById('billTable');
+      var newRow = table.insertRow(table.rows.length);
+      newRow.innerHTML = `
+          <form method="post" id="billForm">
+              {% csrf_token %}
+              <td>{{ bomForm.index }}</td>
+              <td>{{ bomForm.name }}</td>
+              <td>{{ bomForm.estimate_cost }}</td>
+              <td>{{ bomForm.sales_price }}</td>
+              <td>{{ bomForm.quantity }}</td>
+              <td></td>
+              <td></td>
+              <td>{{ bomForm.supplier }}</td>
+              <td>{{ bomForm.actual_cost }}</td>
+              <td>{{ bomForm.Responsible }}</td>
+              <td>{{ bomForm.description }}</td>
+              <td>{{ bomForm.notes }}</td>
+              <td>{{ bomForm.bom_category }}</td>
+              <td>{{ bomForm.project }}</td>
+              <td><button type="button" onclick="submitBill()">Save</button></td>
+              <td><button onclick="deleteRow(this)">Delete</button></td>
+          </form>
+      `;
+    }
+
+    function hideRow() {
+      var table = document.getElementById('billTable');
+      table.rows[5].style.display = 'none';
+    }
+
+
+    //create a function to submit the form
+    function submitForm(){
+
+    }
     
-    <button onclick="addRow()">Add Row</button>
-    <button onclick="saveNewRow()">Save New Row</button>
+
+  function submitBill() {
+  var form = document.getElementById('billForm');
+  console.log(form)
+  var formData= new FormData(form)
+  event.preventDefault();  // Prevent default submission
+
+  // var table = document.getElementById('billTable');
+  // var rowCount = table.rows.length;  
+  // var lastRow = table.rows[rowCount - 1];
+  // console.log(lastRow)
+  // var form = lastRow.querySelector('form');
+  // console.log(form)
+  // var formData= new FormData(form)  
+
+  for (var pair of formData.entries()) {
+    console.log(pair[0] + ': ' + pair[1]);
+  }
+  
+  fetch(form.action, {
+      method: 'POST',
+      body: formData,
+      headers: {
+          'X-CSRFToken': "{{ csrf_token }}", 
+      },
+  })
+  .then(response => response.json())
+  .then(data => {
+      console.log('Form submitted information:', data);
+      if(data.status=='error'){
+        alert('Save item failed. Please check your input.');
+        // appendAlert('Form submission failed. Please check your input.', 'success')
+        console.error('Error submitting form:', error);
+      }
+      
+  })
+  .catch(error => {});
+}
+    
+    </script>
+
+    
+
+
     
         <a href="/budgetTool/{{project.pk}}/createbom" target="_blank">
           <button>Create a new BOM item</button>
@@ -266,6 +387,8 @@
 
       <table class="table table-hover table-bordered border-primary" id="serviceTable">
         <thead>
+          <tr>test title</tr>
+
           <tr>
             <th class="table-primary" scope="col">#</th>
             <th class="table-primary" scope="col">Task</th>
@@ -314,6 +437,9 @@
               {%endfor%}
             {% endfor %}
 
+
+
+
           </tbody>
       </table>
 
@@ -323,28 +449,6 @@
         <hr>
 
       </div>
-
-
-
-
-      <form method="post">
-        {% csrf_token %}
-        <table>
-          <tr>
-            {% for field in bomForm %}
-                
-                    <td>{{ field.label_tag }}</td>
-                    <td>{{ field }}</td>
-            {% endfor %}
-          </tr>
-        </table>
-        <button type="submit">Save</button>
-    </form>
-
-
-
-
-
 
         <script type="text/javascript" src="{% static 'main.js'%}"></script>
   </body>

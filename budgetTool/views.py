@@ -39,8 +39,12 @@ def budget_detail(request,pk):
         bomForm=BillModelForm(request.POST)
         if bomForm.is_valid():
             bomForm.save()
-            print("created a new project")
-            return redirect("/budgetTool")
+            print("created a new bom item")
+            return JsonResponse({'status': 'success'})
+        else:
+            print("invalid form")
+            errors = bomForm.errors.as_json()
+            return JsonResponse({'status': 'error', 'errors': errors}, status=400)
 
     context={
         "table":table,
@@ -78,7 +82,7 @@ def project_update(request,pk):
         if form.is_valid():
             form.save()
             print("created a new project")
-            return redirect("/budgetTool")
+            return redirect(f'/budgetTool/{project.pk}')
     context={
         "project":project,
         "form":form,
