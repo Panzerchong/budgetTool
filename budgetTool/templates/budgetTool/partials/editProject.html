@@ -1,0 +1,11 @@
+<form
+    hx-post="{% url 'budgetTool:editProject' pk=project.pk%}"
+    hx-target="closest h1"
+    hx-swap="outerHTML"
+    hx-headers="{ 'X-CSRFToken': '{{ csrf_token }}' }"
+    hx-boost="true"
+    class="flex"
+    >
+    <input type="text" name="name" value="{{project.name}}"  autofocus>
+    <button class="text-sky-600 hover:text-sky-900"> Save</button>
+</form>

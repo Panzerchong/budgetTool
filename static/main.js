@@ -37,6 +37,7 @@ var listAdjusted=Math.round(totalSale*(1+adjust))
 var marginEst=(1-totalCostEstimate/totalSale)*100
 var marginAdj=(1-totalCostEstimate/listAdjusted)*100
 var marginActual=(1-totalCostActual/quote)*100
+var marginQuoted=(1-totalCostEstimate/quote)*100
 
 document.getElementById("totalCostEstimate").innerText = totalCostEstimate.toLocaleString();
 document.getElementById("totalCostActual").innerText = totalCostActual.toLocaleString();
@@ -45,6 +46,7 @@ document.getElementById("listAdjusted").innerText = listAdjusted.toLocaleString(
 document.getElementById("marginEst").innerText = marginEst.toFixed(2);
 document.getElementById("marginAdj").innerText = marginAdj.toFixed(2);
 document.getElementById("marginActual").innerText = marginActual.toFixed(2);
+document.getElementById("marginQuoted").innerText = marginQuoted.toFixed(2);
 
 //duplicate values for project summry 
 document.getElementById("totalCostEstimate1").innerText = totalCostEstimate.toLocaleString();
@@ -140,4 +142,41 @@ function deleteRow(button) {
   console.log('Form deleted!');
 }
 
+
+
+// function submitBill() {
+//   var form = document.getElementById('billForm');
+//   console.log(form)
+//   var formData= new FormData(form)
+//   event.preventDefault();  // Prevent default submission
+
+//   // var table = document.getElementById('billTable');
+//   // var rowCount = table.rows.length;  
+//   // var lastRow = table.rows[rowCount - 1];
+//   // console.log(lastRow)
+//   // var form = lastRow.querySelector('form');
+//   // console.log(form)
+//   // var formData= new FormData(form)  
+
+  
+  
+//   fetch(form.action, {
+//       method: 'POST',
+//       body: formData,
+//       headers: {
+//           'X-CSRFToken': "{{ csrf_token }}", 
+//       },
+//   })
+//   .then(response => response.json())
+//   .then(data => {
+//       console.log('Form submitted information:', data);
+//       if(data.status=='error'){
+//         alert('Save item failed. Please check your input.');
+//         // appendAlert('Form submission failed. Please check your input.', 'success')
+//         console.error('Error submitting form:', error);
+//       }
+      
+//   })
+//   .catch(error => {});
+// }
 

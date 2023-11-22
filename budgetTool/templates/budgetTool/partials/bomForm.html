@@ -1,0 +1,29 @@
+<form 
+hx-post="{% url 'budgetTool:create_bom' pk=project.pk%}" 
+hx-on="htmx:afterRequest: window.location.reload(true)">
+    {% csrf_token %}
+    <tr>
+      <td>{{bomForm.index}}</td>
+      <td>{{ bomForm.name }}</td>
+      <td>{{ bomForm.estimate_cost }}</td>
+      <td>{{ bomForm.sales_price }}</td>
+      <td>{{ bomForm.quantity }}</td>
+      <td></td>
+      <td></td>
+      <td>{{ bomForm.supplier }}</td>
+      <td>{{ bomForm.actual_cost }}</td>
+      <td>{{ bomForm.Responsible }}</td>
+      <td>{{ bomForm.description }}</td>
+      <td>{{ bomForm.notes }}</td>
+      <td>{{bomForm.bom_category}}</td>
+      <td>{{ bomForm.project }}</td>
+      <td><button type="submit" class="btn btn-success">Save</button></td>
+      <td>
+        <button type="button"class="btn btn-danger" 
+          hx-on="click: this.closest('form').remove()"
+        >Delete</button>
+      </td>
+    </tr>
+    <hr>
+</form>
+

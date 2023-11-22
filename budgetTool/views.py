@@ -5,6 +5,7 @@ from django.contrib import messages
 from .models import RateTable, Project,BoM,Service,Sales,BillOfMaterials,ServiceCategory,BOMCategory
 from .forms import ProjectForm, ProjectModelForm,BillModelForm,ServiceModelForm
 import json
+from django.views.decorators.http import require_http_methods
 
 
 def budget_list(request):
@@ -95,22 +96,50 @@ def project_delete(request,pk):
     project.delete()
     return redirect("/budgetTool")
 
-def create_bom(request,pk):
-    project=Project.objects.get(id=pk)
-    form=BillModelForm()
-    if request.method =="POST":
-        print(project.name)
-        form=BillModelForm(request.POST)
-        if form.is_valid():
-            print(form.cleaned_data['name'])
-            form.save()
+def create_bom(request, pk):
+    project = Project.objects.get(id=pk)
+    
+    if request.method == "POST":
+        bomForm = BillModelForm(request.POST)
+        if bomForm.is_valid():
+            bomForm.instance.project = project
+            bomForm.save()
             print("created a new BOM")
-            return redirect(f'/budgetTool/{project.pk}')
-    context={
-        "form":BillModelForm(initial={'project': project})
-    }
-    return render(request,"budgetTool/create_bom.html",context)
+            return HttpResponse("Saved")
+    bomForm = BillModelForm(initial={'project': project})
+    context = {"bomForm": bomForm, "project": project}
+    return render(request, "budgetTool/partials/bomForm.html", context)
 
+
+# def create_bom(request, pk):
+#     project = Project.objects.get(id=pk)
+#     bomForm = BillModelForm(initial={'project': project})
+#     if request.method == "POST":
+#         bomForm = BillModelForm(request.POST)
+#         if bomForm.is_valid():
+#             bomForm.save()
+#             print("created a new BOM")
+#             context = {
+#                 "bomForm": bomForm, 
+#                 "project": project}
+#             return render(request,'budgetTool/partials/bill.html',context)
+#             # return HttpResponse("Saved")
+
+#     return render(request, "budgetTool/partials/bomForm.html", {'bomForm': BillModelForm},{'pk': 'project.pk'})
+ # project=Project.objects.get(id=pk)
+    # form=BillModelForm()
+    # if request.method =="POST":
+    #     print(project.name)
+    #     form=BillModelForm(request.POST)
+    #     if form.is_valid():
+    #         print(form.cleaned_data['name'])
+    #         form.save()
+    #         print("created a new BOM")
+    #         return redirect(f'/budgetTool/{project.pk}')
+    # context={
+    #     "form":BillModelForm(initial={'project': project})
+    # }
+    # return render(request,"budgetTool/create_bom.html",context)
 
 
 
@@ -337,3 +366,17 @@ def service(request):
 #     table=RateTable.objects.all()
 
 #     return messages.success(request,"it's ratetable\n")
+
+
+# @require_http_methods(['GET','POST'])
+def editProject(request,pk):
+    project=Project.objects.get(id=pk)
+    print(project.name)
+    print(request.method)
+    if request.method == 'POST':
+        print(request.method)
+        project.name=request.POST.get('name','')
+        print(f'project name: {project.name}')
+        project.save()
+        return render(request,'budgetTool/{project.id}',{'project':project})
+    return render(request,'budgetTool/partials/editProject.html',{'project':project})

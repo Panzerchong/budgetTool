@@ -7,11 +7,12 @@
 {% load mathfilters %}
 
 
+
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
+    <script src="https://unpkg.com/htmx.org@1.9.9"></script>
   </head>
   <div id="quoteValue" data-quote="{{ project.quote_BOM }}"></div>
   <div id="quoteService" quoteService="{{project.quote_Service}}"></div>
@@ -27,30 +28,39 @@
     </div>
 
       <hr>
-      <h1>{{project.name}}</h1>
+      <div id="projectName">
+        <h1 
+        hx-get="{% url 'budgetTool:editProject' pk=project.pk%}"
+            hx-target="this"
+            hx-swap="outerHTML"
+            hx-boost="true">
+        {{project.name}}</h1>
+      </div>
+
+
 
       <!-- Project summry -->
       <div>
-        <table class="table table-hover table-bordered table-bordered border-primary w-auto">
+        <table class="table table-sm table-hover table-bordered border-primary w-auto">
           <thead>
             <tr>
-              <th class="table-dark text-center" colspan="7">Summary</th>
+              <th class=" text-center" colspan="7"  style="background-color: #8EA9DB;" >Summary</th>
             </tr>
 
-            <tr>
-              <th class="table-primary" scope="col"></th>
-              <th class="table-primary" scope="col">Cost Est</th>
-              <th class="table-primary" scope="col">Cost Adjusted</th>
-              <th class="table-primary" scope="col">List</th>
-              <th class="table-primary" scope="col">List Adjusted</th>
-              <th class="table-primary" scope="col">Quoted</th>
-              <th class="table-primary" scope="col">Actual</th>
+            <tr style="background-color:lightskyblue;">
+              <th scope="col"></th>
+              <th scope="col">Cost Est</th>
+              <th scope="col">Cost Adjusted</th>
+              <th scope="col">List</th>
+              <th scope="col">List Adjusted</th>
+              <th scope="col">Quoted</th>
+              <th scope="col">Actual</th>
             </tr>
           </thead>
 
             <tbody>
               <tr>
-                <td><strong>Bom</strong></td>
+                <td><strong>BOM</strong></td>
                 <td>$<span id="totalCostEstimate1"></span></td>
                 <td>$<span id="totalCostEstimate2"></span></td>
                 <td>$<span id="totalSale1"></span></td>
@@ -105,25 +115,26 @@
         <table class="table table-hover table-bordered table-bordered border-primary w-auto text-center">
           <thead>
             <tr>
-              <th class="table-primary text-center" colspan="9">Total BoM</th>
+              <th class="text-center" colspan="10"  style="background: color #000;">Totals</th>
             </tr>
 
-            <tr>
-              <th class="table-primary" scope="col"></th>
-              <th class="table-primary" scope="col"></th>
-              <th class="table-primary" scope="col">Cost Estimate</th>
-              <th class="table-primary" scope="col">Actual Cost</th>
-              <th class="table-primary" scope="col">List</th>
-              <th class="table-primary" scope="col">List Adjusted</th>
-              <th class="table-primary" scope="col">Margin Est</th>
-              <th class="table-primary" scope="col">Margin Adj</th>
-              <th class="table-primary" scope="col">Margin Actual</th>
+            <tr  style="background-color:lightskyblue;">
+              <th scope="col">BOM Variables</th>
+              <th scope="col"></th>
+              <th scope="col">Cost Estimate</th>
+              <th scope="col">Actual Cost</th>
+              <th scope="col">List</th>
+              <th scope="col">List Adjusted</th>
+              <th scope="col">Margin Est</th>
+              <th scope="col">Margin Adj</th>
+              <th scope="col">Margin Actual</th>
+              <th scope="col">Margin Quoted</th>
             </tr>
           </thead>
 
             <tbody>
               <tr>
-                <td>Adjusted for Complexity</td>
+                <td><strong>Adjusted for Complexity</strong></td>
                 <td>{{project.adjust_BOM|mul:100}}% </td>
                 <td>$<span id="totalCostEstimate"></span></td>
                 <td>$<span id="totalCostActual"></span></td>
@@ -132,12 +143,13 @@
                 <td><span id="marginEst"></span>%</td>
                 <td><span id="marginAdj"></span>%</td>
                 <td><span id="marginActual"></span>%</td>
+                <td><span id="marginQuoted"></span>%</td>
               </tr>
 
               <tr>
-                <td>Quoted</td>
+                <td><strong>Quoted</strong></td>
                 <td>${{project.quote_BOM|intcomma}}</td>
-                <td colspan="7"></td>
+                <td colspan="8"></td>
               </tr>
             </tbody>
         </table>
@@ -150,23 +162,23 @@
       <div>
       <table class="table table-hover table-bordered border-primary" id="billTable">
         <thead>
-          <tr>test title</tr>
+          <tr style="background-color: cornflowerblue;"><th colspan="12" class="text-center">Bill Of Materials</th></tr>
 
-          <tr>
-            <th class="table-primary" scope="col">#</th>
-            <th class="table-primary" scope="col">Part/Item</th>
-            <th class="table-primary" scope="col">Cost(Estimate)</th>
-            <th class="table-primary" scope="col">Sales Price</th>
-            <th class="table-primary" scope="col">Quantity</th>
-            <th class="table-primary" scope="col">Total Cost(Estimate)</th>
-            <th class="table-primary" scope="col">Total Sale</th>
-            <th class="table-primary" scope="col">Supplier</th>
-            <th class="table-primary" scope="col">Cost (Actual)</th>
-            <th class="table-primary" scope="col">Responsible</th>
-            <th class="table-primary" scope="col">Description</th>
-            <th class="table-primary" scope="col">Notes</th>
-            <th class="table-primary" scope="col"></th>
-            <th class="table-primary" scope="col"></th>
+          <tr style="background-color: lightskyblue;">
+            <th scope="col">#</th>
+            <th scope="col">Part/Item</th>
+            <th scope="col">Cost(Estimate)</th>
+            <th scope="col">List Price</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Total Cost(Estimate)</th>
+            <th scope="col">Total List</th>
+            <th scope="col">Supplier</th>
+            <th scope="col">Cost (Actual)</th>
+            <th scope="col">Responsible</th>
+            <th scope="col">Description</th>
+            <th scope="col">Notes</th>
+            <!-- <th class="table-primary" scope="col"></th>
+            <th class="table-primary" scope="col"></th> -->
           </tr>
         </thead>
 
@@ -201,136 +213,25 @@
                     <td>{{ line.description }}</td>
                     <td>{{ line.notes }}</td>
                   </tr>
-
-                  
                   {%endif%}
               {%endfor%}
             {% endfor %}
-
                 
-          
-          <div id="billDiv" style="display: none;" >
-            <form method="post" id="billForm">
-            {% csrf_token %}
-            <tr>
-              <td>{{bomForm.index}}</td>
-              <td>{{ bomForm.name }}</td>
-              <td>{{ bomForm.estimate_cost }}</td>
-              <td>{{ bomForm.sales_price }}</td>
-              <td>{{ bomForm.quantity }}</td>
-              <td></td>
-              <td></td>
-              <td>{{ bomForm.supplier }}</td>
-              <td>{{ bomForm.actual_cost }}</td>
-              <td>{{ bomForm.Responsible }}</td>
-              <td>{{ bomForm.description }}</td>
-              <td>{{ bomForm.notes }}</td>
-              <td>{{bomForm.bom_category}}</td>
-              <td>{{ bomForm.project }}</td>
-              <td><button type="submit" onclick="submitBill()">Save</button></td>
-              <td>
-                <button onclick="deleteRow(this)">delete Form</button>
-              </td>
-            </tr>
-          </form>
-          </div>
-
           </tbody>
       </table>
 
-        <button onclick="hideRow()">Hide</button>
+      <table>
+        <tr>
+          <div id="currentBillTable"></div>
+        </tr>
+      </table>
 
-
-      <button onclick="addBill()">Add New Row</button>
-
-    <script>
-    function addBill() {
-      var table = document.getElementById('billTable');
-      var newRow = table.insertRow(table.rows.length);
-      newRow.innerHTML = `
-          <form method="post" id="billForm">
-              {% csrf_token %}
-              <td>{{ bomForm.index }}</td>
-              <td>{{ bomForm.name }}</td>
-              <td>{{ bomForm.estimate_cost }}</td>
-              <td>{{ bomForm.sales_price }}</td>
-              <td>{{ bomForm.quantity }}</td>
-              <td></td>
-              <td></td>
-              <td>{{ bomForm.supplier }}</td>
-              <td>{{ bomForm.actual_cost }}</td>
-              <td>{{ bomForm.Responsible }}</td>
-              <td>{{ bomForm.description }}</td>
-              <td>{{ bomForm.notes }}</td>
-              <td>{{ bomForm.bom_category }}</td>
-              <td>{{ bomForm.project }}</td>
-              <td><button type="button" onclick="submitBill()">Save</button></td>
-              <td><button onclick="deleteRow(this)">Delete</button></td>
-          </form>
-      `;
-    }
-
-    function hideRow() {
-      var table = document.getElementById('billTable');
-      table.rows[5].style.display = 'none';
-    }
-
-
-    //create a function to submit the form
-    function submitForm(){
-
-    }
-    
-
-  function submitBill() {
-  var form = document.getElementById('billForm');
-  console.log(form)
-  var formData= new FormData(form)
-  event.preventDefault();  // Prevent default submission
-
-  // var table = document.getElementById('billTable');
-  // var rowCount = table.rows.length;  
-  // var lastRow = table.rows[rowCount - 1];
-  // console.log(lastRow)
-  // var form = lastRow.querySelector('form');
-  // console.log(form)
-  // var formData= new FormData(form)  
-
-  for (var pair of formData.entries()) {
-    console.log(pair[0] + ': ' + pair[1]);
-  }
-  
-  fetch(form.action, {
-      method: 'POST',
-      body: formData,
-      headers: {
-          'X-CSRFToken': "{{ csrf_token }}", 
-      },
-  })
-  .then(response => response.json())
-  .then(data => {
-      console.log('Form submitted information:', data);
-      if(data.status=='error'){
-        alert('Save item failed. Please check your input.');
-        // appendAlert('Form submission failed. Please check your input.', 'success')
-        console.error('Error submitting form:', error);
-      }
-      
-  })
-  .catch(error => {});
-}
-    
-    </script>
-
-    
-
-
-    
-        <a href="/budgetTool/{{project.pk}}/createbom" target="_blank">
-          <button>Create a new BOM item</button>
-        </a>       
-      <hr>
+      <button type="button" class="btn btn-primary"
+        hx-get="{% url 'budgetTool:create_bom' pk=project.pk%}"
+        hx-target="#currentBillTable"
+        hx-swap="beforeend"> Add New Row</button>
       </div>
+      <hr>
 
 
 
@@ -340,19 +241,19 @@
         <table class="table table-hover table-bordered table-bordered border-primary w-auto">
           <thead>
             <tr>
-              <th class="table-primary text-center" colspan="9">Total System Integration Services</th>
+              <th class="text-center" colspan="9" style="background-color: cornflowerblue;">Total System Integration Services</th>
             </tr>
 
-            <tr>
-              <th class="table-primary" scope="col">Adjusted for Complexity; Unknown</th>
-              <th class="table-primary" scope="col">{{project.adjust_Service|mul:100}}%</th>
-              <th class="table-primary" scope="col">Hours</th>
-              <th class="table-primary" scope="col">Risk Hours</th>
-              <th class="table-primary" scope="col">Labor</th>
-              <th class="table-primary" scope="col">Labor Adjusted</th>
-              <th class="table-primary" scope="col">Cost Est</th>
-              <th class="table-primary" scope="col">Cost Adjusted Est</th>
-              <th class="table-primary" scope="col">Cost Act</th>
+            <tr style="background-color: lightskyblue;">
+              <th scope="col">Service Variables</th>
+              <th scope="col">{{project.adjust_Service|mul:100}}%</th>
+              <th scope="col">Hours</th>
+              <th scope="col">Risk Hours</th>
+              <th scope="col">Labor</th>
+              <th scope="col">Labor Adjusted</th>
+              <th scope="col">Cost Est</th>
+              <th scope="col">Cost Adjusted Est</th>
+              <th scope="col">Cost Act</th>
             </tr>
           </thead>
 
@@ -387,24 +288,24 @@
 
       <table class="table table-hover table-bordered border-primary" id="serviceTable">
         <thead>
-          <tr>test title</tr>
+          <tr style="background-color: cornflowerblue;"><th colspan="15" class="text-center">Estimated Labor Hours</th></tr>
 
-          <tr>
-            <th class="table-primary" scope="col">#</th>
-            <th class="table-primary" scope="col">Task</th>
-            <th class="table-primary" scope="col">Type</th>
-            <th class="table-primary" scope="col">Hours Estimated</th>
-            <th class="table-primary" scope="col">Hours Adjusted</th>
-            <th class="table-primary" scope="col">Hours Worked</th>
-            <th class="table-primary" scope="col">Travel Est</th>
-            <th class="table-primary" scope="col">Travel Act</th>
-            <th class="table-primary" scope="col">Rate List</th>
-            <th class="table-primary" scope="col">Sub Total List</th>
-            <th class="table-primary" scope="col">Sub Total Adjusted List</th>
-            <th class="table-primary" scope="col">Rate Cost</th>
-            <th class="table-primary" scope="col">Sub Total Cost Est</th>
-            <th class="table-primary" scope="col">Sub Total Adjusted Cost Est</th>
-            <th class="table-primary" scope="col">Cost Act</th>
+          <tr style="background-color: lightskyblue;">
+            <th scope="col">#</th>
+            <th scope="col">Task</th>
+            <th scope="col">Type</th>
+            <th scope="col">Hours Estimated</th>
+            <th scope="col">Hours Adjusted</th>
+            <th scope="col">Hours Worked</th>
+            <th scope="col">Travel Est</th>
+            <th scope="col">Travel Act</th>
+            <th scope="col">Rate List</th>
+            <th scope="col">Sub Total List</th>
+            <th scope="col">Sub Total Adjusted List</th>
+            <th scope="col">Rate Cost</th>
+            <th scope="col">Sub Total Cost Est</th>
+            <th scope="col">Sub Total Adjusted Cost Est</th>
+            <th scope="col">Cost Act</th>
           </tr>
         </thead>
 
@@ -443,10 +344,17 @@
           </tbody>
       </table>
 
-        <a href="/budgetTool/{{project.pk}}/createservice" target="_blank">
+        <!-- <a href="/budgetTool/{{project.pk}}/createservice" target="_blank">
           <button>Create a new Service item</button>
         </a>
-        <hr>
+        <hr> -->
+
+        <button type="button" class="btn btn-primary"
+        hx-get="{% url 'budgetTool:create_bom' pk=project.pk%}"
+        hx-target="#currentBillTable"
+        hx-swap="beforeend"> Add New Row</button>
+      </div>
+      <hr>
 
       </div>
 
