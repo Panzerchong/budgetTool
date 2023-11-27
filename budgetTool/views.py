@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from django.http import HttpResponse,JsonResponse
+from django.http import HttpResponse,JsonResponse,QueryDict
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .models import RateTable, Project,BoM,Service,Sales,BillOfMaterials,ServiceCategory,BOMCategory
@@ -101,47 +101,18 @@ def create_bom(request, pk):
     
     if request.method == "POST":
         bomForm = BillModelForm(request.POST)
+        request_data = request.POST.copy()
+        mutable_data = QueryDict(mutable=True)
+        mutable_data.update(request_data)
+        mutable_data.appendlist('project', project.pk)
+        bomForm = BillModelForm(mutable_data)
         if bomForm.is_valid():
-            bomForm.instance.project = project
             bomForm.save()
             print("created a new BOM")
             return HttpResponse("Saved")
     bomForm = BillModelForm(initial={'project': project})
     context = {"bomForm": bomForm, "project": project}
     return render(request, "budgetTool/partials/bomForm.html", context)
-
-
-# def create_bom(request, pk):
-#     project = Project.objects.get(id=pk)
-#     bomForm = BillModelForm(initial={'project': project})
-#     if request.method == "POST":
-#         bomForm = BillModelForm(request.POST)
-#         if bomForm.is_valid():
-#             bomForm.save()
-#             print("created a new BOM")
-#             context = {
-#                 "bomForm": bomForm, 
-#                 "project": project}
-#             return render(request,'budgetTool/partials/bill.html',context)
-#             # return HttpResponse("Saved")
-
-#     return render(request, "budgetTool/partials/bomForm.html", {'bomForm': BillModelForm},{'pk': 'project.pk'})
- # project=Project.objects.get(id=pk)
-    # form=BillModelForm()
-    # if request.method =="POST":
-    #     print(project.name)
-    #     form=BillModelForm(request.POST)
-    #     if form.is_valid():
-    #         print(form.cleaned_data['name'])
-    #         form.save()
-    #         print("created a new BOM")
-    #         return redirect(f'/budgetTool/{project.pk}')
-    # context={
-    #     "form":BillModelForm(initial={'project': project})
-    # }
-    # return render(request,"budgetTool/create_bom.html",context)
-
-
 
 def bom_update(request,pk,fk):
     item=BillOfMaterials.objects.get(id=pk,project_id=fk)
@@ -189,7 +160,7 @@ def create_service(request,pk):
                         rate_cost=item.cost
 
             #calculated field value
-            print(rate_cost+rate_list)
+            print(project.adjust_Service)
             if "ite" in type:
                 travel_estimate=hours_estimated*project.travel_weekly/40
 
@@ -221,11 +192,12 @@ def create_service(request,pk):
                 sub_total_adjusted_cost_est=sub_total_adjusted_cost_est,
                 cost_actual=cost_actual,
             )
-            return redirect(f'/budgetTool/{project.pk}')
+            return HttpResponse("Service Saved")
     context={
-        "form":ServiceModelForm(initial={'project': project})
+        "form":ServiceModelForm(initial={'project': project},),
+        "project":project,
     }
-    return render(request,"budgetTool/create_service.html",context)
+    return render(request,"budgetTool/partials/serviceForm.html",context)
 
 # def create_service(request,pk):
 #     project=Project.objects.get(id=pk)
@@ -371,12 +343,36 @@ def service(request):
 # @require_http_methods(['GET','POST'])
 def editProject(request,pk):
     project=Project.objects.get(id=pk)
-    print(project.name)
-    print(request.method)
+
     if request.method == 'POST':
-        print(request.method)
-        project.name=request.POST.get('name','')
-        print(f'project name: {project.name}')
+        if request.POST.get('name'):
+            project.name=request.POST.get('name','')
+        if request.POST.get('quote_BOM'):
+            project.quote_BOM=request.POST.get('quote_BOM','')
+        if request.POST.get('quote_Service'):
+            project.quote_Service=request.POST.get('quote_Service','')
+        if request.POST.get('adjust_Service'):
+            project.adjust_Service=request.POST.get('adjust_Service','')
+        if request.POST.get('adjust_BOM'):
+            project.adjust_BOM=request.POST.get('adjust_BOM','')
+        if request.POST.get('travel_weekly'):
+            project.travel_weekly=request.POST.get('travel_weekly','')
         project.save()
-        return render(request,'budgetTool/{project.id}',{'project':project})
-    return render(request,'budgetTool/partials/editProject.html',{'project':project})
+        return HttpResponse("Project updated successfully")
+    
+    ProjectForm=ProjectModelForm(instance=project)
+    context = {"ProjectForm": ProjectForm, "project": project}
+    if request.GET.get('quote_BOM'):
+        return render(request,'budgetTool/partials/project/editProjectBomQuote.html',context)
+    elif request.GET.get('name'):
+        return render(request,'budgetTool/partials/project/editProjectName.html',context)
+    elif request.GET.get('quote_Service'):
+        return render(request,'budgetTool/partials/project/editProjectServiceQuote.html',context)
+    elif request.GET.get('adjust_Service'):
+        return render(request,'budgetTool/partials/project/editProjectServiceAdjust.html',context)
+    elif request.GET.get('adjust_BOM'):
+        return render(request,'budgetTool/partials/project/editProjectBomAdjust.html',context)
+    elif request.GET.get('travel_weekly'):
+        return render(request,'budgetTool/partials/project/editProjectTravel.html',context)
+    else:
+        return HttpResponse("Project update")

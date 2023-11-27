@@ -1,0 +1,9 @@
+<form
+    hx-post="{% url 'budgetTool:editProject' pk=project.pk%}"
+    hx-on="htmx:afterRequest: window.location.reload(true)"
+    >
+    {% csrf_token %}
+    <input type="text" name="name" value="{{project.name}}"  autofocus>
+    <button class="btn btn-success"> Save</button>
+    <button class="btn btn-danger" type="button" onclick="window.location.reload(true)"> Cancel</button>
+</form>

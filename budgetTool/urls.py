@@ -25,13 +25,14 @@ urlpatterns = [
     path('<int:pk>/delete',project_delete),
     path('create/',create_project),
     path('rate_table/',rate_table),
-    path('<int:pk>/createservice/',create_service),
+    # path('<int:pk>/createservice/',create_service),
     path('<int:fk>/<int:pk>/bom/',bom_update),
     path('<int:fk>/service/<int:pk>/',service_update),
     path('<int:pk>/bomSave/',bomSave),
     #sytax for htmx
     path('<int:pk>/',views.create_bom,name='create_bom'),
     path('edit/<int:pk>/',views.editProject,name='editProject'),
+    path('<int:pk>/createService/',views.create_service,name='create_service'),
     
 
     # path('', views.home, name='home'),

@@ -1,0 +1,10 @@
+<form
+    hx-post="{% url 'budgetTool:editProject' pk=project.pk%}"
+    hx-on="htmx:afterRequest: window.location.reload(true)"
+    style="display: flex; align-items: center;"
+    >
+    {% csrf_token %}
+    <input type="number" name="quote_Service" value="{{project.quote_Service}}" min="0" autofocus>
+    <button class="btn btn-success"> Save</button>
+    <button class="btn btn-danger" type="button" onclick="window.location.reload(true)"> Cancel</button>
+</form>

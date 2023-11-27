@@ -180,3 +180,7 @@ function deleteRow(button) {
 //   .catch(error => {});
 // }
 
+// document.body.addEventListener('htmx:configRequest', (event) => {
+//   event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+// });
+

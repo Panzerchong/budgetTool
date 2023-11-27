@@ -1,0 +1,25 @@
+<form 
+hx-post="{% url 'budgetTool:create_service' pk=project.pk %}" 
+hx-on="htmx:afterRequest: window.location.reload(true)">
+    {% csrf_token %}
+    <tr>
+      <td>{{form.index}}</td>
+      <td>{{ form.name }}</td>
+      <td>{{ form.type }}</td>
+      <td>{{ form.hours_estimated }}</td>
+      <td>{{ form.hours_worked }}</td>
+      <td>{{ form.rate_list }}</td>
+      <td>{{ form.rate_cost }}</td>
+      <td>{{ form.travel_actual }}</td>
+      <td>{{ form.category }}</td>
+
+      <td><button type="submit" class="btn btn-success">Save</button></td>
+      <td>
+        <button type="button"class="btn btn-danger" 
+          hx-on="click: this.closest('form').remove()"
+        >Delete</button>
+      </td>
+    </tr>
+    <hr>
+</form>
+
