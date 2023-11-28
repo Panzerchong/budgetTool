@@ -137,9 +137,12 @@ def create_service(request,pk):
     form=ServiceModelForm()
     if request.method =="POST":
         print(project.name)
-        form=ServiceModelForm(request.POST)
+        form=ServiceModelForm(request.POST,initial={'project': project})
+        print(form.data)
+
         if form.is_valid():
             data=form.cleaned_data
+            print(data)
             name=data['name']
             category=data['category']
             type=data['type']
@@ -148,7 +151,6 @@ def create_service(request,pk):
             rate_list=data['rate_list']
             rate_cost=data['rate_cost']
             travel_actual=data['travel_actual']
-            notes=data['notes']
             
             if rate_list == -1:
                 for item in rate_table:
@@ -161,8 +163,10 @@ def create_service(request,pk):
 
             #calculated field value
             print(project.adjust_Service)
-            if "ite" in type:
+            if "On Site" in type:
                 travel_estimate=hours_estimated*project.travel_weekly/40
+            else:
+                travel_estimate=0
 
             hours_adjusted=hours_estimated*(1+project.adjust_Service)
             sub_total_list=hours_estimated*rate_list+travel_estimate
@@ -172,8 +176,7 @@ def create_service(request,pk):
             cost_actual=hours_worked*rate_cost+travel_actual
 
             print(f'rate_list: {rate_cost}')
-            Service.objects.create(
-                
+            Service.objects.create(   
                 name=name,
                 category=category,
                 type=type,
@@ -182,7 +185,6 @@ def create_service(request,pk):
                 rate_list=rate_list,
                 rate_cost=rate_cost,
                 travel_actual=travel_actual,
-                notes=notes,
                 project=project,
                 hours_adjusted=hours_adjusted,
                 travel_estimate=travel_estimate,
@@ -198,23 +200,6 @@ def create_service(request,pk):
         "project":project,
     }
     return render(request,"budgetTool/partials/serviceForm.html",context)
-
-# def create_service(request,pk):
-#     project=Project.objects.get(id=pk)
-#     form=ServiceModelForm()
-#     if request.method =="POST":
-#         print(project.name)
-#         form=ServiceModelForm(request.POST)
-#         if form.is_valid():
-#             rate_list=500
-#             rate_cost=159
-#             form.save()
-#             print("created a new service")
-#             return redirect(f'/budgetTool/{project.pk}')
-#     context={
-#         "form":ServiceModelForm(initial={'project': project})
-#     }
-#     return render(request,"budgetTool/create_service.html",context)
 
 
 def service_update(request,pk,fk):

@@ -5,13 +5,14 @@ hx-on="htmx:afterRequest: window.location.reload(true)">
     <tr>
       <td>{{form.index}}</td>
       <td>{{ form.name }}</td>
-      <td>{{ form.type }}</td>
+      <td>{{ form.type.label_tag }}{{ form.type }}</td>
       <td>{{ form.hours_estimated }}</td>
       <td>{{ form.hours_worked }}</td>
       <td>{{ form.rate_list }}</td>
       <td>{{ form.rate_cost }}</td>
       <td>{{ form.travel_actual }}</td>
-      <td>{{ form.category }}</td>
+      <td>{{ form.category.label_tag }}{{ form.category }}</td>
+      <td>{{ form.project }}</td>
 
       <td><button type="submit" class="btn btn-success">Save</button></td>
       <td>

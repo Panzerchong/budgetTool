@@ -24,8 +24,8 @@ class BOMCategory(models.Model):
 class RateTable(models.Model):
     created_at=models.DateTimeField(auto_now_add=True)
     type=models.CharField(max_length=100)
-    list=models.IntegerField()
-    cost=models.IntegerField()
+    list=models.FloatField()
+    cost=models.FloatField()
 
     def __str__(self):
         return (f"{self.type} {self.list} {self.cost}")
