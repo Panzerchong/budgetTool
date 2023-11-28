@@ -130,6 +130,11 @@ document.getElementById("quotedMarginSummry").innerText = quotedMarginSummry.toF
 document.getElementById("actualMarginSummry").innerText = actualMarginSummry.toFixed(0);
 
 
+function projectDelete(pk) {
+  if (confirm("Are you sure you want to delete this project?")) {
+    window.location.href = "/budgetTool/" + pk + "/delete";
+  }
+}
 
 //create new row and add item
 

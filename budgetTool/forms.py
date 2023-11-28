@@ -73,9 +73,9 @@ class ServiceModelForm(forms.ModelForm):
         widgets = {
             "index": forms.NumberInput(attrs={'placeholder':"#",'style': 'width: 50px;'}),  
             "name": forms.TextInput(attrs={'placeholder':"Task"}),
-            # "type": forms.Select(attrs={'placeholder':"Type",'style': 'width: 100px;'}),
-            "hours_estimated":forms.NumberInput(attrs={'placeholder':"Hours(Estimate)",'style': 'width: 100px;'}),
-            "hours_worked":forms.NumberInput(attrs={'placeholder':"Hours(Worked)",'style': 'width: 100px;'}),
+            "type": forms.Select(attrs={'placeholder':"Type",'style': 'width: 100px;'}),
+            "hours_estimated":forms.NumberInput(attrs={'placeholder':"Hours(Estimate)",'style': 'width: 120px;'}),
+            "hours_worked":forms.NumberInput(attrs={'placeholder':"Hours(Worked)",'style': 'width: 120px;'}),
             "rate_list":forms.NumberInput(attrs={'placeholder':"Rate List",'style': 'width: 100px;'}),
             "rate_cost":forms.NumberInput(attrs={'placeholder':"Rate Cost ",'style': 'width: 100px;'}),
             "travel_actual":forms.NumberInput(attrs={'placeholder':"Travel Actual",'style': 'width: 100px;'}),
