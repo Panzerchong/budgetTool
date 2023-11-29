@@ -1,6 +1,7 @@
 <form 
 hx-post="{% url 'budgetTool:create_bom' pk=project.pk%}" 
-hx-on="htmx:afterRequest: window.location.reload(true)">
+hx-on="htmx:afterRequest: window.location.reload(true)"
+hx-target="this">
     {% csrf_token %}
     <tr>
       <td>{{bomForm.index}}</td>

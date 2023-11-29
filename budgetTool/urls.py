@@ -13,6 +13,7 @@ from .views import (
     create_service,
     service_update,
     bomSave,
+    bom_edit,
 )
 from .import views
 
@@ -26,13 +27,15 @@ urlpatterns = [
     path('create/',create_project),
     path('rate_table/',rate_table),
     # path('<int:pk>/createservice/',create_service),
-    path('<int:fk>/<int:pk>/bom/',bom_update),
+    # path('<int:fk>/<int:pk>/bom/',bom_update),
     path('<int:fk>/service/<int:pk>/',service_update),
     path('<int:pk>/bomSave/',bomSave),
     #sytax for htmx
-    path('<int:pk>/',views.create_bom,name='create_bom'),
+    path('<int:pk>/createBom',views.create_bom,name='create_bom'),
     path('edit/<int:pk>/',views.editProject,name='editProject'),
     path('<int:pk>/createService/',views.create_service,name='create_service'),
+    path('<int:fk>/<int:pk>/bom/',views.bom_edit,name='bom_edit'),
+    path('<int:pk>/bomDelete/',views.bom_delete,name='bom_delete'),
     
 
     # path('', views.home, name='home'),

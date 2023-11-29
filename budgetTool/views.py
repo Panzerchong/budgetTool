@@ -1,4 +1,4 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,get_object_or_404
 from django.http import HttpResponse,JsonResponse,QueryDict
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -124,12 +124,12 @@ def bom_update(request,pk,fk):
         if form.is_valid():
             form.save()
             print("edit a item")
-            return redirect(f'/budgetTool/{item.project_id}')
+            return HttpResponse("BOM updated")
     context={
         "item":item,
         "form":form,
     }
-    return render(request,"budgetTool/bom_update.html",context)
+    return render(request,"budgetTool/partials/bomForm.html",context)
 
 def create_service(request,pk):
     project=Project.objects.get(id=pk)
@@ -325,7 +325,6 @@ def service(request):
 #     return messages.success(request,"it's ratetable\n")
 
 
-# @require_http_methods(['GET','POST'])
 def editProject(request,pk):
     project=Project.objects.get(id=pk)
 
@@ -361,3 +360,31 @@ def editProject(request,pk):
         return render(request,'budgetTool/partials/project/editProjectTravel.html',context)
     else:
         return HttpResponse("Project update")
+    
+
+def bom_edit(request, pk, fk):
+    item = get_object_or_404(BillOfMaterials, id=pk, project_id=fk)
+
+    if request.method == "POST":
+        request_data = request.POST.copy()
+        request_data['project'] = fk  # Add project to POST data
+        bomForm = BillModelForm(request_data, instance=item)
+
+        if bomForm.is_valid():
+            bomForm.save()
+            return HttpResponse("BOM updated successfully")
+
+    else:
+        bomForm = BillModelForm(instance=item)
+
+    context = {
+        "item": item,
+        "bomForm": bomForm,
+    }
+
+    return render(request, "budgetTool/partials/bomFormEdit.html", context)
+
+def bom_delete(request,pk):
+    bom=BillOfMaterials.objects.get(id=pk)
+    bom.delete()
+    
