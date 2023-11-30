@@ -136,11 +136,6 @@ function projectDelete(pk) {
   }
 }
 
-function boMDelete(pk) {
-  if (confirm("Are you sure you want to delete this item?")) {
-    window.location.href = "/budgetTool/" + pk + "/delete";
-  }
-}
 
 //create new row and add item
 

@@ -36,6 +36,9 @@ urlpatterns = [
     path('<int:pk>/createService/',views.create_service,name='create_service'),
     path('<int:fk>/<int:pk>/bom/',views.bom_edit,name='bom_edit'),
     path('<int:pk>/bomDelete/',views.bom_delete,name='bom_delete'),
+    path('<int:fk>/<int:pk>/service/',views.service_edit,name='service_edit'),
+    path('<int:pk>/serviceDelete/',views.service_delete,name='service_delete'),
+    
     
 
     # path('', views.home, name='home'),

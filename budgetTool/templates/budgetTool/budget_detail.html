@@ -48,7 +48,7 @@
               <th class=" text-center" colspan="7"  style="background-color: #8EA9DB;" >Summary</th>
             </tr>
 
-            <tr style="background-color:lightskyblue;">
+            <tr style="background-color:#BDD7EE;">
               <th scope="col"></th>
               <th scope="col">Cost Est</th>
               <th scope="col">Cost Adjusted</th>
@@ -135,10 +135,10 @@
         <table class="table table-hover table-bordered table-bordered border-primary w-auto text-center">
           <thead>
             <tr>
-              <th class="text-center" colspan="10"  style="background: color #000;">Totals</th>
+              <th class="text-center" colspan="10"  style="background-color: #8EA9DB;">Totals</th>
             </tr>
 
-            <tr  style="background-color:lightskyblue;">
+            <tr  style="background-color:#BDD7EE;">
               <th colspan="2" scope="col">BOM Variables</th>
               <th scope="col">Cost Estimate</th>
               <th scope="col">Actual Cost</th>
@@ -194,9 +194,9 @@
       <div>
       <table class="table table-hover table-bordered border-primary" id="billTable" >
         <thead>
-          <tr style="background-color: cornflowerblue;"><th colspan="12" class="text-center">Bill Of Materials</th></tr>
+          <tr style="background-color:#8EA9DB;"><th colspan="14" class="text-center">Bill Of Materials</th></tr>
 
-          <tr class="text-nowrap" style="background-color: lightskyblue;">
+          <tr class="text-nowrap" style="background-color:#BDD7EE;">
             <th scope="col">#</th>
             <th scope="col">Part/Item</th>
             <th scope="col">Cost(Estimate)</th>
@@ -208,7 +208,7 @@
             <th scope="col">Cost (Actual)</th>
             <th scope="col">Responsible</th>
             <th scope="col">Description</th>
-            <th scope="col">Notes</th>
+            <th scope="col" colspan="3">Notes</th>
             <!-- <th class="table-primary" scope="col"></th>
             <th class="table-primary" scope="col"></th> -->
           </tr>
@@ -219,7 +219,7 @@
               {% for categ in existing_bom_category %}
                 <tr>
                   <td>{{categ.index}}</td>
-                  <td class="text-nowrap" colspan="11"><strong>{{categ.name}}</strong></td>
+                  <td class="text-nowrap" colspan="12"><strong>{{categ.name}}</strong></td>
                 </tr>
 
   
@@ -265,7 +265,8 @@
                       </button>
 
                       <button 
-                      onclick="boMDelete('{{ line.pk }}')" class="btn btn-danger"
+                      class="btn btn-danger"
+                      hx-confirm="Are you sure?"
                       hx-get="{% url 'budgetTool:bom_delete' pk=line.pk %}"
                       hx-on="htmx:afterRequest: window.location.reload(true)"
                       >
@@ -309,10 +310,10 @@
         <table class="table table-hover table-bordered table-bordered border-primary w-auto">
           <thead>
             <tr>
-              <th class="text-center" colspan="12" style="background-color: cornflowerblue;">Total System Integration Services</th>
+              <th class="text-center" colspan="12" style="background-color: #8EA9DB;">Total System Integration Services</th>
             </tr>
 
-            <tr style="background-color: lightskyblue;">
+            <tr style="background-color:#BDD7EE;">
               <th scope="col" colspan="2">Service Variables</th>
               <th scope="col">Hours</th>
               <th scope="col">Risk Hours</th>
@@ -386,9 +387,9 @@
 
       <table class="table table-hover table-bordered border-primary" id="serviceTable">
         <thead>
-          <tr style="background-color: cornflowerblue;"><th colspan="15" class="text-center">Estimated Labor Hours</th></tr>
+          <tr style="background-color: #8EA9DB;"><th colspan="16" class="text-center">Estimated Labor Hours</th></tr>
 
-          <tr style="background-color: lightskyblue;">
+          <tr style="background-color: #BDD7EE;">
             <th scope="col">#</th>
             <th scope="col">Task</th>
             <th scope="col">Type</th>
@@ -403,7 +404,7 @@
             <th scope="col">Rate Cost</th>
             <th scope="col">Sub Total Cost Est</th>
             <th scope="col">Sub Total Adjusted Cost Est</th>
-            <th scope="col">Cost Act</th>
+            <th scope="col" colspan="2">Cost Act</th>
           </tr>
         </thead>
 
@@ -411,11 +412,12 @@
             {% for categ in service_category %}
               <tr>
                 <td>{{categ.index}}</td>
-                <td class="text-nowrap" colspan="14"><strong>{{categ.name}}</strong></td>
+                <td class="text-nowrap" colspan="15"><strong>{{categ.name}}</strong></td>
               </tr>
               {% for line in service %}
                 {% if line.category == categ%}
-                  <tr>
+                <div>
+                  <tr id="serviceRow{{line.pk}}">
                     <td></td>
                     <td><a href="/budgetTool/{{project.pk}}/service/{{line.pk}}">{{ line.name }}</a></td>
                     <td>{{ line.type }}</td>
@@ -431,11 +433,36 @@
                     <td>${{line.sub_total_cost_est|intcomma}}</td>
                     <td>${{line.sub_total_adjusted_cost_est|intcomma}}</td>
                     <td>${{line.cost_actual|intcomma}}</td>
+
+
+                    <td style="white-space: nowrap;">
+                      <button 
+                      class="btn btn-success"
+                      hx-get="{% url 'budgetTool:service_edit' fk=project.pk pk=line.pk %}"
+                      hx-target="closest table"
+                      hx-swap="outerHTML"
+                      >
+                        Edit
+                      </button>
+
+                      <button 
+                      class="btn btn-danger"
+                      hx-confirm="Are you sure?"
+                      hx-get="{% url 'budgetTool:service_delete' pk=line.pk %}"
+                      hx-on="htmx:afterRequest: window.location.reload(true)"
+                      >
+                        Delete
+                    </td>
+
+
                   </tr>
+                </div>
+
                 {%endif%}
               {%endfor%}
             {% endfor %}
           </tbody>
+        
       </table>
 
       <table>
@@ -447,10 +474,9 @@
       <button type="button" class="btn btn-primary"
         hx-get="{% url 'budgetTool:create_service' pk=project.pk%}"
         hx-target="#currentServiceTable"
-        hx-swap="beforeend"> Add New Row</button>
+        hx-swap="beforeend">
+         Add New Row</button>
       <hr>
-
-
 
 
 

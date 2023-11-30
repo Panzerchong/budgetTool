@@ -388,3 +388,28 @@ def bom_delete(request,pk):
     bom=BillOfMaterials.objects.get(id=pk)
     bom.delete()
     
+
+def service_edit(request, pk, fk):
+    item = get_object_or_404(Service, id=pk, project_id=fk)
+
+    if request.method == "POST":
+        request_data = request.POST.copy()
+        request_data['project'] = fk  # Add project to POST data
+        form = ServiceModelForm(request_data, instance=item)
+
+        if form.is_valid():
+            form.save()
+            return HttpResponse("BOM updated successfully")
+
+    else:
+        form = ServiceModelForm(instance=item)
+
+    context = {
+        "item": item,
+        "form": form,
+    }
+    return render(request, "budgetTool/partials/serviceFormEdit.html", context)
+
+def service_delete(request,pk):
+    service=Service.objects.get(id=pk)
+    service.delete()
