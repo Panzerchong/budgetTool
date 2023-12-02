@@ -13,6 +13,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://unpkg.com/htmx.org@1.9.9"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
   </head>
   <div id="quoteValue" data-quote="{{ project.quote_BOM }}"></div>
   <div id="quoteService" quoteService="{{project.quote_Service}}"></div>
@@ -215,7 +216,7 @@
           <div id="billTitle"></div>
         </thead>
 
-          <tbody>
+          <tbody id="serviceTableContent">
               {% for categ in existing_bom_category %}
                 <tr>
                   <td>{{categ.index}}</td>
@@ -234,10 +235,10 @@
                       hx-swap="outerHTML"> -->
                   <tr id="row{{line.pk}}">
                     <td></td>
-                    <td contenteditable="true">{{ line.name }}</td>
-                    <td contenteditable="true">${{line.estimate_cost|intcomma }}</td>
-                    <td contenteditable="true">${{line.sales_price|intcomma }}</td>
-                    <td contenteditable="true" class="text-center">{{ line.quantity }}</td>
+                    <td>{{ line.name }}</td>
+                    <td>${{line.estimate_cost|intcomma }}</td>
+                    <td>${{line.sales_price|intcomma }}</td>
+                    <td class="text-center">{{ line.quantity }}</td>
                     <td id="lineCost">
                         {%with totalCost=line.quantity|mul:line.estimate_cost %}
                         ${{totalCost|intcomma}}
@@ -439,7 +440,7 @@
                       <button 
                       class="btn btn-success"
                       hx-get="{% url 'budgetTool:service_edit' fk=project.pk pk=line.pk %}"
-                      hx-target="closest table"
+                      hx-target="closest tr"
                       hx-swap="outerHTML"
                       >
                         Edit

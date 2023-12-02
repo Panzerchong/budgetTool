@@ -136,16 +136,15 @@ function projectDelete(pk) {
   }
 }
 
-
-//create new row and add item
-
-
-
 function deleteRow(button) {
   // Implement row deletion logic here
   var row = button.parentNode.parentNode;
   row.parentNode.removeChild(row);
   console.log('Form deleted!');
+}
+
+function redirectToCurrentPage() {
+  window.location.reload(true);;
 }
 
 

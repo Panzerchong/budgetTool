@@ -40,6 +40,9 @@ class Project(models.Model):
     travel_weekly=models.IntegerField()
     # bom=models.ForeignKey("BoM",on_delete=models.CASCADE)
     # service=models.ForeignKey("Service",on_delete=models.CASCADE)
+
+    class Meta:
+        ordering = ['name']
     
     def __str__(self):
         return (f"{self.name}")
