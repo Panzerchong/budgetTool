@@ -14,14 +14,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://unpkg.com/htmx.org@1.9.9"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <style>
+      .handle {
+          display: inline-block;
+          border-top: 3px solid var(--dark);
+          width: 30px;
+          cursor: grab;
+      }
+      .handle:after, .handle:before {
+          display: block;
+          content: "";
+          padding-top: 15px;
+          border-top: 5px solid var(--dark);
+      }
+      .handle:hover, .handle:hover:before, .handle:hover:after {
+          border-color: var(--darker);
+      }
+      .handle:active, .handle:active:before, .handle:active:after {
+          cursor: grabbing;
+      }
+
+        .sortableChosen {
+        background-color:#BDD7EE;
+      }
+    </style>
   </head>
-  <div id="quoteValue" data-quote="{{ project.quote_BOM }}"></div>
-  <div id="quoteService" quoteService="{{project.quote_Service}}"></div>
-  <div id="adjustComplexityBOM" adjustComplexityBOM="{{project.adjust_BOM}}"></div>
-  <div id="adjustComplexityService" adjustComplexityService="{{project.adjust_Service}}"></div>
-  <div id="projectPk" projectPk="{{project.pk}}"></div>
+
 
   <body style="margin-left: 20px; margin-right: 20px;">
+    <div id="quoteValue" data-quote="{{ project.quote_BOM }}"></div>
+    <div id="quoteService" quoteService="{{project.quote_Service}}"></div>
+    <div id="adjustComplexityBOM" adjustComplexityBOM="{{project.adjust_BOM}}"></div>
+    <div id="adjustComplexityService" adjustComplexityService="{{project.adjust_Service}}"></div>
+    <div id="projectPk" projectPk="{{project.pk}}"></div>
     <div class="btn-group">
       <a href="/budgetTool/"class="btn btn-primary active" aria-current="page">Go back to Project lists</a>
       <a href="/budgetTool/{{project.pk}}/update" class="btn btn-primary">Update</a>
@@ -192,6 +217,7 @@
         </table>
       </div>
 
+      <!-- BOM table -->
       <div>
       <table class="table table-hover table-bordered border-primary" id="billTable" >
         <thead>
@@ -222,8 +248,6 @@
                   <td>{{categ.index}}</td>
                   <td class="text-nowrap" colspan="12"><strong>{{categ.name}}</strong></td>
                 </tr>
-
-  
 
                 {% for line in bom %}
                   {% if line.bom_category == categ %}
@@ -383,10 +407,14 @@
               </tr>
             </tbody>
         </table>
+
+      </div>
       
 
-
+      <form class="sortable" hx-post="/sort" hx-trigger="end">
+        <div class="htmx-indicator">Updating...</div>
       <table class="table table-hover table-bordered border-primary" id="serviceTable">
+        
         <thead>
           <tr style="background-color: #8EA9DB;"><th colspan="16" class="text-center">Estimated Labor Hours</th></tr>
 
@@ -409,17 +437,21 @@
           </tr>
         </thead>
 
-          <tbody>
+          <tbody id="groups">
             {% for categ in service_category %}
               <tr>
-                <td>{{categ.index}}</td>
+                <td></td>
                 <td class="text-nowrap" colspan="15"><strong>{{categ.name}}</strong></td>
               </tr>
+
+             
+                
               {% for line in service %}
                 {% if line.category == categ%}
-                <div>
+                
                   <tr id="serviceRow{{line.pk}}">
-                    <td></td>
+                    <input type='hidden' name='service_order' value='{{line.pk}}'/>
+                    <td>{{line.index}}<span class="handle"></span></td>
                     <td><a href="/budgetTool/{{project.pk}}/service/{{line.pk}}">{{ line.name }}</a></td>
                     <td>{{ line.type }}</td>
                     <td class="text-center">{{ line.hours_estimated }}</td>
@@ -454,17 +486,17 @@
                       >
                         Delete
                     </td>
-
-
                   </tr>
-                </div>
+              
+              
 
                 {%endif%}
               {%endfor%}
+            
             {% endfor %}
           </tbody>
-        
       </table>
+      </form>
 
       <table>
         <tr>
@@ -514,9 +546,118 @@
         </tbody>
       </table> -->
 
+      
+      
+      
+      <form class="sortable" hx-post="/items" hx-trigger="end">
+        <div class="htmx-indicator">Updating...</div>
+        <table class="table table-hover table-bordered border-primary" id="akfjalkf">
+        
+        <div>
+          <tr>
+          <input type='hidden' name='item' value='1'/>Item 1
+          <td>test here</td>
+        </tr>
+        </div>
+
+        <div>
+          <tr>
+          <input type='hidden' name='item' value='1'/>Item 1
+          <td>test here</td>
+        </tr>
+        </div>
+
+        <div>
+          <tr>
+          <input type='hidden' name='item' value='1'/>Item 1
+          <td>test here</td>
+        </tr>
+        </div>
+
+          <!-- <div>
+            <tr> 
+              <input type='hidden' name='item' value='1'/>Item 1
+              <td>test here</td>
+            </tr>
+            </div>
+
+            <div>
+              <tr> 
+                <input type='hidden' name='item' value='1'/>Item 1
+                <td>test here</td>
+              </tr>
+              </div>
 
 
+        <tr> 
+          <div><input type='hidden' name='item' value='2'/>Item 2</div>
+          <td>test here</td>
+        </tr>
+        <tr> 
+          <div><input type='hidden' name='item' value='3'/>Item 3</div>
+        </tr>
+        <tr> 
+          <div><input type='hidden' name='item' value='4'/>Item 4</div>
+        </tr> -->
+      
+      </table>
+      </form>
+  
 
+    
+      
+        <table>
+          <thead>
+            <tr style="background-color: #8EA9DB;">
+              <th colspan="16" class="text-center">Estimated Labor Hours</th>
+            </tr>
+      
+            <tr style="background-color: #BDD7EE;">
+              <th scope="col">#</th>
+              <th scope="col">Task</th>
+              <!-- ... (other header cells) ... -->
+              <th scope="col" colspan="2">Cost Act</th>
+            </tr>
+          </thead>
+      
+          <tbody>
+            <form class="sortable" hx-post="/sort" hx-trigger="end">
+              <div class="htmx-indicator">Updating...</div>
+            {% for categ in service_category %}
+            <tr>
+              <td>{{ categ.index }}</td>
+              <td class="text-nowrap" colspan="15"><strong>{{ categ.name }}</strong></td>
+            </tr>
+      
+            {% for line in service %}
+            {% if line.category == categ %}
+            <tr hx-post="/sort" hx-trigger="end">
+              <td>
+                
+                </td>
+              <td></td>
+              <td><a href="/budgetTool/{{ project.pk }}/service/{{ line.pk }}">{{ line.name }}</a></td>
+              <td>{{ line.type }}</td>
+              <!-- ... (other cells) ... -->
+              <td style="white-space: nowrap;">
+                <button class="btn btn-success" hx-get="{% url 'budgetTool:service_edit' fk=project.pk pk=line.pk %}"
+                  hx-target="closest tr" hx-swap="outerHTML">Edit</button>
+      
+                <button class="btn btn-danger" hx-confirm="Are you sure?"
+                  hx-get="{% url 'budgetTool:service_delete' pk=line.pk %}" hx-on="htmx:afterRequest: window.location.reload(true)">
+                  Delete
+                </button>
+              </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+      
+            {% endfor %}
+          </tbody>
+          </form>
+        </table>
+
+      
 
 
 
