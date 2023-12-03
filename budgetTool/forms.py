@@ -91,3 +91,6 @@ class ProjectForm(forms.Form):
     quote_Service=forms.IntegerField()
     adjusted_bom=forms.IntegerField()
     adjusted_service=forms.IntegerField()
+
+class OrderForm(forms.Form):
+   ordering=forms.CharField()

@@ -92,6 +92,7 @@ class Service(models.Model):
     ]
 
     # category=models.CharField(max_length=100,choices=SERVICE_CATEGORY)
+    order = models.IntegerField(blank=True, default=1000)
     index=models.IntegerField(null=True,blank=True)
     name=models.CharField(max_length=100)
     type=models.CharField(max_length=100,choices=SERVICE_TYPES)
@@ -112,11 +113,13 @@ class Service(models.Model):
     sub_total_adjusted_cost_est=models.IntegerField(default=0)
     cost_actual=models.IntegerField(default=0)
 
-
     category=models.ForeignKey(ServiceCategory,on_delete=models.SET_NULL, null=True,related_name='project_service_category')
     project=models.ForeignKey(Project,on_delete=models.CASCADE,related_name='project_service')
     def __str__(self):
         return (f"{self.name}--- {self.category}")
+    
+    class Meta:
+        ordering = ['order']
 
 
 class Sales(models.Model):
