@@ -92,6 +92,7 @@ class Service(models.Model):
     ]
 
     # category=models.CharField(max_length=100,choices=SERVICE_CATEGORY)
+    order = models.IntegerField(blank=False, default=1000)
     index=models.IntegerField(null=True,blank=True)
     name=models.CharField(max_length=100)
     type=models.CharField(max_length=100,choices=SERVICE_TYPES)
@@ -117,6 +118,9 @@ class Service(models.Model):
     project=models.ForeignKey(Project,on_delete=models.CASCADE,related_name='project_service')
     def __str__(self):
         return (f"{self.name}--- {self.category}")
+    
+    class Meta:
+        ordering = ['order']
 
 
 class Sales(models.Model):

@@ -1,9 +1,10 @@
+from gettext import translation
 from django.shortcuts import render,redirect,get_object_or_404
 from django.http import HttpResponse,JsonResponse,QueryDict
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .models import RateTable, Project,BoM,Service,Sales,BillOfMaterials,ServiceCategory,BOMCategory
-from .forms import ProjectForm, ProjectModelForm,BillModelForm,ServiceModelForm
+from .forms import OrderForm, ProjectForm, ProjectModelForm,BillModelForm,ServiceModelForm
 import json
 from django.views.decorators.http import require_http_methods
 
@@ -263,25 +264,6 @@ def bomSave(request,pk):
         return JsonResponse({'error': 'Invalid request method'})
 
 
-    if request.method =="POST":
-        print(project.name)
-        form=BillModelForm(request.POST)
-        if form.is_valid():
-            print(form.cleaned_data['name'])
-            form.save()
-            print("created a new BOM")
-            return redirect(f'/budgetTool/{project.pk}')
-    context={
-        "form":BillModelForm(initial={'project': project})
-    }
-    return render(request,"budgetTool/create_bom.html",context)
-
-
-
-
-
-
-
 def bom(request,pk):
     bom=BillOfMaterials.objects.get(id=pk)
     context={
@@ -413,3 +395,21 @@ def service_edit(request, pk, fk):
 def service_delete(request,pk):
     service=Service.objects.get(id=pk)
     service.delete()
+
+def service_order(request):
+    form=OrderForm(request.POST)
+
+    if form.is_valid():
+        ordered_ids = form.cleaned_data["ordering"].split(',')
+        print(ordered_ids)
+        current_order = 1
+        for lookup_id in ordered_ids:
+            if lookup_id.isdigit() and lookup_id != "0":
+                service = Service.objects.get(id=lookup_id)
+                service.field_to_update = current_order
+                service.save()
+                print(service)
+                current_order += 1
+        return HttpResponse("Order updated successfully")
+
+    
