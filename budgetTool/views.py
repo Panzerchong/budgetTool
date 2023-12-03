@@ -406,9 +406,9 @@ def service_order(request):
         for lookup_id in ordered_ids:
             if lookup_id.isdigit() and lookup_id != "0":
                 service = Service.objects.get(id=lookup_id)
-                service.field_to_update = current_order
-                service.save()
-                print(service)
+                service.order = current_order
+                service.save(update_fields=["order"])
+                print(f'what is Service: {service.order}')
                 current_order += 1
         return HttpResponse("Order updated successfully")
 
