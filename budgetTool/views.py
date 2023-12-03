@@ -7,6 +7,7 @@ from .models import RateTable, Project,BoM,Service,Sales,BillOfMaterials,Service
 from .forms import OrderForm, ProjectForm, ProjectModelForm,BillModelForm,ServiceModelForm
 import json
 from django.views.decorators.http import require_http_methods
+from django.urls import reverse
 
 
 def budget_list(request):
@@ -396,7 +397,7 @@ def service_delete(request,pk):
     service=Service.objects.get(id=pk)
     service.delete()
 
-def service_order(request):
+def service_order(request,pk):
     form=OrderForm(request.POST)
 
     if form.is_valid():
@@ -410,6 +411,5 @@ def service_order(request):
                 service.save(update_fields=["order"])
                 print(f'what is Service: {service.order}')
                 current_order += 1
-        return HttpResponse("Order updated successfully")
-
+        return HttpResponse("Service order updated successfully")
     

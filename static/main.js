@@ -144,7 +144,7 @@ function deleteRow(button) {
 }
 
 function redirectToCurrentPage() {
-  window.location.reload(true);;
+  window.location.reload(true);
 }
 
 
@@ -161,10 +161,11 @@ let sortable = Sortable.create(groups, {
   chosenClass: 'sortableChosen',
   onChange: () => {
     saveOrderingButton.disabled = false;
+    saveOrdering();
 }
 });
 
-saveOrderingButton.addEventListener('click', saveOrdering);
+// saveOrderingButton.addEventListener('click', saveOrdering);
 
 function saveOrdering() {
   const rows = document.getElementById("groups").querySelectorAll('tr');
@@ -173,10 +174,8 @@ function saveOrdering() {
       ids.push(row.dataset.lookup);
   }
   formInput.value = ids.join(',');
-  console.log('Form submitted!')
-  console.log(ids)
   console.log(formInput.value)
-  orderingForm.submit();
+  // orderingForm.submit();
 }
 
 

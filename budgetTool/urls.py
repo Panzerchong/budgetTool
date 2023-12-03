@@ -38,7 +38,7 @@ urlpatterns = [
     path('<int:pk>/bomDelete/',views.bom_delete,name='bom_delete'),
     path('<int:fk>/<int:pk>/service/',views.service_edit,name='service_edit'),
     path('<int:pk>/serviceDelete/',views.service_delete,name='service_delete'),
-    path('serviceOrder/',views.service_order,name='service_order'),
+    path('<int:pk>/serviceOrder/',views.service_order,name='service_order'),
     
     
 
