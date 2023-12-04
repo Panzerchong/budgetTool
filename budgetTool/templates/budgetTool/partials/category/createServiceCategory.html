@@ -1,0 +1,17 @@
+<form 
+hx-post="{% url 'budgetTool:create_service_category' %}" 
+hx-on="htmx:afterRequest: window.location.reload(true)"
+hx-target="this">
+    {% csrf_token %}
+    <tr>
+      <td>{{form.index}}</td>
+      <td>{{form.name }}</td>
+      <td><button type="submit" class="btn btn-success">Save</button></td>
+      <td>
+        <button type="button"class="btn btn-secondary" 
+          hx-on="click: this.closest('form').remove()"
+        >Cancel</button>
+      </td>
+    </tr>
+    <hr>
+</form>

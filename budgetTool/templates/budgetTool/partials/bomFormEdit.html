@@ -78,9 +78,25 @@ hx-post="{% url 'budgetTool:bom_edit' fk=item.project_id pk=item.id %}"
 hx-on="htmx:afterRequest: window.location.reload(true)"
 hx-target="this">
     {% csrf_token %}
-    <table>
+    <table class="table-bordered">
+      <tr class="text-nowrap" style="background-color:#BDD7EE;">
+        <th scope="col">#</th>
+        <th scope="col">Part/Item</th>
+        <th scope="col">Cost(Estimate)</th>
+        <th scope="col">List Price</th>
+        <th scope="col">Quantity</th>
+        <th scope="col">Supplier</th>
+        <th scope="col">Cost (Actual)</th>
+        <th scope="col">Responsible</th>
+        <th scope="col">Description</th>
+        <th scope="col">Notes</th>
+        <th scope="col" colspan="3">Category</th>
+        <!-- <th class="table-primary" scope="col"></th>
+        <th class="table-primary" scope="col"></th> -->
+      </tr>
+
     <tr>
-      <td>{{item.id}}</td>
+      <!-- <td>{{item.id}}</td> -->
       <td>{{bomForm.index}}</td>
       <td>{{ bomForm.name }}</td>
       <td>{{ bomForm.estimate_cost }}</td>

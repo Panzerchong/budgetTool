@@ -1,5 +1,5 @@
 from django import forms
-from .models import Project,BillOfMaterials, RateTable,Service
+from .models import BOMCategory, Project,BillOfMaterials, RateTable,Service, ServiceCategory
 from django.utils.translation import gettext_lazy as _
 
 class ProjectModelForm(forms.ModelForm):
@@ -82,9 +82,6 @@ class ServiceModelForm(forms.ModelForm):
             "project":forms.HiddenInput(),
         }
 
-
-
-
 class ProjectForm(forms.Form):
     name=forms.CharField()
     quote_BOM=forms.IntegerField()
@@ -94,3 +91,19 @@ class ProjectForm(forms.Form):
 
 class OrderForm(forms.Form):
    ordering=forms.CharField()
+
+class BomCategoryModelForm(forms.ModelForm):
+    class Meta:
+        model = BOMCategory
+        fields = '__all__'
+        widgets = {
+            "index": forms.NumberInput(attrs={'placeholder':"#",'style': 'width: 50px;'}),  
+            "name": forms.TextInput(attrs={'placeholder':"Name"}),  }
+        
+class ServiceCategoryModelForm(forms.ModelForm):
+    class Meta:
+        model = ServiceCategory
+        fields = '__all__'
+        widgets = {
+            "index": forms.NumberInput(attrs={'placeholder':"#",'style': 'width: 50px;'}),  
+            "name": forms.TextInput(attrs={'placeholder':"Name"}),  }

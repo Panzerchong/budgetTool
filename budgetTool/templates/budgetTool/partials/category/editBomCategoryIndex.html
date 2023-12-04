@@ -1,0 +1,12 @@
+<!-- use view context to pass parameter  -->
+
+<form
+    hx-post="{% url 'budgetTool:bom_category_edit' pk=category.id %}"
+    hx-on="htmx:afterRequest: window.location.reload(true)"
+    style="display: flex; align-items: center;"
+    >
+    {% csrf_token %}
+    <input type="number" name="index" value="{{category.index}}" min="0" autofocus style="width: 50px;">
+    <button class="btn btn-success"> Save</button>
+    <button class="btn btn-secondary" type="button" onclick="redirectToCurrentPage()" > Cancel</button>
+</form>

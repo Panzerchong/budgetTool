@@ -13,12 +13,16 @@ class ServiceCategory(models.Model):
     name=models.CharField(max_length=300)
     def __str__(self):
         return (f"{self.name}")
+    class Meta:
+        ordering = ['index']
 
 class BOMCategory(models.Model):
     index=models.IntegerField()
     name=models.CharField(max_length=300)
     def __str__(self):
         return (f"{self.name}")
+    class Meta:
+        ordering = ['index']
 
 
 class RateTable(models.Model):

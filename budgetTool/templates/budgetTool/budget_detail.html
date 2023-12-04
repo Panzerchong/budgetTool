@@ -245,8 +245,24 @@
           <tbody id="bomRow">
               {% for categ in existing_bom_category %}
                 <tr>
-                  <td>{{categ.index}}</td>
-                  <td class="text-nowrap" colspan="12"><strong>{{categ.name}}</strong></td>
+                  <td>
+                    <div
+                      hx-get="{% url 'budgetTool:bom_category_edit' pk=categ.id %}"
+                      hx-params="index"
+                      hx-target="this"
+                      hx-swap="outerHTML">
+                      <strong>{{categ.index}}</strong>
+                    </div>
+                  </td>
+                  <td class="text-nowrap" colspan="12">
+                    <div
+                      hx-get="{% url 'budgetTool:bom_category_edit' pk=categ.id %}"
+                      hx-params="name"
+                      hx-target="this"
+                      hx-swap="outerHTML">
+                    <strong>{{categ.name}}</strong>
+                    </div>
+                  </td>
                 </tr>
 
                 {% for line in bom %}
@@ -325,8 +341,14 @@
             hx-get="{% url 'budgetTool:create_bom' pk=project.pk%}"
             hx-target="#currentBillTable"
             hx-swap="beforeend"> Add New Row</button>
-
-          </td>          
+          </td>    
+          
+          <td>
+            <button type="button" class="btn btn-primary"
+            hx-get="{% url 'budgetTool:create_bom_category' %}"
+            hx-target="#currentBillTable"
+            hx-swap="beforeend"> Add New Category</button>
+          </td>
           
           <td>
             <form id="bomOrderingForm"
@@ -453,8 +475,27 @@
           <tbody id="serviceRow">
             {% for categ in service_category %}
               <tr>
-                <td></td>
-                <td class="text-nowrap" colspan="15"><strong>{{categ.name}}</strong></td>
+                <td>
+                  <div
+                    hx-get="{% url 'budgetTool:service_category_edit' pk=categ.id %}"
+                    hx-params="index"
+                    hx-target="this"
+                    hx-swap="outerHTML">
+                    <strong>{{categ.index}}</strong>
+                  </div>
+                </td>
+                
+                <td class="text-nowrap" colspan="15">
+                  <div
+                  hx-get="{% url 'budgetTool:service_category_edit' pk=categ.id %}"
+                  hx-params="name"
+                  hx-target="this"
+                  hx-swap="outerHTML">
+                  <strong>
+                    {{categ.name}}
+                  </strong>
+                </div>
+                </td>
               </tr>
 
              
@@ -503,6 +544,7 @@
                       hx-on="htmx:afterRequest: window.location.reload(true)"
                       >
                         Delete
+                      </button>
                     </td>
                   </tr>
               
@@ -530,6 +572,13 @@
             hx-target="#currentServiceTable"
             hx-swap="beforeend">
              Add New Row</button>
+          </td>
+
+          <td>
+            <button type="button" class="btn btn-primary"
+            hx-get="{% url 'budgetTool:create_service_category' %}"
+            hx-target="#currentServiceTable"
+            hx-swap="beforeend"> Add New Category</button>
           </td>
 
           <td>

@@ -4,7 +4,7 @@ from django.http import HttpResponse,JsonResponse,QueryDict
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .models import RateTable, Project,BoM,Service,Sales,BillOfMaterials,ServiceCategory,BOMCategory
-from .forms import OrderForm, ProjectForm, ProjectModelForm,BillModelForm,ServiceModelForm
+from .forms import BomCategoryModelForm, OrderForm, ProjectForm, ProjectModelForm,BillModelForm, ServiceCategoryModelForm,ServiceModelForm
 import json
 from django.views.decorators.http import require_http_methods
 from django.urls import reverse
@@ -382,7 +382,7 @@ def service_edit(request, pk, fk):
 
         if form.is_valid():
             form.save()
-            return HttpResponse("BOM updated successfully")
+            return HttpResponse("Service updated successfully")
 
     else:
         form = ServiceModelForm(instance=item)
@@ -429,3 +429,72 @@ def bom_order(request,pk):
                 current_order += 1
         return HttpResponse("BOM order updated successfully")
     
+def bom_category_edit(request,pk):
+    category=BOMCategory.objects.get(id=pk)
+    
+    if request.method == 'POST':
+        if request.POST.get('index'):
+            category.index=request.POST.get('index','')
+        if request.POST.get('name'):
+            category.name=request.POST.get('name','')
+        category.save()
+        return HttpResponse("BOM category updated successfully")
+    
+    categoryForm=BomCategoryModelForm(instance=category)
+    context = {"categoryForm": categoryForm, "category": category}
+    if request.GET.get('index'):
+        print(category.id)
+        return render(request,'budgetTool/partials/category/editBomCategoryIndex.html',context)
+    elif request.GET.get('name'):
+        return render(request,'budgetTool/partials/category/editBomCategoryName.html',context)
+
+def create_bom_category(request):
+    form=BomCategoryModelForm()
+    if request.method == "POST":
+        form=BomCategoryModelForm(request.POST)
+        if form.is_valid():
+            print("valid")
+            form.save()
+            return HttpResponse("Category created successfully")
+    context={"form":form}
+    return render(request,'budgetTool/partials/category/createBomCategory.html',context)
+
+def bom_category_delete(request,pk):
+    category=BOMCategory.objects.get(id=pk)
+    related_boms = BillOfMaterials.objects.filter(bom_category=category)
+    if related_boms.exists():
+        return HttpResponse("Cannot delete category. There are associated BillOfMaterials instances.")
+    category.delete()
+    return HttpResponse("Category deleted successfully")
+
+def service_category_edit(request,pk):
+    category=ServiceCategory.objects.get(id=pk)
+    
+    if request.method == 'POST':
+        if request.POST.get('index'):
+            category.index=request.POST.get('index','')
+        if request.POST.get('name'):
+            category.name=request.POST.get('name','')
+        category.save()
+        return HttpResponse("Service category updated successfully")
+    
+    categoryForm=ServiceCategoryModelForm(instance=category)
+    context = {"categoryForm": categoryForm, "category": category}
+    if request.GET.get('index'):
+        return render(request,'budgetTool/partials/category/editServiceCategoryIndex.html',context)
+    elif request.GET.get('name'):
+        return render(request,'budgetTool/partials/category/editServiceCategoryName.html',context)
+    
+def create_service_category(request):
+    form=ServiceCategoryModelForm()
+    print("Confirm valid")
+    if request.method == "POST":
+        form=ServiceCategoryModelForm(request.POST)
+
+        print(form.data)
+        if form.is_valid():
+            print("!!!!!!!!!!!!!Confirm valid")
+            form.save()
+            return HttpResponse("Category created successfully")
+    context={"form":form}
+    return render(request,'budgetTool/partials/category/createServiceCategory.html',context)

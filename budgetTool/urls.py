@@ -40,6 +40,12 @@ urlpatterns = [
     path('<int:pk>/serviceDelete/',views.service_delete,name='service_delete'),
     path('<int:pk>/serviceOrder/',views.service_order,name='service_order'),
     path('<int:pk>/bomOrder/',views.bom_order,name='bom_order'),
+    path('bomCategory/<int:pk>/',views.bom_category_edit,name='bom_category_edit'),
+    path('createBomCategory/',views.create_bom_category,name='create_bom_category'),
+    path('bomCategoryDelete/<int:pk>/',views.bom_category_delete,name='bom_category_delete'),
+    path('serviceCategory/<int:pk>/',views.service_category_edit,name='service_category_edit'),
+    path('createServiceCategory/',views.create_service_category,name='create_service_category'),
+
     
     
 
