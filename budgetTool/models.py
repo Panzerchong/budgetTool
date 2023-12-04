@@ -49,6 +49,7 @@ class Project(models.Model):
 
 class BillOfMaterials(models.Model):
 
+    order = models.IntegerField(blank=True, default=1000)
     index=models.IntegerField(null=True,blank=True)
     name=models.CharField(max_length=100)
     estimate_cost=models.IntegerField()
@@ -66,6 +67,8 @@ class BillOfMaterials(models.Model):
     def __str__(self):
         return (f"{self.name}")
     
+    class Meta:
+        ordering = ['order']
 
 
 class Service(models.Model):

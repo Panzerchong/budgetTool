@@ -147,36 +147,54 @@ function redirectToCurrentPage() {
   window.location.reload(true);
 }
 
+function saveOrdering(rowId,formInput) {
+  const rows = document.getElementById(rowId).querySelectorAll('tr');
+  let ids = [];
+  for (let row of rows) {
+      console.log(row.dataset)
+      ids.push(row.dataset.lookupid);
+  }
+  formInput.value = ids.join(',');
+  console.log(formInput.value)
+  // orderingForm.submit();
+}
 
+// bom ordering part
+const bomSaveOrderingButton = document.getElementById('bomSaveOrdering');
+const bomOrderingForm = document.getElementById('bomOrderingForm');
+const bomFormInput = bomOrderingForm.querySelector('#bomOrderingInput');
+const bomRowOrder = document.getElementById('bomRow');
+
+let bomSortable = Sortable.create(bomRowOrder, {
+  animation: 150,
+  handle: '.handle',
+  dragClass: 'dragged',
+  chosenClass: 'sortableChosen',
+  onChange: () => {
+    bomSaveOrderingButton.disabled = false;
+    saveOrdering("bomRow", bomFormInput);
+}
+});
+
+//service order part
 const saveOrderingButton = document.getElementById('saveOrdering');
-const orderingForm = document.getElementById('orderingForm');
-const formInput = orderingForm.querySelector('#orderingInput');
-
-const groups = document.getElementById('groups');
+const serviceOrderingForm = document.getElementById('serviceOrderingForm');
+const serviceformInput = serviceOrderingForm.querySelector('#serviceOrderingInput');
+const serviceRowOrder = document.getElementById('serviceRow');
   
-let sortable = Sortable.create(groups, {
+let sortable = Sortable.create(serviceRowOrder, {
   animation: 150,
   handle: '.handle',
   dragClass: 'dragged',
   chosenClass: 'sortableChosen',
   onChange: () => {
     saveOrderingButton.disabled = false;
-    saveOrdering();
+    saveOrdering("serviceRow", serviceformInput);
 }
 });
-
 // saveOrderingButton.addEventListener('click', saveOrdering);
+  
 
-function saveOrdering() {
-  const rows = document.getElementById("groups").querySelectorAll('tr');
-  let ids = [];
-  for (let row of rows) {
-      ids.push(row.dataset.lookup);
-  }
-  formInput.value = ids.join(',');
-  console.log(formInput.value)
-  // orderingForm.submit();
-}
 
 
 // htmx.onLoad(function(content) {

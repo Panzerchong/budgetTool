@@ -413,3 +413,19 @@ def service_order(request,pk):
                 current_order += 1
         return HttpResponse("Service order updated successfully")
     
+
+def bom_order(request,pk):
+    form=OrderForm(request.POST)
+
+    if form.is_valid():
+        ordered_ids = form.cleaned_data["ordering"].split(',')
+        current_order = 1
+        for lookup_id in ordered_ids:
+            if lookup_id.isdigit() and lookup_id != "0":
+                bom = BillOfMaterials.objects.get(id=lookup_id)
+                bom.order = current_order
+                bom.save(update_fields=["order"])
+                print(f'what is bom: {bom.order}')
+                current_order += 1
+        return HttpResponse("BOM order updated successfully")
+    

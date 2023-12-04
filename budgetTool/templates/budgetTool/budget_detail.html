@@ -242,7 +242,7 @@
           <div id="billTitle"></div>
         </thead>
 
-          <tbody id="serviceTableContent">
+          <tbody id="bomRow">
               {% for categ in existing_bom_category %}
                 <tr>
                   <td>{{categ.index}}</td>
@@ -252,13 +252,15 @@
                 {% for line in bom %}
                   {% if line.bom_category == categ %}
                   <div id="div{{line.name}}">
-                  <!-- <tr 
-                    id="row{{line.pk}}"
-                    hx-get="{% url 'budgetTool:bom_edit' fk=project.pk pk=line.pk %}"
-                      hx-target="closest div"
-                      hx-swap="outerHTML"> -->
-                  <tr id="row{{line.pk}}">
-                    <td></td>
+
+                    <tr data-lookupid="{{line.pk}}">
+                    <input type='hidden' name='bom' value='{{line.pk}}'/>
+                    <td>
+                      {% if line.index %}
+                        {{line.index}}
+                      {%endif%}
+                      <span class="handle"></span>
+                    </td>
                     <td>{{ line.name }}</td>
                     <td>${{line.estimate_cost|intcomma }}</td>
                     <td>${{line.sales_price|intcomma }}</td>
@@ -309,10 +311,6 @@
       </table>
     </div>
 
-
-   
-
-
     <div>
       <table>
         <tr>
@@ -320,11 +318,28 @@
         </tr>
       </table>
 
-      <button type="button" class="btn btn-primary"
-        hx-get="{% url 'budgetTool:create_bom' pk=project.pk%}"
-        hx-target="#currentBillTable"
-        hx-swap="beforeend"> Add New Row</button>
-      
+      <table>
+        <tr>
+          <td>
+            <button type="button" class="btn btn-primary"
+            hx-get="{% url 'budgetTool:create_bom' pk=project.pk%}"
+            hx-target="#currentBillTable"
+            hx-swap="beforeend"> Add New Row</button>
+
+          </td>          
+          
+          <td>
+            <form id="bomOrderingForm"
+              hx-post="{% url 'budgetTool:bom_order' pk=project.pk %}"
+              hx-target="this"
+              hx-on="htmx:afterRequest: window.location.reload(true)">
+              {% csrf_token %}
+              <input type="hidden" id="bomOrderingInput" name="ordering">
+              <button id="bomSaveOrdering" disabled class="btn btn-success" >Save ordering</button>
+            </form>
+          </td>
+        </tr>
+      </table>
       <hr>
     </div>
 
@@ -435,7 +450,7 @@
           </tr>
         </thead>
 
-          <tbody id="groups">
+          <tbody id="serviceRow">
             {% for categ in service_category %}
               <tr>
                 <td></td>
@@ -447,9 +462,14 @@
               {% for line in service %}
                 {% if line.category == categ%}
                 
-                  <tr data-lookup="{{line.pk}}">
+                  <tr data-lookupid="{{line.pk}}">
                     <input type='hidden' name='service_order' value='{{line.pk}}'/>
-                    <td>{{line.order}} |||    {{line.pk}}<span class="handle"></span></td>
+                    <td>
+                      {% if line.index %}
+                        {{line.index}}
+                      {%endif%}
+                      <span class="handle"></span>
+                    </td>
                     <td><a href="/budgetTool/{{project.pk}}/service/{{line.pk}}">{{ line.name }}</a></td>
                     <td>{{ line.type }}</td>
                     <td class="text-center">{{ line.hours_estimated }}</td>
@@ -513,28 +533,19 @@
           </td>
 
           <td>
-            <form id="orderingForm"
+            <form id="serviceOrderingForm"
             hx-post="{% url 'budgetTool:service_order' pk=project.pk %}"
             hx-target="this"
             hx-on="htmx:afterRequest: window.location.reload(true)">
             {% csrf_token %}
-            <input type="hidden" id="orderingInput" name="ordering">
+            <input type="hidden" id="serviceOrderingInput" name="ordering">
             <button id="saveOrdering" disabled class="btn btn-success" >Save ordering</button>
           </form>
           </td>
         </tr>
       </table>
-     
       <hr>
 
-      
-      
-
-      
-      
-    
-
-     
         <script type="text/javascript" src="{% static 'main.js'%}"></script>
   </body>
 </html>
