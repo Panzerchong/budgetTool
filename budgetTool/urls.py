@@ -3,17 +3,8 @@ from .views import (
     budget_list,
     budget_detail,
     create_project,
-    editProject,
     rate_table,
-    project_update,
     project_delete,
-    create_bom,
-    bom,
-    bom_update,
-    create_service,
-    service_update,
-    bomSave,
-    bom_edit,
 )
 from .import views
 
@@ -22,14 +13,14 @@ app_name="budgetTool"
 urlpatterns = [
     path('', budget_list),
     path('<int:pk>',budget_detail),
-    path('<int:pk>/update',project_update),
     path('<int:pk>/delete',project_delete),
     path('create/',create_project),
     path('rate_table/',rate_table),
+    # path('<int:pk>/update',project_update),
     # path('<int:pk>/createservice/',create_service),
     # path('<int:fk>/<int:pk>/bom/',bom_update),
-    path('<int:fk>/service/<int:pk>/',service_update),
-    path('<int:pk>/bomSave/',bomSave),
+    # path('<int:fk>/service/<int:pk>/',service_update),
+    # path('<int:pk>/bomSave/',bomSave),
     #sytax for htmx
     path('<int:pk>/createBom',views.create_bom,name='create_bom'),
     path('edit/<int:pk>/',views.editProject,name='editProject'),
@@ -45,7 +36,7 @@ urlpatterns = [
     path('bomCategoryDelete/<int:pk>/',views.bom_category_delete,name='bom_category_delete'),
     path('serviceCategory/<int:pk>/',views.service_category_edit,name='service_category_edit'),
     path('createServiceCategory/',views.create_service_category,name='create_service_category'),
-
+    path('download/<int:pk>/',views.download_excel,name='download_excel'),
     
     
 

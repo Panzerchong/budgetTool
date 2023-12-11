@@ -80,29 +80,29 @@ function calculateService(columnIndex) {
   return sum;
 }
 
-var hours=calculateService(3)
+var hours=calculateService(4)
 document.getElementById("hours").innerText = hours
-var riskHours=calculateService(4)
+var riskHours=calculateService(5)
 document.getElementById("riskHours").innerText = riskHours
-var labor=calculateService(9)
+var labor=calculateService(10)
 document.getElementById("labor").innerText = labor.toLocaleString();
-var laborAdjusted=calculateService(10)
+var laborAdjusted=calculateService(11)
 document.getElementById("laborAdjusted").innerText = laborAdjusted.toLocaleString();
-var costEst=calculateService(12)
+var costEst=calculateService(13)
 document.getElementById("costEst").innerText = costEst.toLocaleString();
-var costAdjustedEst=calculateService(13)
+var costAdjustedEst=calculateService(14)
 document.getElementById("costAdjustedEst").innerText = costAdjustedEst.toLocaleString();
-var costAct=calculateService(14)
+var costAct=calculateService(15)
 document.getElementById("costAct").innerText = costAct.toLocaleString();
 
 var costMargin=(1-costEst/labor)*100
-document.getElementById("costMargin").innerText = costMargin.toFixed(0);
+document.getElementById("costMargin").innerText = costMargin.toFixed(2);
 var costAdjustedMargin=(1-costAdjustedEst/laborAdjusted)*100
-document.getElementById("costAdjustedMargin").innerText = costAdjustedMargin.toFixed(0);
+document.getElementById("costAdjustedMargin").innerText = costAdjustedMargin.toFixed(2);
 
 var serviceQuote=parseInt(document.getElementById("quoteService").getAttribute('quoteService'))
 var actualMargin=(1-costAct/serviceQuote)*100
-document.getElementById("actualMargin").innerText = actualMargin.toFixed(0);
+document.getElementById("actualMargin").innerText = actualMargin.toFixed(2);
 
 //duplicate value for project summry
 document.getElementById("labor1").innerText = labor.toLocaleString();
@@ -192,7 +192,7 @@ let sortable = Sortable.create(serviceRowOrder, {
     saveOrdering("serviceRow", serviceformInput);
 }
 });
-// saveOrderingButton.addEventListener('click', saveOrdering);
+
   
 
 

@@ -42,11 +42,9 @@ class Project(models.Model):
     adjust_Service=models.FloatField()
     adjust_BOM=models.FloatField()
     travel_weekly=models.IntegerField()
-    # bom=models.ForeignKey("BoM",on_delete=models.CASCADE)
-    # service=models.ForeignKey("Service",on_delete=models.CASCADE)
 
     class Meta:
-        ordering = ['name']
+        ordering = ['created_at']
     
     def __str__(self):
         return (f"{self.name}")
@@ -76,17 +74,6 @@ class BillOfMaterials(models.Model):
 
 
 class Service(models.Model):
-    # SERVICE_CATEGORY = [
-    #     ("GENERAL PROJECT", "GENERAL PROJECT"),
-    #     ("HARDWARE DEVELOPMENT", "HARDWARE DEVELOPMENT"),
-    #     ("SOFTWARE DEVELOPMENT", "SOFTWARE DEVELOPMENT"),
-    #     ("IMPLEMENTATION", "IMPLEMENTATION"),
-    #     ("FACTORY ACCEPTANCE TEST", "FACTORY ACCEPTANCE TEST"),
-    #     ("SHIPPING", "SHIPPING"),
-    #     ("INSTALLATION", "INSTALLATION"),
-    #     ("SITE ACCEPTANCE TEST", "SITE ACCEPTANCE TEST"),
-    #     ("TRAINING", "TRAINING"),
-    # ]
 
     SERVICE_TYPES = [
         ("Project Management", "Project Management"),
@@ -106,10 +93,11 @@ class Service(models.Model):
     hours_estimated=models.IntegerField()
     hours_worked=models.IntegerField()
     
-    rate_list=models.FloatField(default=-1)
-    rate_cost=models.FloatField(default=-1)
+    rate_list=models.FloatField(default=0)
+    rate_cost=models.FloatField(default=0)
     travel_actual=models.IntegerField()
     notes=models.CharField(max_length=300,blank=True)
+    isOnSite=models.BooleanField(default=False)
 
     #calculated field
     hours_adjusted=models.FloatField(default=0)

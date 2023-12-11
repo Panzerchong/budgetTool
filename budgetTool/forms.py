@@ -68,12 +68,14 @@ class ServiceModelForm(forms.ModelForm):
             "rate_list": _("Rate List"),
             "rate_cost": _("Rate Cost"),
             "category": _("Category"),
+            "isOnSite": _("Is on Site?"),
         }
 
         widgets = {
             "index": forms.NumberInput(attrs={'placeholder':"#",'style': 'width: 50px;'}),  
             "name": forms.TextInput(attrs={'placeholder':"Task"}),
             "type": forms.Select(attrs={'placeholder':"Type",'style': 'width: 100px;'}),
+            "isOnSite": forms.CheckboxInput(attrs={'style': 'width: 50px;'}),
             "hours_estimated":forms.NumberInput(attrs={'placeholder':"Hours(Estimate)",'style': 'width: 120px;'}),
             "hours_worked":forms.NumberInput(attrs={'placeholder':"Hours(Worked)",'style': 'width: 120px;'}),
             "rate_list":forms.NumberInput(attrs={'placeholder':"Rate List",'style': 'width: 100px;'}),

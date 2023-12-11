@@ -37,6 +37,7 @@
         .sortableChosen {
         background-color:#BDD7EE;
       }
+
     </style>
   </head>
 
@@ -49,8 +50,9 @@
     <div id="projectPk" projectPk="{{project.pk}}"></div>
     <div class="btn-group">
       <a href="/budgetTool/"class="btn btn-primary active" aria-current="page">Go back to Project lists</a>
-      <a href="/budgetTool/{{project.pk}}/update" class="btn btn-primary">Update</a>
-      <a href="#" onclick="projectDelete('{{ project.pk }}')" class="btn btn-primary">Delete</a>
+      <a href="/budgetTool/{{project.pk}}/update" class="btn" style="background-color: #8EA9DB;">Update</a>
+      <a href="#" onclick="projectDelete('{{ project.pk }}')" class="btn" style="background-color: #8EA9DB;">Delete</a>
+      <a href="{% url 'budgetTool:download_excel' pk=project.pk %}" class="btn" style="background-color: #8EA9DB;">Export to Excel</a>
     </div>
 
       <hr>
@@ -451,12 +453,13 @@
       <table class="table table-hover table-bordered border-primary" id="serviceTable">
         
         <thead>
-          <tr style="background-color: #8EA9DB;"><th colspan="16" class="text-center">Estimated Labor Hours</th></tr>
+          <tr style="background-color: #8EA9DB;"><th colspan="17" class="text-center">Estimated Labor Hours</th></tr>
 
           <tr style="background-color: #BDD7EE;">
             <th scope="col">#</th>
             <th scope="col">Task</th>
             <th scope="col">Type</th>
+            <th scope="col">OS</th>
             <th scope="col">Hours Estimated</th>
             <th scope="col">Hours Adjusted</th>
             <th scope="col">Hours Worked</th>
@@ -511,8 +514,13 @@
                       {%endif%}
                       <span class="handle"></span>
                     </td>
-                    <td><a href="/budgetTool/{{project.pk}}/service/{{line.pk}}">{{ line.name }}</a></td>
+                    <td>{{ line.name }}</td>
                     <td>{{ line.type }}</td>
+                    <td>
+                      {% if line.isOnSite == True %}
+                        On Site
+                      {% endif %}
+                    </td>
                     <td class="text-center">{{ line.hours_estimated }}</td>
                     <td class="text-center">{{line.hours_adjusted|floatformat:2}}</td>
                     <td class="text-center">{{ line.hours_worked }}</td>
@@ -594,6 +602,11 @@
         </tr>
       </table>
       <hr>
+
+
+      
+        
+
 
         <script type="text/javascript" src="{% static 'main.js'%}"></script>
   </body>

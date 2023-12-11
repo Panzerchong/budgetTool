@@ -40,6 +40,71 @@
         </tbody>
       </table>
 
+
+
+      <table border="1">
+        <thead>
+            <tr style="background-color: blue;">
+                <th>Name</th>
+                <th>Age</th>
+                <th>Country</th>
+                <th>Color</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>John</td>
+                <td>25</td>
+                <td>USA</td>
+                <td>FF0000</td>
+            </tr>
+            <tr>
+                <td>Jane</td>
+                <td>30</td>
+                <td>Canada</td>
+                <td>00FF00</td>
+            </tr>
+            <tr>
+                <td>Bob</td>
+                <td>22</td>
+                <td>UK</td>
+                <td>0000FF</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <button onclick="saveTableAsExcel()">Save Table as Excel</button>
+
+    <script>
+        function saveTableAsExcel() {
+            // Select the table element
+            const table = document.querySelector('table');
+
+            // Create a data URI for the table content
+            const uri = 'data:application/vnd.ms-excel;base64,' + btoa(unescape(encodeURIComponent(table.outerHTML)));
+
+            // Internet Explorer
+            if (window.navigator.msSaveBlob) {
+                const blob = new Blob([table.outerHTML], { type: 'application/vnd.ms-excel' });
+                window.navigator.msSaveBlob(blob, 'my_table.xls');
+            }
+            // Other browsers
+            else {
+                const link = document.createElement('a');
+                link.href = uri;
+                link.download = 'my_table.xls';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+        }
+    </script>
+
+</body>
+</html>
+
+
+
     
   </body>
 </html>

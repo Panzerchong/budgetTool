@@ -8,6 +8,26 @@ from .forms import BomCategoryModelForm, OrderForm, ProjectForm, ProjectModelFor
 import json
 from django.views.decorators.http import require_http_methods
 from django.urls import reverse
+from openpyxl import Workbook
+from openpyxl.formula import *
+from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
+from openpyxl.utils import get_column_letter
+from openpyxl.styles import NamedStyle
+
+percentage_style = NamedStyle(name='percentage')
+percentage_style.number_format = '0.00%'
+
+currency_style = NamedStyle(name='currency')
+currency_style.number_format = '$#,##0'
+
+border = Border(
+    left=Side(border_style='thin', color='000000'),
+    right=Side(border_style='thin', color='000000'),
+    top=Side(border_style='thin', color='000000'), 
+    bottom=Side(border_style='thin', color='000000') 
+)
+currency_style.border = border
+percentage_style.border = border
 
 
 def budget_list(request):
@@ -28,12 +48,13 @@ def budget_detail(request,pk):
     project=Project.objects.get(id=pk)
     table=RateTable.objects.all()
     bom=BillOfMaterials.objects.filter(project_id=pk)
-    bom_category=BOMCategory.objects.filter(project_BOM_category__isnull=False).distinct().order_by('index')
+    #filter category that is used by current project bom
+    bom_category=BOMCategory.objects.filter(project_BOM_category__in=bom).distinct()
 
     #service
     service=Service.objects.filter(project_id=pk)
     #filter out category not used
-    service_category=ServiceCategory.objects.filter(project_service_category__isnull=False).distinct().order_by('index')
+    service_category=ServiceCategory.objects.filter(project_service_category__in=service).distinct()
 
 
     bomForm=BillModelForm()
@@ -116,22 +137,22 @@ def create_bom(request, pk):
     context = {"bomForm": bomForm, "project": project}
     return render(request, "budgetTool/partials/bomForm.html", context)
 
-def bom_update(request,pk,fk):
-    item=BillOfMaterials.objects.get(id=pk,project_id=fk)
-    form=BillModelForm(instance=item)
+# def bom_update(request,pk,fk):
+#     item=BillOfMaterials.objects.get(id=pk,project_id=fk)
+#     form=BillModelForm(instance=item)
 
-    if request.method =="POST":
-        print("received")
-        form=BillModelForm(request.POST,instance=item)
-        if form.is_valid():
-            form.save()
-            print("edit a item")
-            return HttpResponse("BOM updated")
-    context={
-        "item":item,
-        "form":form,
-    }
-    return render(request,"budgetTool/partials/bomForm.html",context)
+#     if request.method =="POST":
+#         print("received")
+#         form=BillModelForm(request.POST,instance=item)
+#         if form.is_valid():
+#             form.save()
+#             print("edit a item")
+#             return HttpResponse("BOM updated")
+#     context={
+#         "item":item,
+#         "form":form,
+#     }
+#     return render(request,"budgetTool/partials/bomForm.html",context)
 
 def create_service(request,pk):
     project=Project.objects.get(id=pk)
@@ -153,12 +174,13 @@ def create_service(request,pk):
             rate_list=data['rate_list']
             rate_cost=data['rate_cost']
             travel_actual=data['travel_actual']
+            isOnSite=data['isOnSite']
             
-            if rate_list == -1:
+            if rate_list == 0:
                 for item in rate_table:
                     if type == item.type:                  
                         rate_list=item.list
-            if rate_cost == -1:
+            if rate_cost == 0:
                  for item in rate_table:
                     if type == item.type:
                         rate_cost=item.cost
@@ -187,6 +209,7 @@ def create_service(request,pk):
                 rate_list=rate_list,
                 rate_cost=rate_cost,
                 travel_actual=travel_actual,
+                isOnSite=isOnSite,
                 project=project,
                 hours_adjusted=hours_adjusted,
                 travel_estimate=travel_estimate,
@@ -203,51 +226,98 @@ def create_service(request,pk):
     }
     return render(request,"budgetTool/partials/serviceForm.html",context)
 
+def service_edit(request, pk, fk):
+    item = get_object_or_404(Service, id=pk, project_id=fk)
+    project=Project.objects.get(id=fk)
 
-def service_update(request,pk,fk):
-    item=Service.objects.get(id=pk,project_id=fk)
-    form=ServiceModelForm(instance=item)
-    rate_table=RateTable.objects.all()
+    if request.method == "POST":
+        request_data = request.POST.copy()
+        request_data['project'] = fk  # Add project to POST data
+        form = ServiceModelForm(request_data, instance=item)
 
-    if request.method =="POST":
-        print("received")
-        form=ServiceModelForm(request.POST,instance=item)
         if form.is_valid():
             data=form.cleaned_data
-            name=data['name']
-            category=data['category']
-            type=data['type']
-            hours_estimated=data['hours_estimated']
-            hours_worked=data['hours_worked']
-            rate_list=0
-            rate_cost=0
-            travel_actual=data['travel_actual']
-            notes=data['notes']
+            item.name = data['name']
+            item.category = data['category']
+            item.type = data['type']
+            item.hours_estimated = data['hours_estimated']
+            item.hours_worked = data['hours_worked']
+            item.rate_list = data['rate_list']
+            item.rate_cost = data['rate_cost']
+            item.travel_actual = data['travel_actual']
+            item.isOnSite = data['isOnSite']
 
-            for service in rate_table:
-                if type == service.type:
-                   
-                    rate_list=service.list
-                    rate_cost=service.cost
+            # Calculate and set calculated fields
+            if "On Site" in item.type:
+                item.travel_estimate = item.hours_estimated * project.travel_weekly / 40
+            else:
+                item.travel_estimate = 0
 
-            Service.objects.update(
-                name=name,
-                category=category,
-                type=type,
-                hours_estimated=hours_estimated,
-                hours_worked=hours_worked,
-                rate_list=rate_list,
-                rate_cost=rate_cost,
-                travel_actual=travel_actual,
-                notes=notes,
-                )
-            print("edit an item")
-            return redirect(f'/budgetTool/{item.project_id}')
-    context={
-        "item":item,
-        "form":form,
+            item.hours_adjusted = item.hours_estimated * (1 + project.adjust_Service)
+            item.sub_total_list = item.hours_estimated * item.rate_list + item.travel_estimate
+            item.sub_total_adjusted_list = item.hours_adjusted * item.rate_list + item.travel_estimate
+            item.sub_total_cost_est = item.hours_estimated * item.rate_cost + item.travel_estimate
+            item.sub_total_adjusted_cost_est = item.hours_adjusted * item.rate_cost + item.travel_estimate
+            item.cost_actual = item.hours_worked * item.rate_cost + item.travel_actual
+
+            # Save the updated item
+            item.save()
+            return HttpResponse("Service updated successfully")
+
+    else:
+        form = ServiceModelForm(instance=item)
+
+    context = {
+        "item": item,
+        "form": form,
     }
-    return render(request,"budgetTool/service_update.html",context)
+    return render(request, "budgetTool/partials/serviceFormEdit.html", context)
+
+
+# def service_update(request,pk,fk):
+#     item=Service.objects.get(id=pk,project_id=fk)
+#     form=ServiceModelForm(instance=item)
+#     rate_table=RateTable.objects.all()
+
+#     if request.method =="POST":
+#         print("received")
+#         form=ServiceModelForm(request.POST,instance=item)
+#         if form.is_valid():
+#             data=form.cleaned_data
+#             name=data['name']
+#             category=data['category']
+#             type=data['type']
+#             hours_estimated=data['hours_estimated']
+#             hours_worked=data['hours_worked']
+#             rate_list=0
+#             rate_cost=0
+#             travel_actual=data['travel_actual']
+#             notes=data['notes']
+
+#             for service in rate_table:
+#                 if type == service.type:
+                   
+#                     rate_list=service.list
+#                     rate_cost=service.cost
+
+#             Service.objects.update(
+#                 name=name,
+#                 category=category,
+#                 type=type,
+#                 hours_estimated=hours_estimated,
+#                 hours_worked=hours_worked,
+#                 rate_list=rate_list,
+#                 rate_cost=rate_cost,
+#                 travel_actual=travel_actual,
+#                 notes=notes,
+#                 )
+#             print("edit an item")
+#             return redirect(f'/budgetTool/{item.project_id}')
+#     context={
+#         "item":item,
+#         "form":form,
+#     }
+#     return render(request,"budgetTool/service_update.html",context)
 
 def bomSave(request,pk):
     project=Project.objects.get(id=pk)
@@ -265,19 +335,6 @@ def bomSave(request,pk):
         return JsonResponse({'error': 'Invalid request method'})
 
 
-def bom(request,pk):
-    bom=BillOfMaterials.objects.get(id=pk)
-    context={
-        "bom": bom,
-    }
-    return render(request,'budgetTool/bom.html',context)
-
-def service(request):
-    rate_table=RateTable.objects.all()
-    context={
-        "rate_table": rate_table,
-    }
-    return render(request,'budgetTool/rate_table.html',context)
 # def home(request):
 #     if request.method == 'POST':
 #         username=request.POST['username']
@@ -320,10 +377,26 @@ def editProject(request,pk):
             project.quote_Service=request.POST.get('quote_Service','')
         if request.POST.get('adjust_Service'):
             project.adjust_Service=request.POST.get('adjust_Service','')
+            for service in Service.objects.filter(project=project):
+                service.hours_adjusted = service.hours_estimated * (1 + float(project.adjust_Service))
+                service.sub_total_adjusted_list = service.hours_adjusted * service.rate_list + service.travel_estimate
+                service.sub_total_adjusted_cost_est = service.hours_adjusted * service.rate_cost + service.travel_estimate
+                service.save()
         if request.POST.get('adjust_BOM'):
             project.adjust_BOM=request.POST.get('adjust_BOM','')
         if request.POST.get('travel_weekly'):
             project.travel_weekly=request.POST.get('travel_weekly','')
+            for service in Service.objects.filter(project=project):
+                if "On Site" in service.type:
+                    service.travel_estimate = service.hours_estimated * float(project.travel_weekly) / 40
+                else:
+                    service.travel_estimate = 0
+
+                service.sub_total_list = service.hours_estimated * service.rate_list + service.travel_estimate
+                service.sub_total_adjusted_list = service.hours_adjusted * service.rate_list + service.travel_estimate
+                service.sub_total_cost_est = service.hours_estimated * service.rate_cost + service.travel_estimate
+                service.sub_total_adjusted_cost_est = service.hours_adjusted * service.rate_cost + service.travel_estimate
+                service.save()
         project.save()
         return HttpResponse("Project updated successfully")
     
@@ -372,26 +445,26 @@ def bom_delete(request,pk):
     bom.delete()
     
 
-def service_edit(request, pk, fk):
-    item = get_object_or_404(Service, id=pk, project_id=fk)
+# def service_edit(request, pk, fk):
+#     item = get_object_or_404(Service, id=pk, project_id=fk)
 
-    if request.method == "POST":
-        request_data = request.POST.copy()
-        request_data['project'] = fk  # Add project to POST data
-        form = ServiceModelForm(request_data, instance=item)
+#     if request.method == "POST":
+#         request_data = request.POST.copy()
+#         request_data['project'] = fk  # Add project to POST data
+#         form = ServiceModelForm(request_data, instance=item)
 
-        if form.is_valid():
-            form.save()
-            return HttpResponse("Service updated successfully")
+#         if form.is_valid():
+#             form.save()
+#             return HttpResponse("Service updated successfully")
 
-    else:
-        form = ServiceModelForm(instance=item)
+#     else:
+#         form = ServiceModelForm(instance=item)
 
-    context = {
-        "item": item,
-        "form": form,
-    }
-    return render(request, "budgetTool/partials/serviceFormEdit.html", context)
+#     context = {
+#         "item": item,
+#         "form": form,
+#     }
+#     return render(request, "budgetTool/partials/serviceFormEdit.html", context)
 
 def service_delete(request,pk):
     service=Service.objects.get(id=pk)
@@ -493,8 +566,292 @@ def create_service_category(request):
 
         print(form.data)
         if form.is_valid():
-            print("!!!!!!!!!!!!!Confirm valid")
             form.save()
             return HttpResponse("Category created successfully")
     context={"form":form}
     return render(request,'budgetTool/partials/category/createServiceCategory.html',context)
+
+def apply_border_to_row(ws,row_index):
+    border_style = Border(left=Side(border_style='thin', color='000000'),
+                          right=Side(border_style='thin', color='000000'),
+                          top=Side(border_style='thin', color='000000'),
+                          bottom=Side(border_style='thin', color='000000'))
+
+    for col in ws.iter_cols(min_col=1, max_col=ws.max_column, min_row=row_index, max_row=row_index):
+        for cell in col:
+            cell.border = border_style
+
+def download_excel(request,pk):
+    project=Project.objects.get(id=pk)
+
+    wb = Workbook()
+    ws_summary = wb.create_sheet(title="Summary")
+    
+    ws_summary.append(["Summary"])
+
+    data = [
+        [" ","Cost Est","Cost Adjusted","List","List Adjusted","Quoted","Actual"],
+        ["BOM","=BoM!E4","=BoM!E4","=BoM!G4","=BoM!H4","=BoM!D5","=BoM!F4"],
+        ["Service","=Service!I4","=Service!J4","=Service!G4","=Service!H4","=Service!D5","=Service!K4"],
+        ["Total","=C4+C5","=D4+D5","=E4+E5","=F4+F5","=G4+G5","=H4+H5"],
+        ["Margin"," "," ","=1-C6/E6","=1-D6/F6","=1-D6/G6","=1-H6/G6"],
+    ]
+
+    for row in data:
+        ws_summary.append(row)
+
+    for cell in ws_summary[1]:
+        cell.font = Font(bold=True)
+        cell.alignment = Alignment(horizontal='center', vertical='center')
+        cell.font = Font(size=23)
+        cell.fill = PatternFill(start_color="8EA9DB", end_color="8EA9DB", fill_type="solid")
+
+    for cell in ws_summary[2]:
+        cell.font = Font(bold=True)
+        cell.fill = PatternFill(start_color="BDD7EE", end_color="BDD7EE", fill_type="solid")        
+
+    for i in range(1,7):
+        apply_border_to_row(ws_summary, i)
+    
+    ws_summary['A3'].font = Font(bold=True)
+    ws_summary['A4'].font = Font(bold=True)
+    ws_summary['A5'].font = Font(bold=True)
+    ws_summary['A6'].font = Font(bold=True)
+    
+    ws_summary.insert_cols(1)
+    ws_summary.insert_rows(1)
+    ws_summary.merge_cells('B2:H2')
+
+    for col_num in range(1, 8):
+        ws_summary.column_dimensions[get_column_letter(col_num)].width = 15
+
+    ws_summary['E7'].style = percentage_style
+    ws_summary['F7'].style = percentage_style
+    ws_summary['G7'].style = percentage_style
+    ws_summary['H7'].style = percentage_style
+
+    columns_to_format = ['C','D','E','F','G','H']
+    for col in columns_to_format:
+        for row in range(4, 7):
+            cell = ws_summary[f'{col}{row}']
+            cell.style = currency_style
+
+
+    if 'Sheet' in wb.sheetnames:
+        wb.remove(wb['Sheet'])
+
+    bom_page(wb,pk)
+    service_page(wb,pk)
+
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="test.xlsx"'
+    wb.save(response)
+
+    return response
+
+def bom_page(wb:Workbook, pk:int):
+    project=Project.objects.get(id=pk)
+    bom=BillOfMaterials.objects.filter(project_id=pk)
+    bom_category=BOMCategory.objects.filter(project_BOM_category__in=bom).distinct()
+
+    ws = wb.create_sheet(title="BOM")
+    
+    ws.append(["Totals"])
+    summary = [
+        ["BOM Variables","","Cost Estimate","Actual Cost","List","List Adjusted","Margin Est","Margin Adj","Margin Actual","Margin quoted"],
+        ["Adjusted for complexity",f'{100*project.adjust_BOM} %',"=SUM(G10:G2000)","=SUM(J10:J2000)","=SUM(H10:H2000)","=G4*(1+D4)","=1-E4/G4","=1-E4/H4","=1-F4/D5","=1-E4/D5"],
+        ["Quoted",project.quote_BOM,],
+    ]
+
+    for row in summary:
+        ws.append(row)
+
+    for cell in ws[1]:
+        cell.font = Font(bold=True)
+        cell.alignment = Alignment(horizontal='center', vertical='center')
+        cell.font = Font(size=23)
+        cell.fill = PatternFill(start_color="8EA9DB", end_color="8EA9DB", fill_type="solid")
+
+    for cell in ws[2]:
+        cell.alignment = Alignment(wrap_text=False)
+        cell.font = Font(bold=True)
+        cell.fill = PatternFill(start_color="BDD7EE", end_color="BDD7EE", fill_type="solid")      
+
+    for i in range(1,5):
+        apply_border_to_row(ws, i)
+
+    ws.insert_cols(1)
+ 
+    data=[
+        ["Bill of Materials"],
+        ["#","Part/Item","Cost(Estimate)","List Price","Quantity",	"Total Cost(Estimate)",
+         	"Total List","Supplier","Cost (Actual)","Responsible","Description","Notes"],
+    ]
+
+    for row in data:
+        ws.append(row)
+
+    for cell in ws[5]:
+        cell.font = Font(bold=True)
+        cell.alignment = Alignment(horizontal='center', vertical='center')
+        cell.font = Font(size=23)
+        cell.fill = PatternFill(start_color="8EA9DB", end_color="8EA9DB", fill_type="solid")
+
+    for cell in ws[6]:
+        cell.font = Font(bold=True)
+        cell.fill = PatternFill(start_color="BDD7EE", end_color="BDD7EE", fill_type="solid") 
+
+
+    for category in bom_category:
+        ws.append([category.name])
+        ws[f'A{ws.max_row}'].font = Font(bold=True)
+        bom_items = bom.filter(bom_category=category)
+        for item in bom_items:
+            ws.append([item.index,item.name,item.estimate_cost,item.sales_price,
+                       item.quantity,item.estimate_cost*item.quantity,
+                       item.sales_price*item.quantity,item.supplier,item.actual_cost,item.Responsible,item.description,item.notes]) 
+
+    for i in range(5,ws.max_row+1):
+        apply_border_to_row(ws, i)
+
+    ws.insert_cols(1)
+    ws.insert_rows(1)
+    ws.insert_rows(6)
+
+    ws.merge_cells('C2:L2')
+    ws.merge_cells('B7:M7')
+    ws.merge_cells('C3:D3')
+
+    # Apply the style to the cell
+    ws['D4'].style = percentage_style
+    ws['I4'].style = percentage_style
+    ws['J4'].style = percentage_style
+    ws['K4'].style = percentage_style
+    ws['L4'].style = percentage_style
+
+    ws['E4'].style = currency_style
+    ws['F4'].style = currency_style
+    ws['G4'].style = currency_style
+    ws['H4'].style = currency_style
+    ws['D5'].style = currency_style
+
+    columns_to_format = ['D','E','G','H','J']
+    for col in columns_to_format:
+        for row in range(10, ws.max_row+1):
+            cell = ws[f'{col}{row}']
+            cell.style = currency_style
+
+    for col_num in range(3, 13):
+        ws.column_dimensions[get_column_letter(col_num)].width = 15
+
+    if 'Sheet' in wb.sheetnames:
+        wb.remove(wb['Sheet'])
+    return ws
+
+
+def service_page(wb:Workbook, pk:int):
+    project=Project.objects.get(id=pk)
+    service=Service.objects.filter(project_id=pk)
+    service_category=ServiceCategory.objects.filter(project_service_category__in=service).distinct()
+
+    ws = wb.create_sheet(title="Service")
+    ws.append(["Total System Integration Services"])
+    summary = [
+        ["Service Variables","","Hours","Risk Hours","Labor","Labor Adjusted","Cost Est","Cost Adjusted Est","Cost Act","Est Margin","Est Adjusted Margin","Actual Margin"],
+        ["Adjusted for complexity",f'{100*project.adjust_Service} %',"=SUM(F10:F1000)","=SUM(G10:G1000)","=SUM(L10:L1000)","=SUM(M10:M1000)","=SUM(O10:O1000)","=SUM(P10:P1000)","=SUM(Q10:Q1000)","==1-I4/G4","==1-J4/H4","=1-K4/D5"],
+        ["Quoted",project.quote_Service,],
+        ["Travel Weekly",f'$ {project.travel_weekly}',],
+    ]
+
+    for row in summary:
+        ws.append(row)
+
+    for cell in ws[1]:
+        cell.font = Font(bold=True)
+        cell.alignment = Alignment(horizontal='center', vertical='center')
+        cell.font = Font(size=23)
+        cell.fill = PatternFill(start_color="8EA9DB", end_color="8EA9DB", fill_type="solid")
+
+    for cell in ws[2]:
+        cell.font = Font(bold=True)
+        cell.fill = PatternFill(start_color="BDD7EE", end_color="BDD7EE", fill_type="solid")
+
+    for i in range(1,6):
+        apply_border_to_row(ws, i)      
+
+    ws.insert_cols(1)
+ 
+    data=[
+        ["Service"],
+        ["#","Task","Type","OS","Hours Estimated","Hours Adjusted","Hours Worked","Travel Estimate","Travel Actual","Rate List","Sub Total List","Sub Total Adjusted List","Rate Cost","Sub Total Cost Est","Sub Total Adjusted Cost Est","Cost Actual"],
+    ]
+
+    for row in data:
+        ws.append(row)
+
+    for cell in ws[6]:
+        cell.font = Font(bold=True)
+        cell.alignment = Alignment(horizontal='center', vertical='center')
+        cell.font = Font(size=23)
+        cell.fill = PatternFill(start_color="8EA9DB", end_color="8EA9DB", fill_type="solid")
+
+    for cell in ws[7]:
+        cell.font = Font(bold=True)
+        cell.fill = PatternFill(start_color="BDD7EE", end_color="BDD7EE", fill_type="solid")
+
+    isOnSite=""
+    for current_category in service_category:
+        ws.append([current_category.name])
+        ws[f'A{ws.max_row}'].font = Font(bold=True)
+        service_items = service.filter(category=current_category)
+        for item in service_items:
+            if item.isOnSite:
+                isOnSite="On Site"
+            else:
+                isOnSite=""
+            ws.append([item.index,item.name,item.type,isOnSite,item.hours_estimated,item.hours_adjusted,
+                        item.hours_worked,item.travel_estimate,item.travel_actual,item.rate_list,item.sub_total_list,
+                        item.sub_total_adjusted_list,item.rate_cost, item.sub_total_cost_est,item.sub_total_adjusted_cost_est,
+                        item.cost_actual
+                       ]) 
+
+    for i in range(7,ws.max_row+1):
+        apply_border_to_row(ws, i)
+
+    ws.insert_cols(1)
+    ws.insert_rows(1)
+    ws.insert_rows(7)
+
+    ws.merge_cells('C2:N2')
+    ws.merge_cells('D6:N6')
+    ws.merge_cells('B8:Q8')
+    for col_num in range(3, 17):
+        ws.column_dimensions[get_column_letter(col_num)].width = 15
+
+    ws['L4'].style = percentage_style
+    ws['M4'].style = percentage_style
+    ws['N4'].style = percentage_style
+
+    ws['G4'].style = currency_style
+    ws['H4'].style = currency_style
+    ws['I4'].style = currency_style
+    ws['J4'].style = currency_style
+    ws['K4'].style = currency_style
+    ws['D5'].style = currency_style
+
+    columns_to_format = ['I', 'J', 'L', 'M', 'N', 'O', 'P', 'Q']
+    for col in columns_to_format:
+        for row in range(11, ws.max_row+1):
+            cell = ws[f'{col}{row}']
+            cell.style = currency_style
+
+    ws.column_dimensions['C'].width = 20
+    ws.column_dimensions['D'].width = 20
+    for col_num in range(5, 17):
+        ws.column_dimensions[get_column_letter(col_num)].width = 15
+
+    if 'Sheet' in wb.sheetnames:
+        wb.remove(wb['Sheet'])
+    return ws
+    
+

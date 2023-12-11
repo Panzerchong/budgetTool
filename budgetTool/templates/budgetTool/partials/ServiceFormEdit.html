@@ -5,24 +5,38 @@ hx-on="htmx:afterRequest: window.location.reload(true)"
 hx-target="this">
     {% csrf_token %}
 
-    <table>
-    <tr>
-      <td>{{form.index}}</td>
-      <td>{{ form.name }}</td>
-      <td>{{ form.type }}</td>
-      <td>{{ form.hours_estimated }}</td>
-      <td>{{ form.hours_worked }}</td>
-      <td>{{ form.rate_list }}</td>
-      <td>{{ form.rate_cost }}</td>
-      <td>{{ form.travel_actual }}</td>
-      <td>{{ form.category }}</td>
-      <td>{{ form.project }}</td>
+    <table class="table-bordered">
+      <tr class="text-nowrap" style="background-color: #BDD7EE;">
+        <th scope="col">#</th>
+        <th scope="col">Task</th>
+        <th scope="col">Type</th>
+        <th scope="col">OS</th>
+        <th scope="col">Hours Estimated</th>
+        <th scope="col">Hours Worked</th>
+        <th scope="col">Rate List</th>
+        <th scope="col">Rate Cost</th>
+        <th scope="col">Travel Actual</th>
+        <th scope="col" colspan="2">Category</th>
+      </tr>
 
-      <td><button type="submit" class="btn btn-success">Save</button></td>
-      <td>
-        <button type="button" onclick="redirectToCurrentPage()" class="btn btn-secondary">Cancel</button>
-      </td>
-    </tr>
+      <tr>
+        <td>{{form.index}}</td>
+        <td>{{ form.name }}</td>
+        <td>{{ form.type }}</td>
+        <td>{{ form.isOnSite.label_tag }}{{form.isOnSite}}</td>
+        <td>{{ form.hours_estimated }}</td>
+        <td>{{ form.hours_worked }}</td>
+        <td>{{ form.rate_list }}</td>
+        <td>{{ form.rate_cost }}</td>
+        <td>{{ form.travel_actual }}</td>
+        <td>{{ form.category }}</td>
+        <td>{{ form.project }}</td>
+
+        <td><button type="submit" class="btn btn-success">Save</button></td>
+        <td>
+          <button type="button" onclick="redirectToCurrentPage()" class="btn btn-secondary">Cancel</button>
+        </td>
+      </tr>
   </table>
 </form>
 
