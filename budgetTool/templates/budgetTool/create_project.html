@@ -1,18 +1,21 @@
 <!doctype html>
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">  
   </head>
 
-  <body>
-      <a href="/budgetTool/">Go back to Project lists</a>
+  <body style="margin-left: 20px; margin-right: 20px;">
+    <a class="btn btn-primary" href="/budgetTool/" role="button">Go back to Project lists</a>
       <hr>
       <h1>Create a Project</h1>
 
         <form method="post" autocomplete="off">
         {% csrf_token %}
-        {{ form.as_ul }}
+        {{ form.as_p }}
         <button type="submit">Submit</button>
         </form>
       

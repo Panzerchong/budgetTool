@@ -48,12 +48,12 @@
     <div id="adjustComplexityBOM" adjustComplexityBOM="{{project.adjust_BOM}}"></div>
     <div id="adjustComplexityService" adjustComplexityService="{{project.adjust_Service}}"></div>
     <div id="projectPk" projectPk="{{project.pk}}"></div>
-    <div class="btn-group">
-      <a href="/budgetTool/"class="btn btn-primary active" aria-current="page">Go back to Project lists</a>
-      <a href="/budgetTool/{{project.pk}}/update" class="btn" style="background-color: #8EA9DB;">Update</a>
-      <a href="#" onclick="projectDelete('{{ project.pk }}')" class="btn" style="background-color: #8EA9DB;">Delete</a>
-      <a href="{% url 'budgetTool:download_excel' pk=project.pk %}" class="btn" style="background-color: #8EA9DB;">Export to Excel</a>
-    </div>
+
+    
+    <a class="btn btn-primary" href="/budgetTool/" role="button">Go back to Project lists</a>
+    <a class="btn btn-primary" onclick="projectDelete('{{ project.pk }}')" role="button">Delete</a>
+    <a class="btn btn-primary" href="{% url 'budgetTool:download_excel' pk=project.pk %}" role="button">Export to Excel</a>
+    
 
       <hr>
       <div id="projectName">
@@ -299,7 +299,7 @@
                     <td>{{ line.description }}</td>
                     <td>{{ line.notes }}</td>
 
-                    <td>
+                    <td class="text-nowrap">
                       <button 
                       class="btn btn-success"
                       hx-get="{% url 'budgetTool:bom_edit' fk=project.pk pk=line.pk %}"
@@ -535,7 +535,7 @@
                     <td>${{line.cost_actual|intcomma}}</td>
 
 
-                    <td style="white-space: nowrap;">
+                    <td class="text-nowrap">
                       <button 
                       class="btn btn-success"
                       hx-get="{% url 'budgetTool:service_edit' fk=project.pk pk=line.pk %}"

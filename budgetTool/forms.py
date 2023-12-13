@@ -1,5 +1,5 @@
 from django import forms
-from .models import BOMCategory, Project,BillOfMaterials, RateTable,Service, ServiceCategory
+from .models import BOMCategory, Product_Price, Project,BillOfMaterials, RateTable,Service, ServiceCategory,RateTableCost
 from django.utils.translation import gettext_lazy as _
 
 class ProjectModelForm(forms.ModelForm):
@@ -109,3 +109,32 @@ class ServiceCategoryModelForm(forms.ModelForm):
         widgets = {
             "index": forms.NumberInput(attrs={'placeholder':"#",'style': 'width: 50px;'}),  
             "name": forms.TextInput(attrs={'placeholder':"Name"}),  }
+        
+class RateCostModelForm(forms.ModelForm):
+    class Meta:
+        model = RateTableCost
+        fields = '__all__'
+        widgets = {  
+            "name": forms.TextInput(attrs={'placeholder':"Name"}),
+            "code": forms.TextInput(attrs={'placeholder':"Code"}),
+            "base": forms.NumberInput(attrs={'placeholder':"Base"}),
+            "y1": forms.NumberInput(attrs={'placeholder':"Y1"}),
+            "y2": forms.NumberInput(attrs={'placeholder':"Y2"}),
+            "y3": forms.NumberInput(attrs={'placeholder':"Y3"}),
+            "y4": forms.NumberInput(attrs={'placeholder':"Y4"}),
+            "labor_cost": forms.NumberInput(attrs={'placeholder':"Labor Cost"}),    
+            "labor_rate_in_house": forms.NumberInput(attrs={'placeholder':"Labor Rate(In House)"}),
+            "labor_rate_on_site": forms.NumberInput(attrs={'placeholder':"Labor Rate(On Site)"}),
+            "employee": forms.TextInput(attrs={'placeholder':"Employee"}),
+        }
+
+class ProductPriceModelForm(forms.ModelForm):
+    class Meta:
+        model = Product_Price
+        fields = '__all__'
+        widgets = {
+            "item": forms.TextInput(attrs={'placeholder':"Item"}),
+            "cost": forms.NumberInput(attrs={'placeholder':"Cost"}),
+            "list": forms.NumberInput(attrs={'placeholder':"List"}),
+            "notes": forms.TextInput(attrs={'placeholder':"Notes"}),
+        }

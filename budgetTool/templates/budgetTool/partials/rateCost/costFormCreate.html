@@ -1,0 +1,27 @@
+<form 
+hx-post="{% url 'budgetTool:create_rateTableCost' %}" 
+hx-on="htmx:afterRequest: window.location.reload(true)"
+hx-target="this">
+    {% csrf_token %}
+    <tr>
+      <td>{{form.name}}</td>
+      <td>{{form.code}}</td>
+      <td>{{form.base}}</td>
+      <!-- <td>{{form.y1}}</td>
+      <td>{{form.y2}}</td>
+      <td>{{form.y3}}</td>
+      <td>{{form.y4}}</td>
+      <td>{{form.labor_cost}}</td> -->
+      <td>{{form.labor_in_house}}</td>
+      <td>{{form.labor_on_site}}</td>
+      <td>{{form.employee}}</td>
+      <td><button type="submit" class="btn btn-success">Save</button></td>
+      <td>
+        <button type="button"class="btn btn-secondary" 
+          hx-on="click: this.closest('form').remove()"
+        >Cancel</button>
+      </td>
+    </tr>
+    <hr>
+</form>
+

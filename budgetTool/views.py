@@ -1,10 +1,11 @@
 from gettext import translation
+import math
 from django.shortcuts import render,redirect,get_object_or_404
 from django.http import HttpResponse,JsonResponse,QueryDict
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from .models import RateTable, Project,BoM,Service,Sales,BillOfMaterials,ServiceCategory,BOMCategory
-from .forms import BomCategoryModelForm, OrderForm, ProjectForm, ProjectModelForm,BillModelForm, ServiceCategoryModelForm,ServiceModelForm
+from .models import Product_Price, RateTable, Project,BoM, RateTableCost,Service,Sales,BillOfMaterials,ServiceCategory,BOMCategory, Vendor
+from .forms import BomCategoryModelForm, OrderForm, ProductPriceModelForm, ProjectForm, ProjectModelForm,BillModelForm, RateCostModelForm, ServiceCategoryModelForm,ServiceModelForm
 import json
 from django.views.decorators.http import require_http_methods
 from django.urls import reverse
@@ -39,8 +40,10 @@ def budget_list(request):
 
 def rate_table(request):
     table=RateTable.objects.all()
+    tableCost=RateTableCost.objects.all()
     context={
         "table": table,
+        "tableCost": tableCost,
     }
     return render(request,'budgetTool/rate_table.html',context)
 
@@ -594,7 +597,7 @@ def download_excel(request,pk):
         ["BOM","=BoM!E4","=BoM!E4","=BoM!G4","=BoM!H4","=BoM!D5","=BoM!F4"],
         ["Service","=Service!I4","=Service!J4","=Service!G4","=Service!H4","=Service!D5","=Service!K4"],
         ["Total","=C4+C5","=D4+D5","=E4+E5","=F4+F5","=G4+G5","=H4+H5"],
-        ["Margin"," "," ","=1-C6/E6","=1-D6/F6","=1-D6/G6","=1-H6/G6"],
+        ["Margin"," "," ","=1-C7/E7","=1-D7/F7","=1-D7/G7","=1-H7/G7"],
     ]
 
     for row in data:
@@ -636,7 +639,7 @@ def download_excel(request,pk):
             cell = ws_summary[f'{col}{row}']
             cell.style = currency_style
 
-
+    ws_summary.insert_rows(6)
     if 'Sheet' in wb.sheetnames:
         wb.remove(wb['Sheet'])
 
@@ -855,3 +858,134 @@ def service_page(wb:Workbook, pk:int):
     return ws
     
 
+def create_rateTableCost(request):
+    if request.method == "POST":
+        form=RateCostModelForm(request.POST)
+        request_data = request.POST.copy()
+        mutable_data = QueryDict(mutable=True)
+        mutable_data.update(request_data)
+
+        base = int(request_data.get('base', 0))
+        y1_value = (1.1 * base)
+        y2_value = 1.1 * y1_value
+        y3_value = 1.1 * y2_value
+        y4_value = 1.3 * y3_value
+        labor_cost = math.ceil(y4_value / 2080)
+        mutable_data.appendlist('y1', int(y1_value))
+        mutable_data.appendlist('y2', int(y2_value))
+        mutable_data.appendlist('y3', int(y3_value))
+        mutable_data.appendlist('y4', math.ceil(y4_value))
+        mutable_data.appendlist('labor_cost', labor_cost)
+
+        form=RateCostModelForm(mutable_data)
+        print(form.data)
+        if form.is_valid():
+            form.save()
+            print("created a new rate table cost item")
+            return HttpResponse("Saved") 
+    context = {"form": RateCostModelForm()}
+    return render(request, "budgetTool/partials/rateCost/costFormCreate.html", context)
+
+def rateCost_edit(request,pk):
+    item = get_object_or_404(RateTableCost, id=pk)
+    if request.method == "POST":
+        request_data = request.POST.copy()
+        base=int(request_data.get('base',0))
+        y1_value=1.1*base
+        y2_value=1.1*y1_value
+        y3_value=1.1*y2_value
+        y4_value=1.3*y3_value
+        labor_cost=math.ceil(y4_value/2080)
+        request_data['y1']=int(y1_value)
+        request_data['y2']=int(y2_value)
+        request_data['y3']=int(y3_value)
+        request_data['y4']=math.ceil(y4_value)
+        request_data['labor_cost']=labor_cost
+        form = RateCostModelForm(request_data, instance=item)
+
+        if form.is_valid():
+            form.save()
+            return HttpResponse("Rate Cost updated successfully")
+    else:
+        form = RateCostModelForm(instance=item)
+        
+    context = {
+        "item": item,
+        "form": form,
+    }
+
+    return render(request, "budgetTool/partials/rateCost/costFormEdit.html", context)
+
+def rateCost_delete(request,pk):
+    cost=RateTableCost.objects.get(id=pk)
+    cost.delete()
+
+def price_sheet(request):
+    vendors=Vendor.objects.all()
+    Product_Prices=Product_Price.objects.all()
+
+    context={
+        "vendors":vendors,
+        "Product_Prices":Product_Prices,
+    }
+
+    return render(request,'budgetTool/price_sheet.html',context)
+
+def create_product_price(request,fk):
+    vendor=Vendor.objects.get(id=fk)
+
+    if request.method == "POST":
+        form=ProductPriceModelForm(request.POST)
+        request_data = request.POST.copy()
+        mutable_data = QueryDict(mutable=True)
+        mutable_data.update(request_data)
+        cost=float(request_data.get('cost',0))
+        list=float(request_data.get('list',0))
+        margin=(1-cost/list)*100
+        rounded_margin = round(margin,2)
+        mutable_data.appendlist('margin',rounded_margin)
+        mutable_data.appendlist('index',100)
+        mutable_data.appendlist('vendor',vendor.id)
+        form=ProductPriceModelForm(mutable_data)
+        print(form.data)
+        if form.is_valid():
+            form.save()
+            return HttpResponse("Product Price created successfully")
+    context={
+        "form":ProductPriceModelForm(),
+        "vendor":vendor,
+    }
+    return render(request,'budgetTool/partials/productPrice/priceFormCreate.html',context)
+
+def product_price_edit(request,pk,fk):
+    item = get_object_or_404(Product_Price, id=pk)
+    vendor=Vendor.objects.get(id=fk)
+    if request.method == "POST":
+        request_data = request.POST.copy()
+        cost=float(request_data.get('cost',0))
+        list=float(request_data.get('list',0))
+        margin=(1-cost/list)*100
+        rounded_margin = round(margin,2)
+        request_data['margin']=rounded_margin
+        # mutable_data.appendlist('margin',rounded_margin)
+        request_data.appendlist('vendor',vendor.id)
+        request_data.appendlist('index',100)
+        form=ProductPriceModelForm(request_data, instance=item) 
+        print(form.data)
+
+        if form.is_valid():
+            form.save()
+            return HttpResponse("Product Price updated successfully")
+    else:
+        form = ProductPriceModelForm(instance=item)
+        
+    context = {
+        "item": item,
+        "form": form,
+        "vendor":vendor,
+    }
+    return render(request, "budgetTool/partials/productPrice/priceFormEdit.html", context)
+
+def product_price_delete(request,pk):
+    price=Product_Price.objects.get(id=pk)
+    price.delete()

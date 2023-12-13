@@ -1,0 +1,97 @@
+{% load humanize %}
+<!doctype html>
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% load static %}
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      .table td, .table th {
+        padding: 8px;
+      }
+    </style>
+    <script src="https://unpkg.com/htmx.org@1.9.9"></script>
+  </head>
+  
+  <body style="margin-left: 20px; margin-right: 20px;">
+    
+  <a class="btn btn-primary" href="/budgetTool/" role="button">Go back to Project lists</a>
+  <hr>
+    
+
+  {% for vendor in vendors %}
+
+  <table class="table table-sm table-hover table-bordered border-primary w-auto">
+    <thead>
+      <tr>
+        <th class=" text-center" colspan="7"  style="background-color: #8EA9DB;" >{{vendor}}</th>
+      </tr>
+  
+      <tr class=" text-center" style="background-color:#BDD7EE;">
+        <th>Item</th>
+        <th>Cost</th>
+        <th>List</th>
+        <th>Margin</th>
+        <th colspan="2">Note</th>
+      </tr>
+    </thead>
+
+          <tbody>
+            {% for line in Product_Prices %}
+              {% if line.vendor == vendor %}
+                <tr>
+                  <td>{{line.item}}</td>
+                  <td>$ {{line.cost|intcomma}}</td>
+                  <td>$ {{line.list|intcomma}}</td>
+                  <td> {{line.margin}} %</td>
+                  <td>
+                    {% if line.note %}
+                    {{line.note}}
+                    {% endif %}
+                  </td>
+
+                  <td class="text-nowrap">
+                    <button 
+                    class="btn btn-success"
+                    hx-get="{% url 'budgetTool:product_price_edit' pk=line.id fk=vendor.id %}"
+                    hx-target="closest tr"
+                    hx-swap="outerHTML"
+                            >
+                      Edit
+                    </button>
+
+                    <button 
+                    class="btn btn-danger"
+                    hx-confirm="Are you sure?"
+                    hx-get="{% url 'budgetTool:product_price_delete' pk=line.pk %}"
+                    hx-on="htmx:afterRequest: window.location.reload(true)"
+                    >
+                      Delete
+                    </button>
+                  </td>
+
+                </tr>
+                {% endif %}
+              {% endfor %}
+                
+                <tr>
+                  <td colspan="7">
+                    <button type="button" class="btn btn-primary"
+                    hx-get="{% url 'budgetTool:create_product_price' fk=vendor.id %}"
+                    hx-target="closest td"
+                    hx-swap="beforeend"> Add New Row</button>
+                  </td>
+                </tr>
+
+
+          </tbody>
+
+  </table>
+        {% endfor %}
+
+  </body>
+</html>

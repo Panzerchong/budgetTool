@@ -9,25 +9,34 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    
+    <style>
+      .table td, .table th {
+        padding: 8px;
+      }
+    </style>
+    <script src="https://unpkg.com/htmx.org@1.9.9"></script>
   </head>
-  <script type="text/javascript" src="{% static 'main.js'%}"></script>
+  
+  <body style="margin-left: 20px; margin-right: 20px;">
+    
+  <a class="btn btn-primary" href="/budgetTool/" role="button">Go back to Project lists</a>
+  <hr>
+    
+    <table class="table table-sm table-hover table-bordered border-primary w-auto">
+      <thead>
+        <tr>
+          <th class=" text-center" colspan="3"  style="background-color: #8EA9DB;" >Rate Table</th>
+        </tr>
+    
+        <tr class=" text-center" style="background-color:#BDD7EE;">
+          <th>Type</th>
+          <th>List</th>
+          <th>Cost</th>
+        </tr>
+      </thead>
+      
 
-  <body>
-      <a href="/budgetTool/">Go back to Project lists</a>
-      <hr>
-      <h1>Rate table</h1>
-
-
-      <table class="table table-sm table-hover table-bordered w-auto">
-        <thead>
-          <tr>
-            <th class="table-primary" scope="col">Type</th>
-            <th class="table-primary" scope="col">List</th>
-            <th class="table-primary" scope="col">Cost</th>
-          </tr>
-        </thead>
-        <tbody>
+      <tbody>
 
           {% for line in table %}
           <tr>
@@ -39,72 +48,97 @@
           
         </tbody>
       </table>
+      <hr>
 
+      <table class="table table-sm table-hover table-bordered border-primary w-auto">
+          <thread>
+            <th class=" text-center" colspan="12" style="background-color: #8EA9DB;">3D Infotech Cost</th>
+          
+          <tr class=" text-center" style="background-color:#BDD7EE;">
+            <th>Name</th>
+            <th>Code</th>
+            <th>Base</th>
+            <th>Y1</th>
+            <th>Y2</th>
+            <th>Y3</th>
+            <th>Y4</th>
+            <th>Labor Cost</th>
+            <th>Labor Rate (In House)</th>
+            <th>Labor Rate (On Site)</th>
+            <th colspan="2">Names</th>
+          </tr>
+          </thread>
 
+          <tbody>
+            {% for line in tableCost %}
+            <tr id="row{{line.name}}">
+              <td>{{line.name}}</td>
+              <td>{{line.code}}</td>
+              <td>$ {{line.base|intcomma}}</td>
+              <td>$ {{line.y1|intcomma}}</td>
+              <td>$ {{line.y2|intcomma}}</td>
+              <td>$ {{line.y3|intcomma}}</td>
+              <td>$ {{line.y4|intcomma}}</td>
+              <td>$ {{line.labor_cost}}</td>
+              <td>$ {{line.labor_in_house}}</td>
+              <td>$ {{line.labor_on_site}}</td>
 
-      <table border="1">
-        <thead>
-            <tr style="background-color: blue;">
-                <th>Name</th>
-                <th>Age</th>
-                <th>Country</th>
-                <th>Color</th>
+              <td>
+                {% if line.employee %}
+                {{line.employee}}
+                {% endif %}
+              </td>
+
+              <td class="text-nowrap">
+                <button 
+                class="btn btn-success"
+                hx-get="{% url 'budgetTool:rateCost_edit' pk=line.pk %}"
+                hx-target="#rateCostTable"
+                hx-swap="outerHTML"
+                        >
+                  Edit
+                </button>
+
+                <button 
+                class="btn btn-danger"
+                hx-confirm="Are you sure?"
+                hx-get="{% url 'budgetTool:rateCost_delete' pk=line.pk %}"
+                hx-on="htmx:afterRequest: window.location.reload(true)"
+                >
+                  Delete
+                </button>
+              </td>
+
             </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>John</td>
-                <td>25</td>
-                <td>USA</td>
-                <td>FF0000</td>
-            </tr>
-            <tr>
-                <td>Jane</td>
-                <td>30</td>
-                <td>Canada</td>
-                <td>00FF00</td>
-            </tr>
-            <tr>
-                <td>Bob</td>
-                <td>22</td>
-                <td>UK</td>
-                <td>0000FF</td>
-            </tr>
-        </tbody>
-    </table>
+            {% endfor %}
+          </tbody>
+        </table>
 
-    <button onclick="saveTableAsExcel()">Save Table as Excel</button>
+          <div>
+            <table>
+              <tr>
+                <div id="rateCostTable"></div>
+              </tr>
+            </table>
+      
+            <table>
+              <tr>
+                <td>
+                  <button type="button" class="btn btn-primary"
+                  hx-get="{% url 'budgetTool:create_rateTableCost' %}"
+                  hx-target="#rateCostTable"
+                  hx-swap="beforeend"> Add New Row</button>
+                </td>    
+                
+              </tr>
+            </table>
+            <hr>
+          </div>
 
-    <script>
-        function saveTableAsExcel() {
-            // Select the table element
-            const table = document.querySelector('table');
 
-            // Create a data URI for the table content
-            const uri = 'data:application/vnd.ms-excel;base64,' + btoa(unescape(encodeURIComponent(table.outerHTML)));
-
-            // Internet Explorer
-            if (window.navigator.msSaveBlob) {
-                const blob = new Blob([table.outerHTML], { type: 'application/vnd.ms-excel' });
-                window.navigator.msSaveBlob(blob, 'my_table.xls');
-            }
-            // Other browsers
-            else {
-                const link = document.createElement('a');
-                link.href = uri;
-                link.download = 'my_table.xls';
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }
-        }
-    </script>
-
-</body>
-</html>
+          
 
 
 
-    
   </body>
 </html>

@@ -1,29 +1,32 @@
 <!doctype html>
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Budget Tool</title>
-    
+  
   </head>
-  <body>
-    <a href="/budgetTool/create" target="_blank">
-      <button>Create a new project</button>
-    </a>
-    <hr>
-    <a href="/budgetTool/rate_table" target="_blank">Rate table</a>
+  <body style="margin-left: 20px; margin-right: 20px;">
 
-    <h1>Budget Tool</h1>
-    <h2>Project lists</h2>
+
+  <a class="btn btn-primary" href="/budgetTool/rate_table" role="button">Rate Table</a>
+  <a class="btn btn-primary" href="/budgetTool/price_sheet" role="button">Price Sheet</a>
+  <h1>Project lists</h1>
+
+  <a class="btn btn-primary" href="/budgetTool/create" role="button">Create a new project</a>
+
+    <ul>
       {% for project in projects %}
-        <div class="project">
-            <a href="/budgetTool/{{project.pk}}">{{project.name}}</a>
-        </div>
+        <li>
+            <a href="/budgetTool/{{project.pk}}">{{project.name}}</a> 
+        </li>
       {% endfor %}
+    </ul>
 
-      
 
-
-      
   </body>
 </html>

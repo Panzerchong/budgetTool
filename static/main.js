@@ -1,4 +1,4 @@
-console.log("hello there")
+
 
 function calculateColumnSum(columnIndex) {
     var table = document.getElementById("billTable");
@@ -270,3 +270,6 @@ let sortable = Sortable.create(serviceRowOrder, {
 //   event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
 // });
 
+
+
+console.log("hello there")

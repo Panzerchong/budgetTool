@@ -16,6 +16,7 @@ urlpatterns = [
     path('<int:pk>/delete',project_delete),
     path('create/',create_project),
     path('rate_table/',rate_table),
+    
     # path('<int:pk>/update',project_update),
     # path('<int:pk>/createservice/',create_service),
     # path('<int:fk>/<int:pk>/bom/',bom_update),
@@ -37,6 +38,13 @@ urlpatterns = [
     path('serviceCategory/<int:pk>/',views.service_category_edit,name='service_category_edit'),
     path('createServiceCategory/',views.create_service_category,name='create_service_category'),
     path('download/<int:pk>/',views.download_excel,name='download_excel'),
+    path('rateTableCost',views.create_rateTableCost,name='create_rateTableCost'),
+    path('rateTableCost/edit/<int:pk>/',views.rateCost_edit,name='rateCost_edit'),
+    path('rateTableCost/delete/<int:pk>/',views.rateCost_delete,name='rateCost_delete'),
+    path('price_sheet',views.price_sheet,name='price_sheet'),
+    path('create_product_price/<int:fk>',views.create_product_price,name='create_product_price'),
+    path('product_price_edit/<int:pk>/<int:fk>',views.product_price_edit,name='product_price_edit'),
+    path('product_price_delete/<int:pk>',views.product_price_delete,name='product_price_delete'),
     
     
 

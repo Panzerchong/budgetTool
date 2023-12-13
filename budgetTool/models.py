@@ -126,10 +126,55 @@ class BoM(models.Model):
 
     def __str__(self):
         return (f"{self.name}")
+    
+class RateTableCost(models.Model):
+    name=models.CharField(max_length=100)
+    code=models.CharField(max_length=100)
+    base=models.IntegerField()
+    y1=models.IntegerField(null=True,blank=True)
+    y2=models.IntegerField(null=True,blank=True)
+    y3=models.IntegerField(null=True,blank=True)
+    y4=models.IntegerField(null=True,blank=True)
+    labor_cost=models.IntegerField(null=True,blank=True)
+    labor_in_house=models.FloatField(default=165)
+    labor_on_site=models.FloatField(default=287.5)
+    employee=models.CharField(max_length=200,null=True,blank=True)
 
+    def __str__(self):
+        return (f"{self.name}")
+    
+    class Meta:
+        ordering = ['id']
 
+class Employee(models.Model):
+    name=models.CharField(max_length=100)
+    level=models.ForeignKey(RateTableCost,on_delete=models.SET_NULL, null=True,related_name='employee_level')
 
+    def __str__(self):
+        return (f"{self.name}")
 
+class Vendor(models.Model):
+    index=models.IntegerField()
+    name=models.CharField(max_length=100)
+    def __str__(self):
+        return (f"{self.name}")
+    
+    class Meta:
+        ordering = ['index']
+
+class Product_Price(models.Model):
+    index=models.IntegerField(default=100)
+    item=models.CharField(max_length=100)
+    cost=models.FloatField()
+    list=models.FloatField()
+    margin=models.FloatField(null=True,blank=True)
+    note=models.CharField(max_length=1000,null=True,blank=True)
+    vendor=models.ForeignKey(Vendor,on_delete=models.SET_NULL, null=True,related_name='product_vendor')
+    def __str__(self):
+        return (f"{self.item}")
+    
+    class Meta:
+        ordering = ['id']
 
 
 
