@@ -5,7 +5,7 @@ from django.http import HttpResponse,JsonResponse,QueryDict
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from .models import Product_Price, RateTable, Project,BoM, RateTableCost,Service,Sales,BillOfMaterials,ServiceCategory,BOMCategory, Vendor
-from .forms import BomCategoryModelForm, OrderForm, ProductPriceModelForm, ProjectForm, ProjectModelForm,BillModelForm, RateCostModelForm, ServiceCategoryModelForm,ServiceModelForm
+from .forms import BomCategoryModelForm, OrderForm, ProductPriceModelForm, ProjectForm, ProjectModelForm,BillModelForm, RateCostModelForm, ServiceCategoryModelForm,ServiceModelForm, VendorModelForm
 import json
 from django.views.decorators.http import require_http_methods
 from django.urls import reverse
@@ -989,3 +989,50 @@ def product_price_edit(request,pk,fk):
 def product_price_delete(request,pk):
     price=Product_Price.objects.get(id=pk)
     price.delete()
+
+def rate_cost_order(request):
+    form=OrderForm(request.POST)
+    if form.is_valid():
+        ordered_ids = form.cleaned_data["ordering"].split(',')
+        print(ordered_ids)
+        current_order = 1
+        for lookup_id in ordered_ids:
+            if lookup_id.isdigit() and lookup_id != "0":
+                cost = RateTableCost.objects.get(id=lookup_id)
+                cost.order = current_order
+                cost.save(update_fields=["order"])
+                print(f'what is rate cost table index: {cost.order}')
+                current_order += 1
+        return HttpResponse("order updated successfully")
+    
+def create_vendor(request):
+    form=VendorModelForm()
+    if request.method == "POST":
+        form=VendorModelForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponse("Vendor created successfully")
+    context={"form":form}
+    return render(request,'budgetTool/partials/vendor/vendorForm.html',context)
+
+def vendor_edit(request,pk):
+    vendor=Vendor.objects.get(id=pk)
+    if request.method == "POST":
+        form=VendorModelForm(request.POST,instance=vendor)
+        if form.is_valid():
+            form.save()
+            return HttpResponse("Vendor updated successfully")
+    else:
+        form=VendorModelForm(instance=vendor)
+    context={
+        "form":form,
+        "vendor":vendor,
+    }
+    return render(request,'budgetTool/partials/vendor/vendorEdit.html',context)
+
+def vendor_delete(request,pk):
+    vendor=Vendor.objects.get(id=pk)
+    vendor.delete()
+
+
+    

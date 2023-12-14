@@ -1,5 +1,5 @@
 from django import forms
-from .models import BOMCategory, Product_Price, Project,BillOfMaterials, RateTable,Service, ServiceCategory,RateTableCost
+from .models import BOMCategory, Product_Price, Project,BillOfMaterials, RateTable,Service, ServiceCategory,RateTableCost, Vendor
 from django.utils.translation import gettext_lazy as _
 
 class ProjectModelForm(forms.ModelForm):
@@ -136,5 +136,14 @@ class ProductPriceModelForm(forms.ModelForm):
             "item": forms.TextInput(attrs={'placeholder':"Item"}),
             "cost": forms.NumberInput(attrs={'placeholder':"Cost"}),
             "list": forms.NumberInput(attrs={'placeholder':"List"}),
-            "notes": forms.TextInput(attrs={'placeholder':"Notes"}),
+            "note": forms.TextInput(attrs={'placeholder':"Note"}),
+        }
+
+class VendorModelForm(forms.ModelForm):
+    class Meta:
+        model = Vendor
+        fields = '__all__'
+        widgets = {
+            "index": forms.NumberInput(attrs={'placeholder':"#",'style': 'width: 50px;'}),
+            "name": forms.TextInput(attrs={'placeholder':"Name"}),
         }

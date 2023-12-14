@@ -20,6 +20,15 @@
   <body style="margin-left: 20px; margin-right: 20px;">
     
   <a class="btn btn-primary" href="/budgetTool/" role="button">Go back to Project lists</a>
+  <button 
+      class="btn btn-primary"
+      hx-get="{% url 'budgetTool:create_vendor' %}"
+      hx-target="#vendorForm"
+      hx-swap="outerHTML"
+      >
+        Create a new vendor
+  </button>
+  <div id="vendorForm"></div>
   <hr>
     
 
@@ -28,7 +37,14 @@
   <table class="table table-sm table-hover table-bordered border-primary w-auto">
     <thead>
       <tr>
-        <th class=" text-center" colspan="7"  style="background-color: #8EA9DB;" >{{vendor}}</th>
+        <th class=" text-center" colspan="7"  style="background-color: #8EA9DB;">
+          <div
+              hx-get="{% url 'budgetTool:vendor_edit' pk=vendor.pk %}"
+              hx-target="this"
+              hx-swap="outerHTML"
+          >{{vendor}}
+          </div>
+        </th>
       </tr>
   
       <tr class=" text-center" style="background-color:#BDD7EE;">

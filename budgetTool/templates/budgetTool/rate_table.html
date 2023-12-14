@@ -9,12 +9,10 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style>
-      .table td, .table th {
-        padding: 8px;
-      }
-    </style>
     <script src="https://unpkg.com/htmx.org@1.9.9"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    
+    <link rel="stylesheet" href="{% static 'style.css' %}">
   </head>
   
   <body style="margin-left: 20px; margin-right: 20px;">
@@ -69,10 +67,11 @@
           </tr>
           </thread>
 
-          <tbody>
+          <tbody id="rateCostRow">
             {% for line in tableCost %}
-            <tr id="row{{line.name}}">
-              <td>{{line.name}}</td>
+            <tr data-lookupid="{{line.pk}}">
+              <input type='hidden' name='rate_cost_order' value='{{line.pk}}'/>
+              <td>{{line.name}}<span class="handle"></span></td>
               <td>{{line.code}}</td>
               <td>$ {{line.base|intcomma}}</td>
               <td>$ {{line.y1|intcomma}}</td>
@@ -128,7 +127,18 @@
                   hx-get="{% url 'budgetTool:create_rateTableCost' %}"
                   hx-target="#rateCostTable"
                   hx-swap="beforeend"> Add New Row</button>
-                </td>    
+                </td>
+
+                <td>
+                  <form id="rateCostOrderingForm" method="POST"
+                  hx-post="{% url 'budgetTool:rate_cost_order' %}"
+                  hx-target="this"
+                  hx-on="htmx:afterRequest: window.location.reload(true)">
+                  {% csrf_token %}
+                  <input type="hidden" id="costTableOrderingInput" name="ordering">
+                  <button id="saveOrdering" disabled class="btn btn-success" >Save ordering</button>
+                </form>
+                </td>
                 
               </tr>
             </table>
@@ -139,6 +149,6 @@
           
 
 
-
+          <script type="text/javascript" src="{% static 'rateTable.js'%}"></script>
   </body>
 </html>

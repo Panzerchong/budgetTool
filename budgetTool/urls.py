@@ -45,6 +45,10 @@ urlpatterns = [
     path('create_product_price/<int:fk>',views.create_product_price,name='create_product_price'),
     path('product_price_edit/<int:pk>/<int:fk>',views.product_price_edit,name='product_price_edit'),
     path('product_price_delete/<int:pk>',views.product_price_delete,name='product_price_delete'),
+    path('costTableOrder/',views.rate_cost_order,name='rate_cost_order'),
+    path('vendorForm/',views.create_vendor,name='create_vendor'),
+    path('vendorForm/edit/<int:pk>/',views.vendor_edit,name='vendor_edit'),
+    path('vendorForm/delete/<int:pk>/',views.vendor_delete,name='vendor_delete'),
     
     
 

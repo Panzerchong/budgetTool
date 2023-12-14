@@ -128,6 +128,7 @@ class BoM(models.Model):
         return (f"{self.name}")
     
 class RateTableCost(models.Model):
+    order = models.IntegerField(blank=True, default=1000)
     name=models.CharField(max_length=100)
     code=models.CharField(max_length=100)
     base=models.IntegerField()
@@ -144,7 +145,7 @@ class RateTableCost(models.Model):
         return (f"{self.name}")
     
     class Meta:
-        ordering = ['id']
+        ordering = ['order']
 
 class Employee(models.Model):
     name=models.CharField(max_length=100)
@@ -154,7 +155,7 @@ class Employee(models.Model):
         return (f"{self.name}")
 
 class Vendor(models.Model):
-    index=models.IntegerField()
+    index=models.IntegerField(default=100)
     name=models.CharField(max_length=100)
     def __str__(self):
         return (f"{self.name}")

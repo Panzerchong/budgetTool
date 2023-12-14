@@ -14,31 +14,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://unpkg.com/htmx.org@1.9.9"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-    <style>
-      .handle {
-          display: inline-block;
-          border-top: 3px solid var(--dark);
-          width: 30px;
-          cursor: grab;
-      }
-      .handle:after, .handle:before {
-          display: block;
-          content: "";
-          padding-top: 15px;
-          border-top: 5px solid var(--dark);
-      }
-      .handle:hover, .handle:hover:before, .handle:hover:after {
-          border-color: var(--darker);
-      }
-      .handle:active, .handle:active:before, .handle:active:after {
-          cursor: grabbing;
-      }
-
-        .sortableChosen {
-        background-color:#BDD7EE;
-      }
-
-    </style>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
   </head>
 
 
