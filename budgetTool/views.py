@@ -91,9 +91,9 @@ def create_project(request):
         print("received")
         form=ProjectModelForm(request.POST)
         if form.is_valid():
-            form.save()
+            project=form.save()
             print("created a new project")
-            return redirect("/budgetTool")
+            return redirect(f'/budgetTool/{project.pk}')
 
     context={
         "form":ProjectModelForm()
@@ -1035,4 +1035,20 @@ def vendor_delete(request,pk):
     vendor.delete()
 
 
-    
+def copy_project(request,pk):
+    print("copy project")
+    project=Project.objects.get(id=pk)
+    project.pk=None
+    project.name=project.name+" copy"
+    project.save()
+    bom=BillOfMaterials.objects.filter(project_id=pk)
+    service=Service.objects.filter(project_id=pk)
+    for item in bom:
+        item.pk=None
+        item.project=project
+        item.save()
+    for item in service:
+        item.pk=None
+        item.project=project
+        item.save()
+    return redirect(f'/budgetTool/{project.id}')

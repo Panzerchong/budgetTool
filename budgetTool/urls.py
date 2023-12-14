@@ -49,6 +49,7 @@ urlpatterns = [
     path('vendorForm/',views.create_vendor,name='create_vendor'),
     path('vendorForm/edit/<int:pk>/',views.vendor_edit,name='vendor_edit'),
     path('vendorForm/delete/<int:pk>/',views.vendor_delete,name='vendor_delete'),
+    path('copyProject/<int:pk>',views.copy_project,name='copy_project'),
     
     
 

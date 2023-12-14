@@ -101,7 +101,7 @@
                 <button 
                 class="btn btn-danger"
                 hx-confirm="Are you sure?"
-                hx-get="{% url 'budgetTool:rateCost_delete' pk=line.pk %}"
+                hx-get="{% url 'budgetTool:rateCost_delete' %}"
                 hx-on="htmx:afterRequest: window.location.reload(true)"
                 >
                   Delete

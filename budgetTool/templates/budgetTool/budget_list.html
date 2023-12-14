@@ -15,9 +15,8 @@
 
   <a class="btn btn-primary" href="/budgetTool/rate_table" role="button">Rate Table</a>
   <a class="btn btn-primary" href="/budgetTool/price_sheet" role="button">Price Sheet</a>
+  <a class="btn btn-primary" href="/budgetTool/create" role="button">Create a new project template</a>
   <h1>Project lists</h1>
-
-  <a class="btn btn-primary" href="/budgetTool/create" role="button">Create a new project</a>
 
     <ul>
       {% for project in projects %}
@@ -27,6 +26,18 @@
       {% endfor %}
     </ul>
 
+  <div class="dropdown">
+      <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Create a new project copy
+      </button>
+      <ul class="dropdown-menu">
+
+        {% for project in projects %}
+          <li><a class="dropdown-item" href="{% url 'budgetTool:copy_project' pk=project.pk %}">{{project.name}}</a></li>
+        {% endfor %}
+
+      </ul>
+    </div>
 
   </body>
 </html>
