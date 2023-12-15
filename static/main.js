@@ -40,7 +40,10 @@ var marginActual=(1-totalCostActual/quote)*100
 var marginQuoted=(1-totalCostEstimate/quote)*100
 
 document.getElementById("totalCostEstimate").innerText = totalCostEstimate.toLocaleString();
-document.getElementById("totalCostActual").innerText = totalCostActual.toLocaleString();
+document.getElementById("totalCostActual").innerText = totalCostActual.toLocaleString('en-US', {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
 document.getElementById("totalSale").innerText = totalSale.toLocaleString();
 document.getElementById("listAdjusted").innerText = listAdjusted.toLocaleString();//add commas to thousand
 document.getElementById("marginEst").innerText = marginEst.toFixed(2);
@@ -51,7 +54,10 @@ document.getElementById("marginQuoted").innerText = marginQuoted.toFixed(2);
 //duplicate values for project summry 
 document.getElementById("totalCostEstimate1").innerText = totalCostEstimate.toLocaleString();
 document.getElementById("totalCostEstimate2").innerText = totalCostEstimate.toLocaleString();
-document.getElementById("totalCostActual1").innerText = totalCostActual.toLocaleString();
+document.getElementById("totalCostActual1").innerText = totalCostActual.toLocaleString('en-US', {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
 document.getElementById("totalSale1").innerText = totalSale.toLocaleString();
 document.getElementById("listAdjusted1").innerText = listAdjusted.toLocaleString();//add commas to thousand
 
@@ -93,7 +99,10 @@ document.getElementById("costEst").innerText = costEst.toLocaleString();
 var costAdjustedEst=calculateService(14)
 document.getElementById("costAdjustedEst").innerText = costAdjustedEst.toLocaleString();
 var costAct=calculateService(15)
-document.getElementById("costAct").innerText = costAct.toLocaleString();
+document.getElementById("costAct").innerText = costAct.toLocaleString('en-US', {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
 
 var costMargin=(1-costEst/labor)*100
 document.getElementById("costMargin").innerText = costMargin.toFixed(2);
@@ -109,13 +118,19 @@ document.getElementById("labor1").innerText = labor.toLocaleString();
 document.getElementById("laborAdjusted1").innerText = laborAdjusted.toLocaleString();
 document.getElementById("costEst1").innerText = costEst.toLocaleString();
 document.getElementById("costAdjustedEst1").innerText = costAdjustedEst.toLocaleString();
-document.getElementById("costAct1").innerText = costAct.toLocaleString();
+document.getElementById("costAct1").innerText = costAct.toLocaleString('en-US', {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
 //calculate BoM and Servicesummry
 document.getElementById("listSummry").innerText = (labor+totalSale).toLocaleString();
 document.getElementById("listAdjustedSummry").innerText = (laborAdjusted+listAdjusted).toLocaleString();
 document.getElementById("costEstSummry").innerText = (costEst+totalCostEstimate).toLocaleString();
 document.getElementById("costAdjustedEstSummry").innerText = (costAdjustedEst+totalCostEstimate).toLocaleString();
-document.getElementById("costActSummry").innerText = (costAct+totalCostActual).toLocaleString();
+document.getElementById("costActSummry").innerText = (costAct+totalCostActual).toLocaleString('en-US', {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
 
 document.getElementById("totalQuote").innerText = (quote+serviceQuote).toLocaleString();
 

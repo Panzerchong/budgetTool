@@ -19,34 +19,6 @@
     
   <a class="btn btn-primary" href="/budgetTool/" role="button">Go back to Project lists</a>
   <hr>
-    
-    <table class="table table-sm table-hover table-bordered border-primary w-auto">
-      <thead>
-        <tr>
-          <th class=" text-center" colspan="3"  style="background-color: #8EA9DB;" >Rate Table</th>
-        </tr>
-    
-        <tr class=" text-center" style="background-color:#BDD7EE;">
-          <th>Type</th>
-          <th>List</th>
-          <th>Cost</th>
-        </tr>
-      </thead>
-      
-
-      <tbody>
-
-          {% for line in table %}
-          <tr>
-            <td>{{line.type}}</td>
-            <td>{{line.list}}</td>
-            <td>{{line.cost}}</td>
-          </tr>
-          {% endfor %}
-          
-        </tbody>
-      </table>
-      <hr>
 
       <table class="table table-sm table-hover table-bordered border-primary w-auto">
           <thread>
@@ -78,9 +50,9 @@
               <td>$ {{line.y2|intcomma}}</td>
               <td>$ {{line.y3|intcomma}}</td>
               <td>$ {{line.y4|intcomma}}</td>
-              <td>$ {{line.labor_cost}}</td>
-              <td>$ {{line.labor_in_house}}</td>
-              <td>$ {{line.labor_on_site}}</td>
+              <td>$ {{line.labor_cost|floatformat:2}}</td>
+              <td>$ {{line.labor_in_house|floatformat:2}}</td>
+              <td>$ {{line.labor_on_site|floatformat:2}}</td>
 
               <td>
                 {% if line.employee %}

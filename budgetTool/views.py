@@ -32,9 +32,11 @@ percentage_style.border = border
 
 
 def budget_list(request):
-    projects=Project.objects.all()
+    templates = Project.objects.filter(isTemplate=True)
+    projects=Project.objects.filter(isTemplate=False)
     context={
         "projects": projects,
+        "templates": templates,
     }
     return render(request, 'budgetTool/budget_list.html',context)
 
@@ -195,11 +197,16 @@ def create_service(request,pk):
             else:
                 travel_estimate=0
 
+            if travel_actual == None:
+                travel_actual=0
+            if hours_worked == None:
+                hours_worked=0
             hours_adjusted=hours_estimated*(1+project.adjust_Service)
             sub_total_list=hours_estimated*rate_list+travel_estimate
             sub_total_adjusted_list=hours_adjusted*rate_list+travel_estimate
             sub_total_cost_est=hours_estimated*rate_cost+travel_estimate
             sub_total_adjusted_cost_est=hours_adjusted*rate_cost+travel_estimate
+
             cost_actual=hours_worked*rate_cost+travel_actual
 
             print(f'rate_list: {rate_cost}')
@@ -1040,6 +1047,7 @@ def copy_project(request,pk):
     project=Project.objects.get(id=pk)
     project.pk=None
     project.name=project.name+" copy"
+    project.isTemplate=False
     project.save()
     bom=BillOfMaterials.objects.filter(project_id=pk)
     service=Service.objects.filter(project_id=pk)

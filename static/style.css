@@ -21,3 +21,6 @@
   background-color:#BDD7EE;
 }
 
+.checkbox:disabled {
+    color:#BDD7EE;
+  }

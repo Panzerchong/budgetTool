@@ -435,7 +435,7 @@
             <th scope="col">#</th>
             <th scope="col">Task</th>
             <th scope="col">Type</th>
-            <th scope="col">OS</th>
+            <th scope="col">On Site</th>
             <th scope="col">Hours Estimated</th>
             <th scope="col">Hours Adjusted</th>
             <th scope="col">Hours Worked</th>
@@ -493,19 +493,21 @@
                     <td>{{ line.name }}</td>
                     <td>{{ line.type }}</td>
                     <td>
-                      {% if line.isOnSite == True %}
-                        On Site
+                      {% if line.isOnSite %}
+                      <input class="form-check-input" type="checkbox" value="" disabled checked>
+                      {% else %}
+                      <input class="form-check-input" type="checkbox" value=""  disabled >
                       {% endif %}
                     </td>
                     <td class="text-center">{{ line.hours_estimated }}</td>
                     <td class="text-center">{{line.hours_adjusted|floatformat:2}}</td>
                     <td class="text-center">{{ line.hours_worked }}</td>
-                    <td>${{ line.travel_estimate|intcomma}}</td>
+                    <td>${{ line.travel_estimate|floatformat:2|intcomma}}</td>
                     <td>${{ line.travel_actual|intcomma }}</td>
-                    <td>${{line.rate_list}}</td>
+                    <td>${{line.rate_list|floatformat:2}}</td>
                     <td>${{line.sub_total_list|intcomma}}</td>
                     <td>${{line.sub_total_adjusted_list|intcomma}}</td>
-                    <td>${{line.rate_cost|intcomma}}</td>
+                    <td>${{line.rate_cost|floatformat:2}}</td>
                     <td>${{line.sub_total_cost_est|intcomma}}</td>
                     <td>${{line.sub_total_adjusted_cost_est|intcomma}}</td>
                     <td>${{line.cost_actual|intcomma}}</td>

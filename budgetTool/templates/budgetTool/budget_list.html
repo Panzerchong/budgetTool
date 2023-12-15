@@ -15,25 +15,35 @@
 
   <a class="btn btn-primary" href="/budgetTool/rate_table" role="button">Rate Table</a>
   <a class="btn btn-primary" href="/budgetTool/price_sheet" role="button">Price Sheet</a>
-  <a class="btn btn-primary" href="/budgetTool/create" role="button">Create a new project template</a>
-  <h1>Project lists</h1>
+  <a class="btn btn-primary" href="/budgetTool/create" role="button">Create a new template</a>
+  <h1>Template lists</h1>
+
+    <ul>
+      {% for template in templates %}
+        <li>
+              <a href="/budgetTool/{{template.pk}}">{{template.name}}</a> 
+        </li>
+      {% endfor %}
+    </ul>
+
+    <h1>Project lists</h1>
 
     <ul>
       {% for project in projects %}
         <li>
-            <a href="/budgetTool/{{project.pk}}">{{project.name}}</a> 
+              <a href="/budgetTool/{{project.pk}}">{{project.name}}</a> 
         </li>
       {% endfor %}
     </ul>
 
   <div class="dropdown">
       <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-        Create a new project copy
+        Create a new project
       </button>
       <ul class="dropdown-menu">
 
-        {% for project in projects %}
-          <li><a class="dropdown-item" href="{% url 'budgetTool:copy_project' pk=project.pk %}">{{project.name}}</a></li>
+        {% for template in templates %}
+          <li><a class="dropdown-item" href="{% url 'budgetTool:copy_project' pk=template.pk %}">{{template.name}}</a></li>
         {% endfor %}
 
       </ul>

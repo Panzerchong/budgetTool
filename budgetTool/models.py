@@ -42,6 +42,7 @@ class Project(models.Model):
     adjust_Service=models.FloatField()
     adjust_BOM=models.FloatField()
     travel_weekly=models.IntegerField()
+    isTemplate=models.BooleanField(default=True)
 
     class Meta:
         ordering = ['created_at']
@@ -91,11 +92,11 @@ class Service(models.Model):
     name=models.CharField(max_length=100)
     type=models.CharField(max_length=100,choices=SERVICE_TYPES)
     hours_estimated=models.IntegerField()
-    hours_worked=models.IntegerField()
+    hours_worked=models.IntegerField(blank=True)
     
     rate_list=models.FloatField(default=0)
     rate_cost=models.FloatField(default=0)
-    travel_actual=models.IntegerField()
+    travel_actual=models.IntegerField(blank=True)
     notes=models.CharField(max_length=300,blank=True)
     isOnSite=models.BooleanField(default=False)
 

@@ -61,8 +61,8 @@
               {% if line.vendor == vendor %}
                 <tr>
                   <td>{{line.item}}</td>
-                  <td>$ {{line.cost|intcomma}}</td>
-                  <td>$ {{line.list|intcomma}}</td>
+                  <td>$ {{line.cost|floatformat:2|intcomma}}</td>
+                  <td>$ {{line.list|floatformat:2|intcomma}}</td>
                   <td> {{line.margin}} %</td>
                   <td>
                     {% if line.note %}
