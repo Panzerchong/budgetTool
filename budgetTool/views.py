@@ -161,7 +161,7 @@ def create_bom(request, pk):
 
 def create_service(request,pk):
     project=Project.objects.get(id=pk)
-    rate_table=RateTable.objects.all()
+    rate_table=RateTableCost.objects.all()
     form=ServiceModelForm()
     if request.method =="POST":
         print(project.name)
@@ -173,26 +173,26 @@ def create_service(request,pk):
             print(data)
             name=data['name']
             category=data['category']
-            type=data['type']
+            serviceType=data['type']
             hours_estimated=data['hours_estimated']
             hours_worked=data['hours_worked']
-            rate_list=data['rate_list']
-            rate_cost=data['rate_cost']
+            # rate_list=data['rate_list']
+            # rate_cost=data['rate_cost']
             travel_actual=data['travel_actual']
             isOnSite=data['isOnSite']
             
-            if rate_list == 0:
-                for item in rate_table:
-                    if type == item.type:                  
-                        rate_list=item.list
-            if rate_cost == 0:
-                 for item in rate_table:
-                    if type == item.type:
-                        rate_cost=item.cost
+            for item in rate_table:
+                if item.name == serviceType.name :
+                    print(f'check match: name:{item.name}|--- type:{serviceType.name}|')
+                    rate_cost=item.labor_cost
+                    if isOnSite:
+                        rate_list=item.labor_on_site
+                    else:
+                        rate_list=item.labor_in_house
 
             #calculated field value
             print(project.adjust_Service)
-            if "On Site" in type:
+            if isOnSite:
                 travel_estimate=hours_estimated*project.travel_weekly/40
             else:
                 travel_estimate=0
@@ -209,11 +209,11 @@ def create_service(request,pk):
 
             cost_actual=hours_worked*rate_cost+travel_actual
 
-            print(f'rate_list: {rate_cost}')
+            print(f'rate list: {rate_list}')
             Service.objects.create(   
                 name=name,
                 category=category,
-                type=type,
+                type=serviceType,
                 hours_estimated=hours_estimated,
                 hours_worked=hours_worked,
                 rate_list=rate_list,
@@ -233,12 +233,14 @@ def create_service(request,pk):
     context={
         "form":ServiceModelForm(initial={'project': project},),
         "project":project,
+        "rate_cost":rate_table,
     }
     return render(request,"budgetTool/partials/serviceForm.html",context)
 
 def service_edit(request, pk, fk):
     item = get_object_or_404(Service, id=pk, project_id=fk)
     project=Project.objects.get(id=fk)
+    rate_table=RateTableCost.objects.all()
 
     if request.method == "POST":
         request_data = request.POST.copy()
@@ -257,11 +259,25 @@ def service_edit(request, pk, fk):
             item.travel_actual = data['travel_actual']
             item.isOnSite = data['isOnSite']
 
-            # Calculate and set calculated fields
-            if "On Site" in item.type:
-                item.travel_estimate = item.hours_estimated * project.travel_weekly / 40
+            for rate in rate_table:
+                if item.type.name == rate.name:
+                    item.rate_cost=rate.labor_cost
+                    if item.isOnSite:
+                        item.rate_list=rate.labor_on_site
+                    else:
+                        item.rate_list=rate.labor_in_house
+                    
+            #calculated field value
+            print(project.adjust_Service)
+            if item.isOnSite:
+                item.travel_estimate=item.hours_estimated*project.travel_weekly/40
             else:
-                item.travel_estimate = 0
+                item.travel_estimate=0
+
+            if item.travel_actual == None:
+                item.travel_actual=0
+            if item.hours_worked == None:
+                item.hours_worked=0
 
             item.hours_adjusted = item.hours_estimated * (1 + project.adjust_Service)
             item.sub_total_list = item.hours_estimated * item.rate_list + item.travel_estimate
@@ -269,8 +285,6 @@ def service_edit(request, pk, fk):
             item.sub_total_cost_est = item.hours_estimated * item.rate_cost + item.travel_estimate
             item.sub_total_adjusted_cost_est = item.hours_adjusted * item.rate_cost + item.travel_estimate
             item.cost_actual = item.hours_worked * item.rate_cost + item.travel_actual
-
-            # Save the updated item
             item.save()
             return HttpResponse("Service updated successfully")
 
@@ -649,6 +663,7 @@ def download_excel(request,pk):
     ws_summary.insert_rows(6)
     if 'Sheet' in wb.sheetnames:
         wb.remove(wb['Sheet'])
+    ws_summary.column_dimensions['A'].width = 2.5
 
     bom_page(wb,pk)
     service_page(wb,pk)
@@ -751,8 +766,20 @@ def bom_page(wb:Workbook, pk:int):
             cell = ws[f'{col}{row}']
             cell.style = currency_style
 
-    for col_num in range(3, 13):
-        ws.column_dimensions[get_column_letter(col_num)].width = 15
+    for column in ws.columns:
+        max_length = 0
+        column_letter = get_column_letter(column[0].column)
+        
+        for cell in column:
+            try:
+                if len(cell.value) > max_length:
+                    max_length = len(cell.value)
+                    print(cell.value)
+                    print(len(cell.value))
+            except:
+                pass
+        ws.column_dimensions[column_letter].width = max_length
+    ws.column_dimensions['A'].width = 2.5
 
     if 'Sheet' in wb.sheetnames:
         wb.remove(wb['Sheet'])
@@ -793,7 +820,7 @@ def service_page(wb:Workbook, pk:int):
  
     data=[
         ["Service"],
-        ["#","Task","Type","OS","Hours Estimated","Hours Adjusted","Hours Worked","Travel Estimate","Travel Actual","Rate List","Sub Total List","Sub Total Adjusted List","Rate Cost","Sub Total Cost Est","Sub Total Adjusted Cost Est","Cost Actual"],
+        ["#","Task","Type","On Site","Hours Estimated","Hours Adjusted","Hours Worked","Travel Estimate","Travel Actual","Rate List","Sub Total List","Sub Total Adjusted List","Rate Cost","Sub Total Cost Est","Sub Total Adjusted Cost Est","Cost Actual"],
     ]
 
     for row in data:
@@ -816,10 +843,10 @@ def service_page(wb:Workbook, pk:int):
         service_items = service.filter(category=current_category)
         for item in service_items:
             if item.isOnSite:
-                isOnSite="On Site"
+                isOnSite="X"
             else:
                 isOnSite=""
-            ws.append([item.index,item.name,item.type,isOnSite,item.hours_estimated,item.hours_adjusted,
+            ws.append([item.index,item.name,item.type.name,isOnSite,item.hours_estimated,item.hours_adjusted,
                         item.hours_worked,item.travel_estimate,item.travel_actual,item.rate_list,item.sub_total_list,
                         item.sub_total_adjusted_list,item.rate_cost, item.sub_total_cost_est,item.sub_total_adjusted_cost_est,
                         item.cost_actual
@@ -832,11 +859,14 @@ def service_page(wb:Workbook, pk:int):
     ws.insert_rows(1)
     ws.insert_rows(7)
 
+    ws.merge_cells('C3:D3')
     ws.merge_cells('C2:N2')
     ws.merge_cells('D6:N6')
     ws.merge_cells('B8:Q8')
-    for col_num in range(3, 17):
-        ws.column_dimensions[get_column_letter(col_num)].width = 15
+    # for col_num in range(1, 17):
+    #     # ws.column_dimensions[get_column_letter(col_num)].width = 15
+    #     ws.column_dimensions[get_column_letter(col_num)].bestFit = True
+    
 
     ws['L4'].style = percentage_style
     ws['M4'].style = percentage_style
@@ -855,10 +885,19 @@ def service_page(wb:Workbook, pk:int):
             cell = ws[f'{col}{row}']
             cell.style = currency_style
 
-    ws.column_dimensions['C'].width = 20
-    ws.column_dimensions['D'].width = 20
-    for col_num in range(5, 17):
-        ws.column_dimensions[get_column_letter(col_num)].width = 15
+    for column in ws.columns:
+        max_length = 0
+        column_letter = get_column_letter(column[0].column)
+        
+        for cell in column:
+            try:
+                if len(cell.value) > max_length:
+                    max_length = len(cell.value)
+            except:
+                pass
+        ws.column_dimensions[column_letter].width = max_length
+    
+    ws.column_dimensions['A'].width = 2.5
 
     if 'Sheet' in wb.sheetnames:
         wb.remove(wb['Sheet'])
@@ -1060,3 +1099,18 @@ def copy_project(request,pk):
         item.project=project
         item.save()
     return redirect(f'/budgetTool/{project.id}')
+
+def price_sheet_order(request):
+    form=OrderForm(request.POST)
+    if form.is_valid():
+        ordered_ids = form.cleaned_data["ordering"].split(',')
+        print(ordered_ids)
+        current_order = 1
+        for lookup_id in ordered_ids:
+            if lookup_id.isdigit() and lookup_id != "0":
+                cost = Product_Price.objects.get(id=lookup_id)
+                cost.order = current_order
+                cost.save(update_fields=["order"])
+                print(f'what is priceSheet index: {cost.order}')
+                current_order += 1
+        return HttpResponse("order updated successfully")

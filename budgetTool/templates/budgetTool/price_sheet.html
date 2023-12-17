@@ -15,6 +15,8 @@
       }
     </style>
     <script src="https://unpkg.com/htmx.org@1.9.9"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <link rel="stylesheet" href="{% static 'style.css' %}">
   </head>
   
   <body style="margin-left: 20px; margin-right: 20px;">
@@ -56,11 +58,13 @@
       </tr>
     </thead>
 
-          <tbody>
+          <tbody id="prcieSheetTable_{{forloop.counter}}">
+
             {% for line in Product_Prices %}
               {% if line.vendor == vendor %}
-                <tr>
-                  <td>{{line.item}}</td>
+              <tr data-lookupid="{{line.pk}}" class="text-nowrap">
+                <input type='hidden' name='price_sheet_order' value='{{line.pk}}'/>
+                  <td>{{line.item}}<span class="handle"></span></td>
                   <td>$ {{line.cost|floatformat:2|intcomma}}</td>
                   <td>$ {{line.list|floatformat:2|intcomma}}</td>
                   <td> {{line.margin}} %</td>
@@ -89,25 +93,38 @@
                       Delete
                     </button>
                   </td>
-
                 </tr>
                 {% endif %}
               {% endfor %}
+            </tbody>
+          </table>
                 
+          <table>
                 <tr>
-                  <td colspan="7">
+                  <td>
                     <button type="button" class="btn btn-primary"
                     hx-get="{% url 'budgetTool:create_product_price' fk=vendor.id %}"
                     hx-target="closest td"
                     hx-swap="beforeend"> Add New Row</button>
                   </td>
+
+                  <td>
+                    <form id="priceSheetOrderingForm_{{forloop.counter}}" method="POST"
+                    hx-post="{% url 'budgetTool:price_sheet_order' %}"
+                    hx-target="this"
+                    hx-on="htmx:afterRequest: window.location.reload(true)">
+                    {% csrf_token %}
+                    <input type="hidden" id="priceSheetOrderingInput_{{forloop.counter}}" name="ordering">
+                    <button id="saveOrdering_{{forloop.counter}}" disabled class="btn btn-success" >Save ordering</button>
+                  </form>
+                  </td>
                 </tr>
-
-
-          </tbody>
-
-  </table>
+              </table>
+              <hr>
+ 
         {% endfor %}
+
+        <script type="text/javascript" src="{% static 'priceSheet.js'%}"></script>
 
   </body>
 </html>

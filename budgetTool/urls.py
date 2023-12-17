@@ -50,6 +50,7 @@ urlpatterns = [
     path('vendorForm/edit/<int:pk>/',views.vendor_edit,name='vendor_edit'),
     path('vendorForm/delete/<int:pk>/',views.vendor_delete,name='vendor_delete'),
     path('copyProject/<int:pk>',views.copy_project,name='copy_project'),
+    path('priceSheetOrder/',views.price_sheet_order,name='price_sheet_order'),
     
     
 

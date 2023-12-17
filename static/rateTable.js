@@ -12,11 +12,12 @@ function saveOrdering(rowId,formInput) {
     // orderingForm.submit();
   }
   
-  // bom ordering part
   const SaveOrderingButton = document.getElementById('saveOrdering');
   const orderingForm = document.getElementById('rateCostOrderingForm');
   const tableFormInput = orderingForm.querySelector('#costTableOrderingInput');
   const rowOrder = document.getElementById('rateCostRow');
+
+  console.log(rowOrder);
   
   let bomSortable = Sortable.create(rowOrder, {
     animation: 150,
