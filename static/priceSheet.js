@@ -27,13 +27,6 @@ function saveOrdering(table,formInput) {
     const rowOrder = document.getElementById(tableId);
     console.log(rowOrder);
 
-
-
-    // const SaveOrderingButton = document.getElementById('saveOrdering_');
-    //   const orderingForm = document.getElementById('priceSheetOrderingForm');
-    //   const tableFormInput = orderingForm.querySelector('#priceSheetOrderingInput');
-    //   const rowOrder = document.getElementById('priceSheetRow');
-
     let bomSortable = Sortable.create(rowOrder, {
           animation: 150,
           handle: '.handle',
@@ -44,23 +37,5 @@ function saveOrdering(table,formInput) {
             saveOrdering(tableId, tableFormInput);
         }
         });
-  
-  
   });
-  
-//   const SaveOrderingButton = document.getElementsByClassName('saveOrdering');
-//   const orderingForm = document.getElementById('priceSheetOrderingForm');
-//   const tableFormInput = orderingForm.querySelector('#priceSheetOrderingInput');
-//   const rowOrder = document.getElementsByClassName('priceSheetRow');
-  
-//   let bomSortable = Sortable.create(rowOrder, {
-//     animation: 150,
-//     handle: '.handle',
-//     dragClass: 'dragged',
-//     chosenClass: 'sortableChosen',
-//     onChange: () => {
-//         SaveOrderingButton.disabled = false;
-//       saveOrdering("priceSheetRow", tableFormInput);
-//   }
-//   });
   
