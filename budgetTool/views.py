@@ -86,7 +86,6 @@ def budget_detail(request,pk):
     }
     return render(request, 'budgetTool/budget_detail.html',context)
 
-
 def create_project(request):
     form=ProjectModelForm()
     if request.method =="POST":
@@ -141,23 +140,6 @@ def create_bom(request, pk):
     bomForm = BillModelForm(initial={'project': project})
     context = {"bomForm": bomForm, "project": project}
     return render(request, "budgetTool/partials/bomForm.html", context)
-
-# def bom_update(request,pk,fk):
-#     item=BillOfMaterials.objects.get(id=pk,project_id=fk)
-#     form=BillModelForm(instance=item)
-
-#     if request.method =="POST":
-#         print("received")
-#         form=BillModelForm(request.POST,instance=item)
-#         if form.is_valid():
-#             form.save()
-#             print("edit a item")
-#             return HttpResponse("BOM updated")
-#     context={
-#         "item":item,
-#         "form":form,
-#     }
-#     return render(request,"budgetTool/partials/bomForm.html",context)
 
 def create_service(request,pk):
     project=Project.objects.get(id=pk)
@@ -297,52 +279,6 @@ def service_edit(request, pk, fk):
     }
     return render(request, "budgetTool/partials/serviceFormEdit.html", context)
 
-
-# def service_update(request,pk,fk):
-#     item=Service.objects.get(id=pk,project_id=fk)
-#     form=ServiceModelForm(instance=item)
-#     rate_table=RateTable.objects.all()
-
-#     if request.method =="POST":
-#         print("received")
-#         form=ServiceModelForm(request.POST,instance=item)
-#         if form.is_valid():
-#             data=form.cleaned_data
-#             name=data['name']
-#             category=data['category']
-#             type=data['type']
-#             hours_estimated=data['hours_estimated']
-#             hours_worked=data['hours_worked']
-#             rate_list=0
-#             rate_cost=0
-#             travel_actual=data['travel_actual']
-#             notes=data['notes']
-
-#             for service in rate_table:
-#                 if type == service.type:
-                   
-#                     rate_list=service.list
-#                     rate_cost=service.cost
-
-#             Service.objects.update(
-#                 name=name,
-#                 category=category,
-#                 type=type,
-#                 hours_estimated=hours_estimated,
-#                 hours_worked=hours_worked,
-#                 rate_list=rate_list,
-#                 rate_cost=rate_cost,
-#                 travel_actual=travel_actual,
-#                 notes=notes,
-#                 )
-#             print("edit an item")
-#             return redirect(f'/budgetTool/{item.project_id}')
-#     context={
-#         "item":item,
-#         "form":form,
-#     }
-#     return render(request,"budgetTool/service_update.html",context)
-
 def bomSave(request,pk):
     project=Project.objects.get(id=pk)
     
@@ -441,7 +377,6 @@ def editProject(request,pk):
     else:
         return HttpResponse("Project update")
     
-
 def bom_edit(request, pk, fk):
     item = get_object_or_404(BillOfMaterials, id=pk, project_id=fk)
 
@@ -467,28 +402,6 @@ def bom_edit(request, pk, fk):
 def bom_delete(request,pk):
     bom=BillOfMaterials.objects.get(id=pk)
     bom.delete()
-    
-
-# def service_edit(request, pk, fk):
-#     item = get_object_or_404(Service, id=pk, project_id=fk)
-
-#     if request.method == "POST":
-#         request_data = request.POST.copy()
-#         request_data['project'] = fk  # Add project to POST data
-#         form = ServiceModelForm(request_data, instance=item)
-
-#         if form.is_valid():
-#             form.save()
-#             return HttpResponse("Service updated successfully")
-
-#     else:
-#         form = ServiceModelForm(instance=item)
-
-#     context = {
-#         "item": item,
-#         "form": form,
-#     }
-#     return render(request, "budgetTool/partials/serviceFormEdit.html", context)
 
 def service_delete(request,pk):
     service=Service.objects.get(id=pk)
@@ -510,7 +423,6 @@ def service_order(request,pk):
                 current_order += 1
         return HttpResponse("Service order updated successfully")
     
-
 def bom_order(request,pk):
     form=OrderForm(request.POST)
 
@@ -785,7 +697,6 @@ def bom_page(wb:Workbook, pk:int):
         wb.remove(wb['Sheet'])
     return ws
 
-
 def service_page(wb:Workbook, pk:int):
     project=Project.objects.get(id=pk)
     service=Service.objects.filter(project_id=pk)
@@ -903,7 +814,6 @@ def service_page(wb:Workbook, pk:int):
         wb.remove(wb['Sheet'])
     return ws
     
-
 def create_rateTableCost(request):
     if request.method == "POST":
         form=RateCostModelForm(request.POST)
@@ -1079,7 +989,6 @@ def vendor_edit(request,pk):
 def vendor_delete(request,pk):
     vendor=Vendor.objects.get(id=pk)
     vendor.delete()
-
 
 def copy_project(request,pk):
     print("copy project")

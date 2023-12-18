@@ -99,12 +99,20 @@
             </tbody>
           </table>
                 
+          <div>
+            <table>
+              <tr>
+                <div id="addRow_{{forloop.counter}}"></div>
+              </tr>
+          </table>
+
+
           <table>
                 <tr>
                   <td>
                     <button type="button" class="btn btn-primary"
                     hx-get="{% url 'budgetTool:create_product_price' fk=vendor.id %}"
-                    hx-target="closest td"
+                    hx-target="#addRow_{{forloop.counter}}"
                     hx-swap="beforeend"> Add New Row</button>
                   </td>
 
@@ -120,6 +128,7 @@
                   </td>
                 </tr>
               </table>
+            </div>
               <hr>
  
         {% endfor %}
