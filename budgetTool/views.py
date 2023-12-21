@@ -4,8 +4,8 @@ from django.shortcuts import render,redirect,get_object_or_404
 from django.http import HttpResponse,JsonResponse,QueryDict
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from .models import Product_Price, RateTable, Project,BoM, RateTableCost,Service,Sales,BillOfMaterials,ServiceCategory,BOMCategory, Vendor
-from .forms import BomCategoryModelForm, OrderForm, ProductPriceModelForm, ProjectForm, ProjectModelForm,BillModelForm, RateCostModelForm, ServiceCategoryModelForm,ServiceModelForm, VendorModelForm
+from .models import Product_Price, RateTable, Project,BoM, RateTableCost,Service,BillOfMaterials,ServiceCategory,BOMCategory, Vendor
+from .forms import BomCategoryModelForm, OrderForm, ProductPriceModelForm, ProjectForm, ProjectModelForm,BillModelForm, RateCostModelForm, ServiceCategoryModelForm,ServiceModelForm, VendorModelForm,UserForm
 import json
 from django.views.decorators.http import require_http_methods
 from django.urls import reverse
@@ -14,6 +14,10 @@ from openpyxl.formula import *
 from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import NamedStyle
+from.decorators import allowed_users, unauthenticated_user
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import PasswordChangeForm
+
 
 percentage_style = NamedStyle(name='percentage')
 percentage_style.number_format = '0.00%'
@@ -30,6 +34,53 @@ border = Border(
 currency_style.border = border
 percentage_style.border = border
 
+def registerPage(request):
+	if request.method == 'POST':
+		form = UserForm(request.POST)
+		if form.is_valid():
+			form.save()
+			username = form.cleaned_data['username']
+			password = form.cleaned_data['password1']
+			user = authenticate(username=username, password=password)
+			login(request, user)
+			messages.success(request, f'{username}, You Have Successfully Registered!')
+			return redirect("/budgetTool")
+	else:
+		form = UserForm()
+		return render(request, 'budgetTool/user/register.html', {'form':form})
+	return render(request, 'budgetTool/user/register.html', {'form':form})
+
+def change_password(request):
+    user=User.objects.get(username=request.user)
+    print(user)
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            messages.success(request, 'Your password was successfully updated!')
+            return redirect("/budgetTool")
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, 'budgetTool/user/change_password.html', {'form': form})
+
+@unauthenticated_user
+def login_user(request):
+    if request.method == 'POST':
+        username=request.POST['username']
+        password=request.POST['password']
+
+        user=authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request,user)
+            return redirect("/budgetTool")
+        else:
+            messages.success(request,"There was an error log in. Please try again...")
+            return render(request, 'budgetTool/budget_list.html',{})
+
+def logout_user(request):
+    logout(request)
+    messages.success(request,"You have been logged out...")
+    return redirect("/budgetTool")
 
 def budget_list(request):
     templates = Project.objects.filter(isTemplate=True)
@@ -40,7 +91,13 @@ def budget_list(request):
     }
     return render(request, 'budgetTool/budget_list.html',context)
 
+@allowed_users(allowed_roles=['Admin','Account Manager'])
 def rate_table(request):
+    user=User.objects.get(username=request.user)
+    print(user)
+    if user.groups.filter(name='Admin').exists():
+        print(user.groups.all())
+
     table=RateTable.objects.all()
     tableCost=RateTableCost.objects.all()
     context={
@@ -310,20 +367,6 @@ def bomSave(request,pk):
 #             return redirect('index')
 #     else:
 #         return render(request, 'index.html',{})
-
-# def login_user(request):
-#     pass
-
-# def logout_user(request):
-#     logout(request)
-#     messages.success(request,"You have been logged out...")
-#     return redirect('index')
-
-# def rate_table(request):
-#     table=RateTable.objects.all()
-
-#     return messages.success(request,"it's ratetable\n")
-
 
 def editProject(request,pk):
     project=Project.objects.get(id=pk)
@@ -876,6 +919,7 @@ def rateCost_delete(request,pk):
     cost=RateTableCost.objects.get(id=pk)
     cost.delete()
 
+@allowed_users(allowed_roles=['Admin','Account Manager'])
 def price_sheet(request):
     vendors=Vendor.objects.all()
     Product_Prices=Product_Price.objects.all()

@@ -1,12 +1,9 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
 
 #  py .\manage.py shell
 # from budgetTool.models import BillOfMaterials
 # BillOfMaterials.objects.all().values() 
 
-class User(AbstractUser):
-    pass
 
 class ServiceCategory(models.Model):
     index=models.IntegerField()
@@ -126,9 +123,6 @@ class Service(models.Model):
     class Meta:
         ordering = ['order']
 
-
-class Sales(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
 
 class BoM(models.Model):
     name=models.CharField(max_length=100)

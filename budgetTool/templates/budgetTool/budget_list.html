@@ -1,7 +1,9 @@
+
 <!doctype html>
 {% load bootstrap5 %}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
+{% load custom_filters %}
 
 <html lang="en">
   <head>
@@ -11,11 +13,17 @@
   
   </head>
   <body style="margin-left: 20px; margin-right: 20px;">
-
-
+  {% include 'navbar.html' %}
+  
+    
+  <div class="col-md-6 offset-md-3">
+  {% if user.is_authenticated %}
+    
+  {% if user|user_belongs_to_group:'Admin' or user|user_belongs_to_group:'Account Manager' %}
   <a class="btn btn-primary" href="/budgetTool/rate_table" role="button">Rate Table</a>
   <a class="btn btn-primary" href="/budgetTool/price_sheet" role="button">Price Sheet</a>
   <a class="btn btn-primary" href="/budgetTool/create" role="button">Create a new template</a>
+  
   <h1>Template lists</h1>
 
     <ul>
@@ -25,6 +33,8 @@
         </li>
       {% endfor %}
     </ul>
+    {% endif %}
+  
 
     <h1>Project lists</h1>
 
@@ -48,6 +58,11 @@
 
       </ul>
     </div>
+  {% else %}
+    {% include 'budgetTool/user/login.html' %}
+  {% endif %}
 
+</div>
+  
   </body>
 </html>

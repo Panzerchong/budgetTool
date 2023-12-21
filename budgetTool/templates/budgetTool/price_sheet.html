@@ -4,6 +4,7 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 {% load static %}
+{% load custom_filters %}
 
 <html lang="en">
   <head>
@@ -20,7 +21,11 @@
   </head>
   
   <body style="margin-left: 20px; margin-right: 20px;">
-    
+  
+  {% if user|user_belongs_to_group:'Admin' or user|user_belongs_to_group:'Account Manager' %}
+  <h1>Price Sheet</h1>
+  {% endif %}
+
   <a class="btn btn-primary" href="/budgetTool/" role="button">Go back to Project lists</a>
   <button 
       class="btn btn-primary"

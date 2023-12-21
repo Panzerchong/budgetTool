@@ -1,4 +1,5 @@
 from django.urls import path
+from django.contrib.auth.views import LoginView
 from .views import (
     budget_list,
     budget_detail,
@@ -55,7 +56,9 @@ urlpatterns = [
     
 
     # path('', views.home, name='home'),
-    # path('login/', views.login_user, name='login'),
-    # path('logout/', views.logout_user, name='logout'),
+    path('register/', views.registerPage, name='registerPage'),
+    path('changePassword/', views.change_password, name='change_password'),
+    path('login/', views.login_user, name='login_user'),
+    path('logout/', views.logout_user, name='logout_user'),
     # path('rateTable',views.rate_table,name='rate_table')
 ]

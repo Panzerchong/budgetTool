@@ -123,4 +123,4 @@ STATIC_ROOT = "static_root"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL='budgetTool.User'
+# AUTH_USER_MODEL='budgetTool.User'
