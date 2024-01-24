@@ -19,7 +19,7 @@
   <div class="col-md-6 offset-md-3">
   {% if user.is_authenticated %}
     
-  {% if user|user_belongs_to_group:'Admin' or user|user_belongs_to_group:'Account Manager' %}
+  {% if user|user_belongs_to_group:'Admin, Finance, Account Manager, Engineering Lead' %}
   <a class="btn btn-primary" href="/budgetTool/rate_table" role="button">Rate Table</a>
   <a class="btn btn-primary" href="/budgetTool/price_sheet" role="button">Price Sheet</a>
   <a class="btn btn-primary" href="/budgetTool/create" role="button">Create a new template</a>

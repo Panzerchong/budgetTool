@@ -1,0 +1,460 @@
+{% load mathfilters %}
+{% load humanize %}
+<!-- Project summry -->
+
+<style>
+  .table-darkly tr {
+    background-color: #BDD7EE;
+}
+
+</style>
+<div>
+  <table class="table table-secondary table-hover table-bordered border-primary mx-auto w-auto">
+    <thead>
+      <tr>
+        <th class=" text-center table-dark" colspan="7"  style="background-color: #8EA9DB;" >Summary</th>
+      </tr>
+
+      <tr>
+        <th scope="col"></th>
+        <th scope="col">List</th>
+        <th scope="col">List Adjusted</th>
+        <th scope="col">Quoted</th>
+      </tr>
+    </thead>
+
+      <tbody>
+        <tr>
+          <td><strong>BOM</strong></td>
+          <td>$ {{project.list_bom|floatformat:0|intcomma}}</td>
+          <td>$ {{project.list_adjusted_bom|floatformat:0|intcomma}}</td>
+          <td>$ {{project.quote_BOM|floatformat:0|intcomma}}
+          </td> 
+        </tr>
+
+        <tr>
+          <td><strong>Service</strong></td>
+          <td>$ {{project.list_service|floatformat:0|intcomma}}</td>
+          <td>$ {{project.list_adjusted_service|floatformat:0|intcomma}}</td>
+          <td>$ {{project.quote_Service|floatformat:0|intcomma}}</td>
+        </tr>
+
+        <tr>
+          <td colspan="7"></td>
+        </tr>
+
+        <tr>
+          <td><strong>Total</strong></td>
+          <td>$ {{summary.list|floatformat:0|intcomma}}</td>
+          <td>$ {{summary.list_adjusted|floatformat:0|intcomma}}</td>
+          <td>$ {{project.quote_BOM|add:project.quote_Service|floatformat:0|intcomma}}</td>
+        </tr>
+
+      </tbody>
+  </table>
+</div>
+
+
+<!-- summary table for bom -->
+<div>
+  <table class="table table-secondary table-hover table-bordered table-bordered border-primary mx-auto w-auto">
+    <thead>
+      <tr>
+        <th class="text-center" colspan="10"  style="background-color: #8EA9DB;">Total Material Cost</th>
+      </tr>
+
+      <tr  style="background-color:#BDD7EE;">
+        <th colspan="2" scope="col">BOM Variables</th>
+        <th scope="col">List</th>
+        <th scope="col">List Adjusted</th>
+      </tr>
+    </thead>
+
+      <tbody>
+        <tr>
+          <td><strong>Adjusted for Complexity</strong></td>
+          <td>
+            <div
+              id="adjustComplexityBOM"
+              hx-get="{% url 'budgetTool:editProject' pk=project.pk%}"
+              hx-params="adjust_BOM"
+              hx-target="this"
+              hx-swap="outerHTML">
+              {{project.adjust_BOM|mul:100}}%
+            </div>
+          </td>
+          <td>$ {{project.list_bom|floatformat:0|intcomma}}</td>
+          <td>$ {{project.list_adjusted_bom|floatformat:0|intcomma}}</td>
+        </tr>
+
+        <tr>
+          <td><strong>Quoted</strong></td>
+          <td>${{project.quote_BOM|intcomma}}</td>
+          <td colspan="8"></td>
+        </tr>
+      </tbody>
+  </table>
+</div>
+
+<!-- Service summary -->
+<div>
+  <table class="table table-secondary table-hover table-bordered table-bordered border-primary mx-auto w-auto">
+    <thead>
+      <tr>
+        <th class="text-center" colspan="12" style="background-color: #8EA9DB;">Total System Integration Services</th>
+      </tr>
+
+      <tr style="background-color:#BDD7EE;">
+        <th scope="col" colspan="2">Service Variables</th>
+        <th scope="col">Hours</th>
+        <th scope="col">Risk Hours</th>
+        <th scope="col">Labor</th>
+        <th scope="col">Labor Adjusted</th>
+      </tr>
+    </thead>
+
+      <tbody>
+        <tr>
+          <td class="text-nowrap"><strong>Adjusted for Complexity</strong></td>
+          <td>
+            <div
+              hx-get="{% url 'budgetTool:editProject' pk=project.pk%}"
+              hx-params="adjust_Service"
+              hx-target="this"
+              hx-swap="outerHTML">
+              {{project.adjust_Service|mul:100}}%
+            </div>
+          </td>
+          
+          <td>{{project.hours}}</td>
+          <td>{{project.hours_adjusted}}</td>
+          <td class="text-nowrap">$ {{project.list_service|floatformat:0|intcomma}}</td>
+          <td class="text-nowrap">$ {{project.list_adjusted_service|floatformat:0|intcomma}}</td>
+        </tr>
+
+        <tr>
+          <td><strong>Quoted</strong></td>
+          <td>
+            <div
+            hx-get="{% url 'budgetTool:editProject' pk=project.pk%}"
+            hx-params="quote_Service"
+            hx-target="this"
+            hx-swap="outerHTML">
+            ${{project.quote_Service|intcomma}}
+            </div>
+          </td>
+          <td colspan="10"></td>
+        </tr>
+
+        <tr>
+          <td><strong>Travel Weekly</strong></td>
+          <td>
+            <div
+              hx-get="{% url 'budgetTool:editProject' pk=project.pk%}"
+              hx-params="travel_weekly"
+              hx-target="this"
+              hx-swap="outerHTML">
+              ${{project.travel_weekly|intcomma}}
+            </div>
+          </td>
+          <td colspan="10"></td>
+        </tr>
+      </tbody>
+  </table>
+
+</div>
+
+<!-- BOM table -->
+<div>
+<table class="table table-secondary table-hover table-bordered border-primary" id="billTable" >
+  <thead>
+    <tr><th style="background-color:#8EA9DB;" colspan="14" class="text-center">Bill Of Materials</th></tr>
+
+    <tr class="text-nowrap" style="background-color:#BDD7EE;">
+      <th scope="col">#</th>
+      <th scope="col">Part/Item</th>
+      <th scope="col">List Price</th>
+      <th scope="col">Quantity</th>
+      <th scope="col">Total List</th>
+      <th scope="col">Supplier</th>
+      <th scope="col">Responsible</th>
+      <th scope="col">Description</th>
+      <th scope="col" colspan="3">Notes</th>
+      <!-- <th class="table-primary" scope="col"></th>
+      <th class="table-primary" scope="col"></th> -->
+    </tr>
+    <div id="billTitle"></div>
+  </thead>
+
+    <tbody id="bomRow">
+        {% for categ in existing_bom_category %}
+          <tr>
+            <td>
+              <div
+                hx-get="{% url 'budgetTool:bom_category_edit' pk=categ.id %}"
+                hx-params="index"
+                hx-target="this"
+                hx-swap="outerHTML">
+                <strong>{{categ.index}}</strong>
+              </div>
+            </td>
+            <td class="text-nowrap" colspan="12">
+              <div
+                hx-get="{% url 'budgetTool:bom_category_edit' pk=categ.id %}"
+                hx-params="name"
+                hx-target="this"
+                hx-swap="outerHTML">
+              <strong>{{categ.name}}</strong>
+              </div>
+            </td>
+          </tr>
+
+          {% for line in bom %}
+            {% if line.bom_category == categ %}
+            <div id="div{{line.name}}">
+
+              <tr data-lookupid="{{line.pk}}">
+              <input type='hidden' name='bom' value='{{line.pk}}'/>
+              <td>
+                {% if line.index %}
+                  {{line.index}}
+                {%endif%}
+                <span class="handle"></span>
+              </td>
+              <td>{{ line.name }}</td>
+              <td>${{line.sales_price|intcomma }}</td>
+              <td class="text-center">{{ line.quantity }}</td>
+              <td>
+                {%with totalSale=line.quantity|mul:line.sales_price %}
+                ${{totalSale|intcomma}}
+                {%endwith%}
+              </td>
+              <td>{{ line.supplier }}</td>
+              <td>{{ line.Responsible }}</td>
+              <td>{{ line.description }}</td>
+              <td>{{ line.notes }}</td>
+
+              <td class="text-nowrap">
+                <button 
+                class="btn btn-success"
+                hx-get="{% url 'budgetTool:bom_edit' fk=project.pk pk=line.pk %}"
+                hx-target="closest tr"
+                hx-swap="outerHTML"
+                        >
+                  Edit
+                </button>
+
+                <button 
+                class="btn btn-danger"
+                hx-confirm="Are you sure?"
+                hx-get="{% url 'budgetTool:bom_delete' pk=line.pk fk=project.id %}"
+                hx-on="htmx:afterRequest: window.location.reload(true)"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+
+          </div>
+            {%endif%}
+        {%endfor%}
+      {% endfor %}
+          
+    </tbody>
+</table>
+</div>
+
+<div>
+<table>
+  <tr>
+    <div id="currentBillTable"></div>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <td>
+      <button type="button" class="btn btn-primary"
+      hx-get="{% url 'budgetTool:create_bom' pk=project.pk%}"
+      hx-target="#currentBillTable"
+      hx-swap="beforeend"> Add New Row</button>
+    </td>    
+    
+    <td>
+      <button type="button" class="btn btn-primary"
+      hx-get="{% url 'budgetTool:create_bom_category' %}"
+      hx-target="#currentBillTable"
+      hx-swap="beforeend"> Add New Category</button>
+    </td>
+    
+    <td>
+      <form id="bomOrderingForm"
+        hx-post="{% url 'budgetTool:bom_order' pk=project.pk %}"
+        hx-target="this"
+        hx-on="htmx:afterRequest: window.location.reload(true)">
+        {% csrf_token %}
+        <input type="hidden" id="bomOrderingInput" name="ordering">
+        <button id="bomSaveOrdering" disabled class="btn btn-success" >Save ordering</button>
+      </form>
+    </td>
+  </tr>
+</table>
+<hr>
+</div>
+
+
+<!-- service table -->
+<table class="table table-secondary table-hover table-bordered border-primary" id="serviceTable">
+  
+  <thead>
+    <tr style="background-color: #8EA9DB;"><th colspan="17" class="text-center">Estimated Labor Hours</th></tr>
+
+    <tr style="background-color: #BDD7EE;">
+      <th scope="col">#</th>
+      <th scope="col">Task</th>
+      <th scope="col">Type</th>
+      <th scope="col">On Site</th>
+      <th scope="col">Hours Estimated</th>
+      <th scope="col">Hours Adjusted</th>
+      <th scope="col">Hours Worked</th>
+      <!-- <th scope="col">Travel Est</th>
+      <th scope="col">Travel Act</th>
+      <th scope="col">Rate List</th>
+      <th scope="col">Sub Total List</th> -->
+      <th scope="col" colspan="2">Sub Total Adjusted List</th>
+      <!-- <th scope="col">Rate Cost</th>
+      <th scope="col">Sub Total Cost Est</th>
+      <th scope="col">Sub Total Adjusted Cost Est</th>
+      <th scope="col" colspan="2">Cost Act</th> -->
+    </tr>
+  </thead>
+
+    <tbody id="serviceRow">
+      {% for categ in service_category %}
+        <tr>
+          <td>
+            <div
+              hx-get="{% url 'budgetTool:service_category_edit' pk=categ.id %}"
+              hx-params="index"
+              hx-target="this"
+              hx-swap="outerHTML">
+              <strong>{{categ.index}}</strong>
+            </div>
+          </td>
+          
+          <td class="text-nowrap" colspan="15">
+            <div
+            hx-get="{% url 'budgetTool:service_category_edit' pk=categ.id %}"
+            hx-params="name"
+            hx-target="this"
+            hx-swap="outerHTML">
+            <strong>
+              {{categ.name}}
+            </strong>
+          </div>
+          </td>
+        </tr>
+
+        
+          
+        {% for line in service %}
+          {% if line.category == categ%}
+          
+            <tr data-lookupid="{{line.pk}}">
+              <input type='hidden' name='service_order' value='{{line.pk}}'/>
+              <td>
+                {% if line.index %}
+                  {{line.index}}
+                {%endif%}
+                <span class="handle"></span>
+              </td>
+              <td>{{ line.name }}</td>
+              <td>{{ line.type }}</td>
+              <td>
+                {% if line.isOnSite %}
+                <input class="form-check-input" type="checkbox" value="" disabled checked>
+                {% else %}
+                <input class="form-check-input" type="checkbox" value=""  disabled >
+                {% endif %}
+              </td>
+              <td>{{ line.hours_estimated }}</td>
+              <td>{{line.hours_adjusted|floatformat:0}}</td>
+              <td>{{ line.hours_worked }}</td>
+              <!-- <td>${{ line.travel_estimate|floatformat:0|intcomma}}</td>
+              <td>${{ line.travel_actual|intcomma }}</td>
+              <td>${{line.rate_list|floatformat:0}}</td>
+              <td>${{line.sub_total_list|intcomma}}</td> -->
+              <td>${{line.sub_total_adjusted_list|intcomma}}</td>
+              <!-- <td>${{line.rate_cost|floatformat:0}}</td>
+              <td>${{line.sub_total_cost_est|intcomma}}</td>
+              <td>${{line.sub_total_adjusted_cost_est|intcomma}}</td>
+              <td>${{line.cost_actual|intcomma}}</td> -->
+
+
+              <td class="text-nowrap">
+                <button 
+                class="btn btn-success"
+                hx-get="{% url 'budgetTool:service_edit' fk=project.pk pk=line.pk %}"
+                hx-target="closest tr"
+                hx-swap="outerHTML"
+                >
+                  Edit
+                </button>
+
+                <button 
+                class="btn btn-danger"
+                hx-confirm="Are you sure?"
+                hx-get="{% url 'budgetTool:service_delete' pk=line.pk fk=project.id %}"
+                hx-on="htmx:afterRequest: window.location.reload(true)"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+        
+          {%endif%}
+        {%endfor%}
+      
+      {% endfor %}
+    </tbody>
+</table>
+
+
+
+
+<table>
+  <tr>
+    <div id="currentServiceTable"></div>
+  </tr>
+</table>
+
+<table>
+  <tr>
+    <td>
+      <button type="button" class="btn btn-primary"
+      hx-get="{% url 'budgetTool:create_service' pk=project.pk%}"
+      hx-target="#currentServiceTable"
+      hx-swap="beforeend">
+        Add New Row</button>
+    </td>
+
+    <td>
+      <button type="button" class="btn btn-primary"
+      hx-get="{% url 'budgetTool:create_service_category' %}"
+      hx-target="#currentServiceTable"
+      hx-swap="beforeend"> Add New Category</button>
+    </td>
+
+    <td>
+      <form id="serviceOrderingForm"
+      hx-post="{% url 'budgetTool:service_order' pk=project.pk %}"
+      hx-target="this"
+      hx-on="htmx:afterRequest: window.location.reload(true)">
+      {% csrf_token %}
+      <input type="hidden" id="serviceOrderingInput" name="ordering">
+      <button id="saveOrdering" disabled class="btn btn-success" >Save ordering</button>
+    </form>
+    </td>
+  </tr>
+</table>
+<hr>

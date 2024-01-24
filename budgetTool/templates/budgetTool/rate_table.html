@@ -4,6 +4,7 @@
 {% bootstrap_css %}
 {% bootstrap_javascript %}
 {% load static %}
+{% load custom_filters %}
 
 <html lang="en">
   <head>
@@ -27,12 +28,14 @@
           <tr class=" text-center" style="background-color:#BDD7EE;">
             <th>Name</th>
             <th>Code</th>
+            {% if user|user_belongs_to_group:'Admin, Finance' %}
             <th>Base</th>
             <th>Y1</th>
             <th>Y2</th>
             <th>Y3</th>
             <th>Y4</th>
             <th>Labor Cost</th>
+            {% endif %}
             <th>Labor Rate (In House)</th>
             <th>Labor Rate (On Site)</th>
             <th colspan="2">Names</th>
@@ -45,12 +48,14 @@
               <input type='hidden' name='rate_cost_order' value='{{line.pk}}'/>
               <td>{{line.name}}<span class="handle"></span></td>
               <td>{{line.code}}</td>
+              {% if user|user_belongs_to_group:'Admin, Finance' %}
               <td>$ {{line.base|intcomma}}</td>
               <td>$ {{line.y1|intcomma}}</td>
               <td>$ {{line.y2|intcomma}}</td>
               <td>$ {{line.y3|intcomma}}</td>
               <td>$ {{line.y4|intcomma}}</td>
               <td>$ {{line.labor_cost|floatformat:2}}</td>
+              {% endif %}
               <td>$ {{line.labor_in_house|floatformat:2}}</td>
               <td>$ {{line.labor_on_site|floatformat:2}}</td>
 
@@ -60,6 +65,7 @@
                 {% endif %}
               </td>
 
+              {% if user|user_belongs_to_group:'Admin, Finance' %}
               <td class="text-nowrap">
                 <button 
                 class="btn btn-success"
@@ -79,12 +85,14 @@
                   Delete
                 </button>
               </td>
+              {% endif %}
 
             </tr>
             {% endfor %}
           </tbody>
         </table>
 
+          {% if user|user_belongs_to_group:'Admin, Finance' %}
           <div>
             <table>
               <tr>
@@ -111,6 +119,7 @@
                   <button id="saveOrdering" disabled class="btn btn-success" >Save ordering</button>
                 </form>
                 </td>
+                {% endif %}
                 
               </tr>
             </table>

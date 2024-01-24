@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 #  py .\manage.py shell
 # from budgetTool.models import BillOfMaterials
@@ -40,7 +41,19 @@ class Project(models.Model):
     adjust_BOM=models.FloatField()
     travel_weekly=models.IntegerField()
     isTemplate=models.BooleanField(default=True)
-
+    cost_est_bom=models.FloatField(default=0,blank=True)
+    cost_est_service=models.FloatField(default=0,blank=True)
+    cost_adjusted_bom=models.FloatField(default=0,blank=True)
+    cost_adjusted_service=models.FloatField(default=0,blank=True)
+    list_bom=models.FloatField(default=0,blank=True)
+    list_service=models.FloatField(default=0,blank=True)
+    list_adjusted_bom=models.FloatField(default=0,blank=True)
+    list_adjusted_service=models.FloatField(default=0,blank=True)
+    actual_bom=models.FloatField(default=0,blank=True)
+    actual_service=models.FloatField(default=0,blank=True)
+    hours=models.FloatField(default=0,blank=True)
+    hours_adjusted=models.FloatField(default=0,blank=True)
+    
     class Meta:
         ordering = ['created_at']
     
@@ -48,25 +61,21 @@ class Project(models.Model):
         return (f"{self.name}")
 
 class BillOfMaterials(models.Model):
-
     order = models.IntegerField(blank=True, default=1000)
     index=models.IntegerField(null=True,blank=True)
     name=models.CharField(max_length=100)
     estimate_cost=models.IntegerField()
-    sales_price=models.IntegerField()
+    sales_price=models.IntegerField(blank=True,null=True)
     quantity=models.IntegerField()
     supplier=models.CharField(max_length=300,blank=True)
     actual_cost=models.FloatField()
     Responsible=models.CharField(max_length=300,blank=True)
     description=models.CharField(max_length=300,blank=True)
     notes=models.CharField(max_length=300,blank=True)
-    
     bom_category=models.ForeignKey(BOMCategory,on_delete=models.SET_NULL, null=True,related_name='project_BOM_category')
     project=models.ForeignKey(Project,on_delete=models.CASCADE,related_name='project_bom')
-
     def __str__(self):
         return (f"{self.name}")
-    
     class Meta:
         ordering = ['order']
 
@@ -91,20 +100,17 @@ class RateTableCost(models.Model):
         ordering = ['order']
 
 class Service(models.Model):
-
     # category=models.CharField(max_length=100,choices=SERVICE_CATEGORY)
     order = models.IntegerField(blank=True, default=1000)
     index=models.IntegerField(null=True,blank=True)
     name=models.CharField(max_length=100)
     hours_estimated=models.IntegerField()
     hours_worked=models.IntegerField(blank=True)
-    
     rate_list=models.FloatField(blank=True,default=0)
     rate_cost=models.FloatField(blank=True,default=0)
     travel_actual=models.IntegerField(blank=True)
     notes=models.CharField(max_length=300,blank=True)
     isOnSite=models.BooleanField(default=False)
-
     #calculated field
     hours_adjusted=models.FloatField(default=0)
     travel_estimate=models.FloatField(default=0)
@@ -119,10 +125,8 @@ class Service(models.Model):
     type=models.ForeignKey(RateTableCost,on_delete=models.SET_NULL,null=True, related_name='project_service_type')
     def __str__(self):
         return (f"{self.name}--- {self.category}")
-    
     class Meta:
         ordering = ['order']
-
 
 class BoM(models.Model):
     name=models.CharField(max_length=100)
@@ -131,8 +135,6 @@ class BoM(models.Model):
     def __str__(self):
         return (f"{self.name}")
     
-
-
 class Employee(models.Model):
     name=models.CharField(max_length=100)
     level=models.ForeignKey(RateTableCost,on_delete=models.SET_NULL, null=True,related_name='employee_level')
@@ -145,7 +147,6 @@ class Vendor(models.Model):
     name=models.CharField(max_length=100)
     def __str__(self):
         return (f"{self.name}")
-    
     class Meta:
         ordering = ['index']
 
@@ -159,10 +160,37 @@ class Product_Price(models.Model):
     vendor=models.ForeignKey(Vendor,on_delete=models.SET_NULL, null=True,related_name='product_vendor')
     def __str__(self):
         return (f"{self.item}")
-    
     class Meta:
         ordering = ['order']
 
 
+class Summary(models.Model):
+    cost_est=models.FloatField()
+    cost_adjusted=models.FloatField()
+    list=models.FloatField()
+    list_adjusted=models.FloatField()
+    actual=models.FloatField()
+    list_margin=models.FloatField()
+    list_adjusted_margin=models.FloatField()
+    quoted_margin=models.FloatField()
+    actual_margin=models.FloatField()
 
+class Margins(models.Model):
+    margin_est_bom=models.FloatField()
+    margin_est_service=models.FloatField()
+    margin_adjusted_bom=models.FloatField()
+    margin_adjusted_service=models.FloatField()
+    margin_actual_bom=models.FloatField()
+    margin_actual_service=models.FloatField()
+    margin_quoted_bom=models.FloatField()
+
+class Profile(models.Model):
+    user=models.OneToOneField(User,on_delete=models.CASCADE)
+    bom_index=models.JSONField(blank=True,null=True)
+    service_index=models.JSONField(blank=True,null=True)
+    RateTable_index=models.JSONField(blank=True,null=True)
+    Product_Price_index=models.JSONField(blank=True,null=True)
+
+    def __str__(self):
+        return (f"{self.user}'s profile")
     

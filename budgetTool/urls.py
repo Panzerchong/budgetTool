@@ -28,9 +28,9 @@ urlpatterns = [
     path('edit/<int:pk>/',views.editProject,name='editProject'),
     path('<int:pk>/createService/',views.create_service,name='create_service'),
     path('<int:fk>/<int:pk>/bom/',views.bom_edit,name='bom_edit'),
-    path('<int:pk>/bomDelete/',views.bom_delete,name='bom_delete'),
+    path('<int:fk>/<int:pk>/bomDelete/',views.bom_delete,name='bom_delete'),
     path('<int:fk>/<int:pk>/service/',views.service_edit,name='service_edit'),
-    path('<int:pk>/serviceDelete/',views.service_delete,name='service_delete'),
+    path('<int:fk>/<int:pk>/serviceDelete/',views.service_delete,name='service_delete'),
     path('<int:pk>/serviceOrder/',views.service_order,name='service_order'),
     path('<int:pk>/bomOrder/',views.bom_order,name='bom_order'),
     path('bomCategory/<int:pk>/',views.bom_category_edit,name='bom_category_edit'),
@@ -53,8 +53,6 @@ urlpatterns = [
     path('copyProject/<int:pk>',views.copy_project,name='copy_project'),
     path('priceSheetOrder/',views.price_sheet_order,name='price_sheet_order'),
     
-    
-
     # path('', views.home, name='home'),
     path('register/', views.registerPage, name='registerPage'),
     path('changePassword/', views.change_password, name='change_password'),
@@ -62,3 +60,4 @@ urlpatterns = [
     path('logout/', views.logout_user, name='logout_user'),
     # path('rateTable',views.rate_table,name='rate_table')
 ]
+

@@ -2,6 +2,7 @@ from django import template
 
 register = template.Library()
 
-@register.filter
-def user_belongs_to_group(user, group_name):
-    return user.groups.filter(name=group_name).exists()
+@register.filter(name='user_belongs_to_group')
+def user_belongs_to_group(user, group_names):
+    group_list = [group.strip() for group in group_names.split(',')]
+    return user.groups.filter(name__in=group_list).exists()

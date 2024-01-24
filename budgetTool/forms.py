@@ -43,7 +43,7 @@ class BillModelForm(forms.ModelForm):
             "index": forms.NumberInput(attrs={'placeholder':"#",'style': 'width: 50px;'}),  
             "name": forms.TextInput(attrs={'placeholder':"Part/Item"}),  
             "estimate_cost":forms.NumberInput(attrs={'placeholder':"Cost(Estimate)",'style': 'width: 100px;'}),
-            "sales_price":forms.NumberInput(attrs={'placeholder':"List price",'style': 'width: 100px;'}),
+            "sales_price":forms.NumberInput(attrs={'title': 'Leave blank to get default price or enter custom price','placeholder':"List price",'style': 'width: 100px;'}),
             "quantity":forms.NumberInput(attrs={'placeholder':"Quantity",'style': 'width: 85px;'}),
             "supplier":forms.TextInput(attrs={'placeholder':"Supplier",'style': 'width: 85px;'}),
             "actual_cost":forms.NumberInput(attrs={'placeholder':"Cost (Actual)",'style': 'width: 100px;'}),

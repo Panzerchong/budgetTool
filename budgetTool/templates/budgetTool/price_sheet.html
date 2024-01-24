@@ -22,11 +22,8 @@
   
   <body style="margin-left: 20px; margin-right: 20px;">
   
-  {% if user|user_belongs_to_group:'Admin' or user|user_belongs_to_group:'Account Manager' %}
-  <h1>Price Sheet</h1>
-  {% endif %}
-
   <a class="btn btn-primary" href="/budgetTool/" role="button">Go back to Project lists</a>
+  {% if user|user_belongs_to_group:'Admin, Finance,' %}
   <button 
       class="btn btn-primary"
       hx-get="{% url 'budgetTool:create_vendor' %}"
@@ -36,7 +33,10 @@
         Create a new vendor
   </button>
   <div id="vendorForm"></div>
+  {% endif %}
   <hr>
+  <h1>Price Sheet</h1>
+  <br>
     
 
   {% for vendor in vendors %}
@@ -56,9 +56,13 @@
   
       <tr class=" text-center" style="background-color:#BDD7EE;">
         <th>Item</th>
+        {% if user|user_belongs_to_group:'Admin, Finance' %}
         <th>Cost</th>
+        {% endif %}
         <th>List</th>
+        {% if user|user_belongs_to_group:'Admin, Finance' %}
         <th>Margin</th>
+        {% endif %}
         <th colspan="2">Note</th>
       </tr>
     </thead>
@@ -70,15 +74,20 @@
               <tr data-lookupid="{{line.pk}}" class="text-nowrap">
                 <input type='hidden' name='price_sheet_order' value='{{line.pk}}'/>
                   <td>{{line.item}}<span class="handle"></span></td>
+                  {% if user|user_belongs_to_group:'Admin, Finance' %}
                   <td>$ {{line.cost|floatformat:2|intcomma}}</td>
+                  {% endif %}
                   <td>$ {{line.list|floatformat:2|intcomma}}</td>
+                  {% if user|user_belongs_to_group:'Admin, Finance' %}
                   <td> {{line.margin}} %</td>
+                  {% endif %}
                   <td>
                     {% if line.note %}
                     {{line.note}}
                     {% endif %}
                   </td>
 
+                  {% if user|user_belongs_to_group:'Admin, Finance' %}
                   <td class="text-nowrap">
                     <button 
                     class="btn btn-success"
@@ -98,12 +107,14 @@
                       Delete
                     </button>
                   </td>
+                  {% endif %}
                 </tr>
                 {% endif %}
               {% endfor %}
             </tbody>
           </table>
                 
+          {% if user|user_belongs_to_group:'Admin, Finance' %}
           <div>
             <table>
               <tr>
@@ -134,6 +145,8 @@
                 </tr>
               </table>
             </div>
+            {% endif %}
+
               <hr>
  
         {% endfor %}

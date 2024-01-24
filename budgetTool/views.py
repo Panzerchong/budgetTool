@@ -4,7 +4,7 @@ from django.shortcuts import render,redirect,get_object_or_404
 from django.http import HttpResponse,JsonResponse,QueryDict
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from .models import Product_Price, RateTable, Project,BoM, RateTableCost,Service,BillOfMaterials,ServiceCategory,BOMCategory, Vendor
+from .models import Margins, Product_Price, RateTable, Project,BoM, RateTableCost,Service,BillOfMaterials,ServiceCategory,BOMCategory, Vendor, Summary,Profile
 from .forms import BomCategoryModelForm, OrderForm, ProductPriceModelForm, ProjectForm, ProjectModelForm,BillModelForm, RateCostModelForm, ServiceCategoryModelForm,ServiceModelForm, VendorModelForm,UserForm
 import json
 from django.views.decorators.http import require_http_methods
@@ -17,7 +17,9 @@ from openpyxl.styles import NamedStyle
 from.decorators import allowed_users, unauthenticated_user
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordChangeForm
-
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.db.models import Case, When, Value, IntegerField
 
 percentage_style = NamedStyle(name='percentage')
 percentage_style.number_format = '0.00%'
@@ -33,6 +35,19 @@ border = Border(
 )
 currency_style.border = border
 percentage_style.border = border
+
+
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()
+
 
 def registerPage(request):
 	if request.method == 'POST':
@@ -91,13 +106,10 @@ def budget_list(request):
     }
     return render(request, 'budgetTool/budget_list.html',context)
 
-@allowed_users(allowed_roles=['Admin','Account Manager'])
+@allowed_users(allowed_roles=['Admin','Account Manager','Finance'])
 def rate_table(request):
     user=User.objects.get(username=request.user)
-    print(user)
-    if user.groups.filter(name='Admin').exists():
-        print(user.groups.all())
-
+    print(user.id)
     table=RateTable.objects.all()
     tableCost=RateTableCost.objects.all()
     context={
@@ -107,17 +119,41 @@ def rate_table(request):
     return render(request,'budgetTool/rate_table.html',context)
 
 def budget_detail(request,pk):
+    user_profile = Profile.objects.get(user=request.user)
+
+    bom_order = user_profile.bom_index
+    if bom_order == None:
+        bom_order = ""
+    bom_ids = [int(i) for i in bom_order if i.isdigit()]
+    bom_items = BillOfMaterials.objects.filter(project_id=pk)
+    preserved_order = Case(
+        *[When(pk=pk, then=Value(i)) for i, pk in enumerate(bom_ids)],
+        default=Value(len(bom_ids)+1),
+        output_field=IntegerField()
+    )
+    bom = bom_items.annotate(custom_order=preserved_order).order_by('custom_order')
+
+    service_order = user_profile.service_index
+    if service_order == None:
+        service_order = ""
+    service_ids = [int(i) for i in service_order if i.isdigit()]
+    service_items = Service.objects.filter(project_id=pk)
+    service_preserved_order = Case(
+        *[When(pk=pk, then=Value(i)) for i, pk in enumerate(service_ids)],
+        default=Value(len(service_ids)+1),
+        output_field=IntegerField()
+    )
+    service = service_items.annotate(custom_order=service_preserved_order).order_by('custom_order')
+
     project=Project.objects.get(id=pk)
     table=RateTable.objects.all()
-    bom=BillOfMaterials.objects.filter(project_id=pk)
+    # bom=BillOfMaterials.objects.filter(project_id=pk)
     #filter category that is used by current project bom
     bom_category=BOMCategory.objects.filter(project_BOM_category__in=bom).distinct()
-
     #service
-    service=Service.objects.filter(project_id=pk)
+    # service=Service.objects.filter(project_id=pk)
     #filter out category not used
     service_category=ServiceCategory.objects.filter(project_service_category__in=service).distinct()
-
 
     bomForm=BillModelForm()
     if request.method =="POST":
@@ -131,8 +167,71 @@ def budget_detail(request,pk):
             print("invalid form")
             errors = bomForm.errors.as_json()
             return JsonResponse({'status': 'error', 'errors': errors}, status=400)
+        
+    if len(bom)+len(service) == 0:
+        list_margin=100
+        list_adjusted_margin=100
+        actual_margin=100
+        quoted_margin=100
+    else:
+        list_margin=(1-(project.cost_est_bom+project.cost_est_service)/(project.list_bom+project.list_service))*100
+        list_adjusted_margin=(1-(project.cost_adjusted_bom+project.cost_adjusted_service)/(project.list_adjusted_bom+project.list_adjusted_service))*100
+        actual_margin=(1-(project.actual_bom+project.actual_service)/(project.quote_BOM+project.quote_Service))*100
+        quoted_margin=(1-(project.cost_est_bom+project.cost_est_service)/(project.quote_BOM+project.quote_Service))*100
+
+    summary = Summary(
+        cost_est=project.cost_est_bom+project.cost_est_service,
+        cost_adjusted=project.cost_adjusted_bom+project.cost_adjusted_service,
+        list=project.list_bom+project.list_service,
+        list_adjusted=project.list_adjusted_bom+project.list_adjusted_service,
+        actual=project.actual_bom+project.actual_service,
+        list_margin=list_margin,
+        list_adjusted_margin=list_adjusted_margin,
+        actual_margin=actual_margin,
+        quoted_margin=quoted_margin,
+    )
+
+    if len(bom)==0:
+        margin_est_bom=100
+        margin_adjusted_bom=100
+        margin_actual_bom=100
+        margin_quoted_bom=100
+    else:
+        margin_est_bom=round((1-(project.cost_est_bom/project.list_bom))*100,2)
+        margin_adjusted_bom=round((1-(project.cost_adjusted_bom/project.list_adjusted_bom))*100,2)
+        margin_actual_bom=round((1-(project.actual_bom/project.quote_BOM))*100,2)
+        margin_quoted_bom=round((1-(project.cost_est_bom/project.quote_BOM))*100,2)
+    
+    if len(service)==0:
+        margin_est_service=100
+        margin_adjusted_service=100
+        margin_actual_service=100
+    else:
+        margin_est_service=round((1-(project.cost_est_service/project.list_service))*100,2)
+        margin_adjusted_service=round((1-(project.cost_adjusted_service/project.list_adjusted_service))*100,2)
+        margin_actual_service=round((1-(project.actual_service/project.quote_Service))*100,2)
+
+    print(margin_est_service)
+    margin=Margins(
+        margin_est_bom=margin_est_bom,
+        margin_est_service=margin_est_service,
+        margin_adjusted_bom=margin_adjusted_bom,
+        margin_adjusted_service=margin_adjusted_service,
+        margin_actual_bom=margin_actual_bom,
+        margin_actual_service=margin_actual_service,
+        margin_quoted_bom=margin_quoted_bom,
+        # margin_est_bom=round((1-(project.cost_est_bom/project.list_bom))*100,2),
+        # margin_est_service=round((1-(project.cost_est_service/project.list_service))*100,2),
+        # margin_adjusted_bom=round((1-(project.cost_adjusted_bom/project.list_adjusted_bom))*100,2),
+        # margin_adjusted_service=round((1-(project.cost_adjusted_service/project.list_adjusted_service))*100,2),
+        # margin_actual_bom=round((1-(project.actual_bom/project.quote_BOM))*100,2),
+        # margin_actual_service=round((1-(project.actual_service/project.quote_Service))*100,2),
+        # margin_quoted_bom=round((1-(project.cost_est_bom/project.quote_BOM))*100,2),
+    )
 
     context={
+        "summary":summary,
+        "margin":margin,
         "table":table,
         "project":project,
         "service": service,
@@ -143,37 +242,121 @@ def budget_detail(request,pk):
     }
     return render(request, 'budgetTool/budget_detail.html',context)
 
+##create new template
 def create_project(request):
     form=ProjectModelForm()
     if request.method =="POST":
-        print("received")
         form=ProjectModelForm(request.POST)
         if form.is_valid():
             project=form.save()
-            print("created a new project")
+            print("created a new template")
             return redirect(f'/budgetTool/{project.pk}')
-
     context={
         "form":ProjectModelForm()
     }
     return render(request,"budgetTool/create_project.html",context)
 
-def project_update(request,pk):
+def editProject(request,pk):
     project=Project.objects.get(id=pk)
-    form=ProjectModelForm(instance=project)
-    if request.method =="POST":
-        print("received")
-        form=ProjectModelForm(request.POST,instance=project)
-        if form.is_valid():
-            form.save()
-            print("created a new project")
-            return redirect(f'/budgetTool/{project.pk}')
-    context={
-        "project":project,
-        "form":form,
-    }
 
-    return render(request,"budgetTool/project_update.html",context)
+    if request.method == 'POST':
+        if request.POST.get('name'):
+            project.name=request.POST.get('name','')
+        if request.POST.get('quote_BOM'):
+            project.quote_BOM=request.POST.get('quote_BOM','')
+        if request.POST.get('quote_Service'):
+            project.quote_Service=request.POST.get('quote_Service','')
+        if request.POST.get('adjust_Service'):
+            project.adjust_Service=request.POST.get('adjust_Service','')
+            for service in Service.objects.filter(project=project):
+                service.hours_adjusted = service.hours_estimated * (1 + float(project.adjust_Service))
+                service.sub_total_adjusted_list = service.hours_adjusted * service.rate_list + service.travel_estimate
+                service.sub_total_adjusted_cost_est = service.hours_adjusted * service.rate_cost + service.travel_estimate
+                service.save()
+        if request.POST.get('adjust_BOM'):
+            project.adjust_BOM=request.POST.get('adjust_BOM','')
+        if request.POST.get('travel_weekly'):
+            project.travel_weekly=request.POST.get('travel_weekly','')
+            for service in Service.objects.filter(project=project):
+                if "On Site" in service.type:
+                    service.travel_estimate = service.hours_estimated * float(project.travel_weekly) / 40
+                else:
+                    service.travel_estimate = 0
+
+                service.sub_total_list = service.hours_estimated * service.rate_list + service.travel_estimate
+                service.sub_total_adjusted_list = service.hours_adjusted * service.rate_list + service.travel_estimate
+                service.sub_total_cost_est = service.hours_estimated * service.rate_cost + service.travel_estimate
+                service.sub_total_adjusted_cost_est = service.hours_adjusted * service.rate_cost + service.travel_estimate
+                service.save()
+        project.save()
+        return HttpResponse("Project updated successfully")
+    
+    ProjectForm=ProjectModelForm(instance=project)
+    context = {"ProjectForm": ProjectForm, "project": project}
+    if request.GET.get('quote_BOM'):
+        return render(request,'budgetTool/partials/project/editProjectBomQuote.html',context)
+    elif request.GET.get('name'):
+        return render(request,'budgetTool/partials/project/editProjectName.html',context)
+    elif request.GET.get('quote_Service'):
+        return render(request,'budgetTool/partials/project/editProjectServiceQuote.html',context)
+    elif request.GET.get('adjust_Service'):
+        return render(request,'budgetTool/partials/project/editProjectServiceAdjust.html',context)
+    elif request.GET.get('adjust_BOM'):
+        return render(request,'budgetTool/partials/project/editProjectBomAdjust.html',context)
+    elif request.GET.get('travel_weekly'):
+        return render(request,'budgetTool/partials/project/editProjectTravel.html',context)
+    else:
+        return HttpResponse("Project update")
+   
+##calculate the summary after bom and service is updated
+def project_update(pk):
+    project=Project.objects.get(id=pk)
+    boms=BillOfMaterials.objects.filter(project=project)
+    services=Service.objects.filter(project=project)
+    # print(f'check boms: {boms}')
+    ##clear old data
+    project.cost_est_bom=0
+    project.cost_adjusted_bom=0
+    project.list_bom=0
+    project.list_adjusted_bom=0
+    project.actual_bom=0
+    project.cost_est_service=0
+    project.cost_adjusted_service=0
+    project.list_service=0
+    project.list_adjusted_service=0
+    project.actual_service=0
+    project.hours=0
+    project.hours_adjusted=0
+    
+    for bom in boms:
+        ## cost estimate
+        project.cost_est_bom+=bom.estimate_cost*bom.quantity
+        ## list
+        project.list_bom+=bom.sales_price*bom.quantity
+        ## actual
+        project.actual_bom+=bom.actual_cost*bom.quantity
+    ## cost adjusted
+    project.cost_adjusted_bom=project.cost_est_bom
+    ## list adjusted
+    project.list_adjusted_bom=project.list_bom*(1+project.adjust_BOM)
+
+    for service in services:
+        ## cost estimate
+        project.cost_est_service+=service.sub_total_cost_est
+        ## cost adjusted
+        project.cost_adjusted_service+=service.sub_total_adjusted_cost_est
+        ## list
+        project.list_service+=service.sub_total_list
+        ## list adjusted
+        project.list_adjusted_service+=service.sub_total_adjusted_list
+        ## actual
+        project.actual_service+=service.cost_actual
+        ## hours
+        project.hours+=service.hours_estimated
+        ## hours adjusted
+        project.hours_adjusted+=service.hours_adjusted
+    print(f'hours adjusted: {project.hours_adjusted}')
+    project.save()
 
 def project_delete(request,pk):
     project=Project.objects.get(id=pk)
@@ -188,12 +371,16 @@ def create_bom(request, pk):
         request_data = request.POST.copy()
         mutable_data = QueryDict(mutable=True)
         mutable_data.update(request_data)
+        if request_data['sales_price'] == "":
+            mutable_data['sales_price'] = int(float(request_data['estimate_cost']) / 0.6)
+        print(mutable_data)
         mutable_data.appendlist('project', project.pk)
         bomForm = BillModelForm(mutable_data)
         if bomForm.is_valid():
             bomForm.save()
+            project_update(pk)
             print("created a new BOM")
-            return HttpResponse("Saved")
+            return HttpResponse("Saved bom")
     bomForm = BillModelForm(initial={'project': project})
     context = {"bomForm": bomForm, "project": project}
     return render(request, "budgetTool/partials/bomForm.html", context)
@@ -268,6 +455,7 @@ def create_service(request,pk):
                 sub_total_adjusted_cost_est=sub_total_adjusted_cost_est,
                 cost_actual=cost_actual,
             )
+            project_update(pk)
             return HttpResponse("Service Saved")
     context={
         "form":ServiceModelForm(initial={'project': project},),
@@ -325,6 +513,7 @@ def service_edit(request, pk, fk):
             item.sub_total_adjusted_cost_est = item.hours_adjusted * item.rate_cost + item.travel_estimate
             item.cost_actual = item.hours_worked * item.rate_cost + item.travel_actual
             item.save()
+            project_update(fk)
             return HttpResponse("Service updated successfully")
 
     else:
@@ -335,126 +524,47 @@ def service_edit(request, pk, fk):
         "form": form,
     }
     return render(request, "budgetTool/partials/serviceFormEdit.html", context)
-
-def bomSave(request,pk):
-    project=Project.objects.get(id=pk)
-    
-    if request.method == 'POST':
-        data = json.loads(request.body)
-        form = BillModelForm(data)
-
-        if form.is_valid():
-            new_item = form.save()
-            return JsonResponse({'id': new_item.id})
-        else:
-            return JsonResponse({'error': 'Invalid form data'}, status=400)
-    else:
-        return JsonResponse({'error': 'Invalid request method'})
-
-
-# def home(request):
-#     if request.method == 'POST':
-#         username=request.POST['username']
-#         password=request.POST['password']
-
-#         user=authenticate(request, username=username, password=password)
-#         if user is not None:
-#             login(request,user)
-#             messages.success(request,"You have been logged in!")
-#             return redirect('home')
-#         else:
-#             messages.success(request,"There was an error log in. Please try again...")
-#             return redirect('index')
-#     else:
-#         return render(request, 'index.html',{})
-
-def editProject(request,pk):
-    project=Project.objects.get(id=pk)
-
-    if request.method == 'POST':
-        if request.POST.get('name'):
-            project.name=request.POST.get('name','')
-        if request.POST.get('quote_BOM'):
-            project.quote_BOM=request.POST.get('quote_BOM','')
-        if request.POST.get('quote_Service'):
-            project.quote_Service=request.POST.get('quote_Service','')
-        if request.POST.get('adjust_Service'):
-            project.adjust_Service=request.POST.get('adjust_Service','')
-            for service in Service.objects.filter(project=project):
-                service.hours_adjusted = service.hours_estimated * (1 + float(project.adjust_Service))
-                service.sub_total_adjusted_list = service.hours_adjusted * service.rate_list + service.travel_estimate
-                service.sub_total_adjusted_cost_est = service.hours_adjusted * service.rate_cost + service.travel_estimate
-                service.save()
-        if request.POST.get('adjust_BOM'):
-            project.adjust_BOM=request.POST.get('adjust_BOM','')
-        if request.POST.get('travel_weekly'):
-            project.travel_weekly=request.POST.get('travel_weekly','')
-            for service in Service.objects.filter(project=project):
-                if "On Site" in service.type:
-                    service.travel_estimate = service.hours_estimated * float(project.travel_weekly) / 40
-                else:
-                    service.travel_estimate = 0
-
-                service.sub_total_list = service.hours_estimated * service.rate_list + service.travel_estimate
-                service.sub_total_adjusted_list = service.hours_adjusted * service.rate_list + service.travel_estimate
-                service.sub_total_cost_est = service.hours_estimated * service.rate_cost + service.travel_estimate
-                service.sub_total_adjusted_cost_est = service.hours_adjusted * service.rate_cost + service.travel_estimate
-                service.save()
-        project.save()
-        return HttpResponse("Project updated successfully")
-    
-    ProjectForm=ProjectModelForm(instance=project)
-    context = {"ProjectForm": ProjectForm, "project": project}
-    if request.GET.get('quote_BOM'):
-        return render(request,'budgetTool/partials/project/editProjectBomQuote.html',context)
-    elif request.GET.get('name'):
-        return render(request,'budgetTool/partials/project/editProjectName.html',context)
-    elif request.GET.get('quote_Service'):
-        return render(request,'budgetTool/partials/project/editProjectServiceQuote.html',context)
-    elif request.GET.get('adjust_Service'):
-        return render(request,'budgetTool/partials/project/editProjectServiceAdjust.html',context)
-    elif request.GET.get('adjust_BOM'):
-        return render(request,'budgetTool/partials/project/editProjectBomAdjust.html',context)
-    elif request.GET.get('travel_weekly'):
-        return render(request,'budgetTool/partials/project/editProjectTravel.html',context)
-    else:
-        return HttpResponse("Project update")
-    
+ 
 def bom_edit(request, pk, fk):
     item = get_object_or_404(BillOfMaterials, id=pk, project_id=fk)
-
     if request.method == "POST":
         request_data = request.POST.copy()
         request_data['project'] = fk  # Add project to POST data
+        if request_data['sales_price'] == "":
+            request_data['sales_price'] = int(float(request_data['estimate_cost']) / 0.6)
         bomForm = BillModelForm(request_data, instance=item)
-
         if bomForm.is_valid():
             bomForm.save()
+            project_update(fk)
             return HttpResponse("BOM updated successfully")
-
     else:
         bomForm = BillModelForm(instance=item)
-
     context = {
         "item": item,
         "bomForm": bomForm,
     }
-
     return render(request, "budgetTool/partials/bomFormEdit.html", context)
 
-def bom_delete(request,pk):
+def bom_delete(request,pk,fk):
     bom=BillOfMaterials.objects.get(id=pk)
     bom.delete()
+    project_update(fk)
+    return HttpResponse("BOM deleted successfully")
 
-def service_delete(request,pk):
+def service_delete(request,pk,fk):
     service=Service.objects.get(id=pk)
     service.delete()
+    project_update(fk)
+    return HttpResponse("Service deleted successfully")
 
 def service_order(request,pk):
     form=OrderForm(request.POST)
 
     if form.is_valid():
         ordered_ids = form.cleaned_data["ordering"].split(',')
+        user_profile = Profile.objects.get(user=request.user)
+        user_profile.service_index = ordered_ids
+        user_profile.save()
         print(ordered_ids)
         current_order = 1
         for lookup_id in ordered_ids:
@@ -471,6 +581,9 @@ def bom_order(request,pk):
 
     if form.is_valid():
         ordered_ids = form.cleaned_data["ordering"].split(',')
+        user_profile = Profile.objects.get(user=request.user)
+        user_profile.bom_index = ordered_ids
+        user_profile.save()
         current_order = 1
         for lookup_id in ordered_ids:
             if lookup_id.isdigit() and lookup_id != "0":
@@ -1067,3 +1180,4 @@ def price_sheet_order(request):
                 print(f'what is priceSheet index: {cost.order}')
                 current_order += 1
         return HttpResponse("order updated successfully")
+
