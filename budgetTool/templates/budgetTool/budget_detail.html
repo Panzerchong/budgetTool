@@ -1,8 +1,11 @@
 {% load humanize %}
 <!doctype html>
-<!-- {% load bootstrap5 %}
-{% bootstrap_css %} -->
+{% comment %}
+{% load bootstrap5 %}
+{% bootstrap_css %}
 {% bootstrap_javascript %}
+{% endcomment %}
+
 {% load static %}
 {% load mathfilters %}
 {% load custom_filters %}
@@ -26,13 +29,37 @@
     <div id="projectPk" projectPk="{{project.pk}}"></div>
 
     
-    <a class="btn btn-primary" href="/budgetTool/" role="button">Go back to Project lists</a>
-    <a class="btn btn-primary" onclick="projectDelete('{{ project.pk }}')" role="button">Delete</a>
-    {% if user|user_belongs_to_group:'Admin, Finance' %}
-    <a class="btn btn-primary" href="{% url 'budgetTool:download_excel' pk=project.pk %}" role="button">Export to Excel</a>
-    {% endif %}
+    <nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/budgetTool/">Back</a>
+        
+       
+        <div class="collapse navbar-collapse" id="navbarColor02">
+          <ul class="navbar-nav me-auto">
+            {% if user|user_belongs_to_group:'Admin, Finance' %}
+            <li class="nav-item">
+              <a class="nav-link" onclick="projectDelete('{{ project.pk }}')" role="button">Delete</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'budgetTool:download_excel' pk=project.pk %}">Export to Excel</a>
+            </li>
+            {% endif %}
+          </ul>
+          
+          <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'budgetTool:change_password' %}">Edit password</a>
+            </li>
+    
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'budgetTool:logout_user' %}">Logout</a>
+            </li>
+          </ul>
+          
+        </div>
+      </div>
+    </nav>
 
-      <hr>
       <div id="projectName">
         {% if user|user_belongs_to_group:'Admin, Finance' %}
         <h1 

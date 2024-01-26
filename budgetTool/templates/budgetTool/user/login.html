@@ -1,4 +1,29 @@
-{% block content %}   
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Budget Tool</title>
+  </head>
+  <body style="margin-left: 20px; margin-right: 20px;">
+
+
+<nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
+  <div class="container-fluid">
+    <a class="navbar-brand">Login</a>
+    
+    <div class="collapse navbar-collapse" id="navbarColor02">
+      
+      <ul class="navbar-nav me-sm-2" style="display: flex; justify-content: flex-end;">
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'budgetTool:registerPage' %}">Register</a>
+        </li>
+      </ul>
+      
+    </div>
+  </div>
+</nav>
 
 <div class="col-md-6 offset-md-3">
     {% if user.is_authenticated %}
@@ -6,9 +31,6 @@
     <h1>Logged in the system</h1>
 
     {% else %}
-    <a class="btn btn-primary" href="{% url 'budgetTool:registerPage' %}" role="button" style="float: right;">Register</a>
-
-    <h1> Login</h1>
     <br/>
 
     <form method="POST" action="{% url 'budgetTool:login_user' %}">
@@ -22,7 +44,7 @@
               <input type="password" class="form-control" name="password", placeholder="Password" required>
             </div>
 
-            <button type="submit" class="btn btn-secondary">Submit</button>
+            <button type="submit" class="btn btn-outline-light">Submit</button>
           </form>
     
     </form>
@@ -30,4 +52,5 @@
     {% endif %}
 
 </div>
-{% endblock %}
+  
+    </body>

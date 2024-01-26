@@ -1,3 +1,5 @@
+{% load custom_filters %}
+
 <div class="container">
   {% if messages %}
     {% for message in messages %}
@@ -11,25 +13,43 @@
   {% endif %}
 </div> 
 
-<nav class="navbar navbar-expand-lg">
-    <div class="container-fluid">
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          {% if user.is_authenticated %}
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'budgetTool:change_password' %}">Edit password</a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'budgetTool:logout_user' %}">Logout</a>
-            </li>
-          </ul>
+{% if user.is_authenticated %}
+<nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
+  <div class="container-fluid">
+    <a class="navbar-brand">BudgetTool</a>
+    
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    
+    <div class="collapse navbar-collapse" id="navbarColor02">
+      
+      <ul class="navbar-nav me-auto">
+        {% if user|user_belongs_to_group:'Admin, Finance, Account Manager, Engineering Lead' %}
+        <li class="nav-item">
+          <a class="nav-link" href="/budgetTool/rate_table">Rate Table</a>
+        </li>
         
-          {% endif %}
-        </ul>
-      </div>
-    </div>
-  </nav>
+        <li class="nav-item">
+          <a class="nav-link" href="/budgetTool/price_sheet">Price Sheet</a>
+        </li>
+        {% endif %}
+        
+      </ul>
 
+      
+      <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'budgetTool:change_password' %}">Edit password</a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="{% url 'budgetTool:logout_user' %}">Logout</a>
+        </li>
+      </ul>
+      
+    </div>
+  </div>
+</nav>
+{% endif %}
  

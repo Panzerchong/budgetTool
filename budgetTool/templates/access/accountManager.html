@@ -314,7 +314,6 @@
       <th scope="col">Task</th>
       <th scope="col">Type</th>
       <th scope="col">On Site</th>
-      <th scope="col">Hours Estimated</th>
       <th scope="col">Hours Adjusted</th>
       <th scope="col">Hours Worked</th>
       <!-- <th scope="col">Travel Est</th>
@@ -377,7 +376,6 @@
                 <input class="form-check-input" type="checkbox" value=""  disabled >
                 {% endif %}
               </td>
-              <td>{{ line.hours_estimated }}</td>
               <td>{{line.hours_adjusted|floatformat:0}}</td>
               <td>{{ line.hours_worked }}</td>
               <!-- <td>${{ line.travel_estimate|floatformat:0|intcomma}}</td>

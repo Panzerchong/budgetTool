@@ -106,7 +106,7 @@ def budget_list(request):
     }
     return render(request, 'budgetTool/budget_list.html',context)
 
-@allowed_users(allowed_roles=['Admin','Account Manager','Finance'])
+@allowed_users(allowed_roles=['Admin','Account Manager','Finance','Engineering Lead'])
 def rate_table(request):
     user=User.objects.get(username=request.user)
     print(user.id)
@@ -1032,7 +1032,7 @@ def rateCost_delete(request,pk):
     cost=RateTableCost.objects.get(id=pk)
     cost.delete()
 
-@allowed_users(allowed_roles=['Admin','Account Manager'])
+@allowed_users(allowed_roles=['Admin','Account Manager','Engineering Lead'])
 def price_sheet(request):
     vendors=Vendor.objects.all()
     Product_Prices=Product_Price.objects.all()

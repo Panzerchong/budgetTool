@@ -1,14 +1,20 @@
 
 <!doctype html>
+{% comment %}
 {% load bootstrap5 %}
 {% bootstrap_css %}
 {% bootstrap_javascript %}
+{% endcomment %}
+{% load static %}
 {% load custom_filters %}
 
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="{% static 'bootstrap.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'bootstrap.min.css'%}">
     <title>Budget Tool</title>
   
   </head>
@@ -20,10 +26,6 @@
   {% if user.is_authenticated %}
     
   {% if user|user_belongs_to_group:'Admin, Finance, Account Manager, Engineering Lead' %}
-  <a class="btn btn-primary" href="/budgetTool/rate_table" role="button">Rate Table</a>
-  <a class="btn btn-primary" href="/budgetTool/price_sheet" role="button">Price Sheet</a>
-  <a class="btn btn-primary" href="/budgetTool/create" role="button">Create a new template</a>
-  
   <h1>Template lists</h1>
 
     <ul>
@@ -33,10 +35,12 @@
         </li>
       {% endfor %}
     </ul>
+
+    <a class="btn btn-outline-light" href="/budgetTool/create" role="button">Create a new template</a>
     {% endif %}
   
 
-    <h1>Project lists</h1>
+  <h1>Project lists</h1>
 
     <ul>
       {% for project in projects %}
@@ -47,17 +51,30 @@
     </ul>
 
   <div class="dropdown">
-      <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <button class="btn btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
         Create a new project
       </button>
       <ul class="dropdown-menu">
-
         {% for template in templates %}
           <li><a class="dropdown-item" href="{% url 'budgetTool:copy_project' pk=template.pk %}">{{template.name}}</a></li>
         {% endfor %}
 
       </ul>
+  </div>
+
+  <!-- <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+    <a class="btn btn-outline-light" href="/budgetTool/create" role="button">Create a new project</a>
+    <div class="btn-group" role="group">
+      <button id="btnGroupDrop4" type="button" class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+      <div class="dropdown-menu" aria-labelledby="btnGroupDrop4">
+        {% for template in templates %}
+        <a class="dropdown-item" href="{% url 'budgetTool:copy_project' pk=template.pk %}">{{template.name}}</a>
+        {% endfor %}
+      </div>
     </div>
+  </div> -->
+
+
   {% else %}
     {% include 'budgetTool/user/login.html' %}
   {% endif %}

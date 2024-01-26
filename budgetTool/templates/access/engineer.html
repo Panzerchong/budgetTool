@@ -183,7 +183,6 @@
       <th scope="col">Type</th>
       <th scope="col">On Site</th>
       <th scope="col">Hours Estimated</th>
-      <th scope="col">Hours Adjusted</th>
       <th scope="col" colspan="2">Hours Worked</th>
     </tr>
   </thead>
@@ -237,7 +236,6 @@
                 {% endif %}
               </td>
               <td>{{ line.hours_estimated }}</td>
-              <td>{{line.hours_adjusted|floatformat:0}}</td>
               <td>{{ line.hours_worked }}</td>
 
               <td class="text-nowrap">

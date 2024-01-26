@@ -1,11 +1,12 @@
 <!doctype html>
-{% load bootstrap5 %}
-{% bootstrap_css %}
-{% bootstrap_javascript %}
+{% load static %}
+
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">  
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="{% static 'bootstrap.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'bootstrap.min.css'%}">
   </head>
 
   <body style="margin-left: 20px; margin-right: 20px;">

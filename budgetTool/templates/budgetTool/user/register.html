@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
+
 {% block content %}
-
-
 <div class="col-md-6 offset-md-3">
 <h1>Register</h1>
 <br/>
@@ -22,11 +21,9 @@
 	{{ form.as_p }}
 
 	<br/>
-	  <button type="submit" class="btn btn-primary">Register</button>
-	  <a class="btn btn-secondary" href="/budgetTool/" role="button">Go back to Project lists</a>
+	  <button type="submit" class="btn btn-outline-light">Register</button>
+	  <button type="button" class="btn btn-outline-light" onclick="window.location.href='/budgetTool/'">Cancel</button>
 	</form>
-
-
 
 </div>
 
