@@ -10,15 +10,11 @@
   </head>
 
   <body style="margin-left: 20px; margin-right: 20px;">
-    <a class="btn btn-primary" href="/budgetTool/" role="button">Go back to Project lists</a>
-      <hr>
-      <h1>Create a Project</h1>
-
+    {% include 'navbarBack.html' %}
         <form method="post" autocomplete="off">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Submit</button>
+        <button type="submit" class="btn btn-outline-light">Submit</button>
         </form>
-      
   </body>
 </html>

@@ -36,9 +36,6 @@ border = Border(
 currency_style.border = border
 percentage_style.border = border
 
-
-
-
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
