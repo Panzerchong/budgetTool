@@ -105,10 +105,19 @@ def budget_list(request):
 
 @allowed_users(allowed_roles=['Admin','Account Manager','Finance','Engineering Lead'])
 def rate_table(request):
-    user=User.objects.get(username=request.user)
-    print(user.id)
-    table=RateTable.objects.all()
-    tableCost=RateTableCost.objects.all()
+    user_profile=Profile.objects.get(user=request.user)
+    table_order=user_profile.RateTable_index
+    if table_order == None:
+        table_order = ""
+    table_ids = [int(i) for i in table_order if i.isdigit()]
+    table = RateTableCost.objects.all()
+    preserved_order = Case(
+        *[When(pk=pk, then=Value(i)) for i, pk in enumerate(table_ids)],
+        default=Value(len(table_ids)+1),
+        output_field=IntegerField()
+    )
+    tableCost = table.annotate(custom_order=preserved_order).order_by('custom_order')
+
     context={
         "table": table,
         "tableCost": tableCost,
@@ -1032,7 +1041,18 @@ def rateCost_delete(request,pk):
 @allowed_users(allowed_roles=['Admin','Account Manager','Engineering Lead'])
 def price_sheet(request):
     vendors=Vendor.objects.all()
-    Product_Prices=Product_Price.objects.all()
+    user_profile=Profile.objects.get(user=request.user)
+    table_order=user_profile.Product_Price_index
+    if table_order == None:
+        table_order = ""
+    table_ids= [int(i) for i in table_order if i.isdigit()]
+    table=Product_Price.objects.all()
+    preserved_order = Case(
+        *[When(pk=pk, then=Value(i)) for i, pk in enumerate(table_ids)],
+        default=Value(len(table_ids)+1),
+        output_field=IntegerField()
+    )
+    Product_Prices = table.annotate(custom_order=preserved_order).order_by('custom_order')
 
     context={
         "vendors":vendors,
@@ -1104,15 +1124,9 @@ def rate_cost_order(request):
     form=OrderForm(request.POST)
     if form.is_valid():
         ordered_ids = form.cleaned_data["ordering"].split(',')
-        print(ordered_ids)
-        current_order = 1
-        for lookup_id in ordered_ids:
-            if lookup_id.isdigit() and lookup_id != "0":
-                cost = RateTableCost.objects.get(id=lookup_id)
-                cost.order = current_order
-                cost.save(update_fields=["order"])
-                print(f'what is rate cost table index: {cost.order}')
-                current_order += 1
+        user_profile=Profile.objects.get(user=request.user)
+        user_profile.RateTable_index=ordered_ids
+        user_profile.save()
         return HttpResponse("order updated successfully")
     
 def create_vendor(request):
@@ -1165,9 +1179,13 @@ def copy_project(request,pk):
 
 def price_sheet_order(request):
     form=OrderForm(request.POST)
+
     if form.is_valid():
         ordered_ids = form.cleaned_data["ordering"].split(',')
-        print(ordered_ids)
+        user_profile = Profile.objects.get(user=request.user)
+        user_profile.Product_Price_index = ordered_ids
+        user_profile.save()
+        # print(ordered_ids)
         current_order = 1
         for lookup_id in ordered_ids:
             if lookup_id.isdigit() and lookup_id != "0":

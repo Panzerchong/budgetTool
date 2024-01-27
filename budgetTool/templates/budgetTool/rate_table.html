@@ -95,7 +95,7 @@
           </tbody>
         </table>
 
-          {% if user|user_belongs_to_group:'Admin, Finance' %}
+          
           <div>
             <table>
               <tr>
@@ -105,12 +105,14 @@
       
             <table>
               <tr>
+                {% if user|user_belongs_to_group:'Admin, Finance' %}
                 <td>
                   <button type="button" class="btn btn-outline-light"
                   hx-get="{% url 'budgetTool:create_rateTableCost' %}"
                   hx-target="#rateCostTable"
                   hx-swap="beforeend"> Add New Row</button>
                 </td>
+                {% endif %}
 
                 <td>
                   <form id="rateCostOrderingForm" method="POST"
@@ -122,7 +124,7 @@
                   <button id="saveOrdering" disabled class="btn btn-outline-success" >Save ordering</button>
                 </form>
                 </td>
-                {% endif %}
+                
                 
               </tr>
             </table>
