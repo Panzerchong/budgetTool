@@ -4,7 +4,7 @@
     style="display: flex; align-items: center;"
     >
     {% csrf_token %}
-    <input type="number" name="quote_Service" value="{{project.quote_Service}}" min="0" autofocus>
-    <button class="btn btn-success"> Save</button>
-    <button class="btn btn-secondary" type="button" onclick="window.location.reload(true)"> Cancel</button>
+    <input type="number" name="quote_Service" value="{{project.quote_Service}}" min="1" autofocus>
+    <button class="btn btn-outline-success"> Save</button>
+    <button class="btn btn-outline-light" type="button" onclick="window.location.reload(true)"> Cancel</button>
 </form>

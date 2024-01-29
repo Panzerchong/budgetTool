@@ -75,6 +75,7 @@
           <td><strong>Adjusted for Complexity</strong></td>
           <td>
             <div
+              class="text-success"
               id="adjustComplexityBOM"
               hx-get="{% url 'budgetTool:editProject' pk=project.pk%}"
               hx-params="adjust_BOM"
@@ -118,6 +119,7 @@
           <td class="text-nowrap"><strong>Adjusted for Complexity</strong></td>
           <td>
             <div
+              class="text-success"
               hx-get="{% url 'budgetTool:editProject' pk=project.pk%}"
               hx-params="adjust_Service"
               hx-target="this"
@@ -136,11 +138,12 @@
           <td><strong>Quoted</strong></td>
           <td>
             <div
-            hx-get="{% url 'budgetTool:editProject' pk=project.pk%}"
-            hx-params="quote_Service"
-            hx-target="this"
-            hx-swap="outerHTML">
-            ${{project.quote_Service|intcomma}}
+              class="text-success"
+              hx-get="{% url 'budgetTool:editProject' pk=project.pk%}"
+              hx-params="quote_Service"
+              hx-target="this"
+              hx-swap="outerHTML">
+              ${{project.quote_Service|intcomma}}
             </div>
           </td>
           <td colspan="10"></td>

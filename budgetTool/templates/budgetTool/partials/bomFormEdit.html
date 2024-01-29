@@ -1,119 +1,31 @@
-<!-- <form 
-hx-put="{% url 'budgetTool:bom_edit' fk=item.project_id pk=item.id %}"
-hx-target="this"
-hx-swap="outerHTML"
->
-<p>test input</p>
-    {% csrf_token %}
-    <tr>
-      <input type="text" name="name" value="bomForm.name"  autofocus>
-      <td>{{ bomForm.project }}</td>
-      <td><button type="submit" class="btn btn-success">Save</button></td>
-      <td>
-        <button type="button"class="btn btn-danger" 
-          hx-on="click: this.closest('form').remove()"
-        >Delete</button>
-      </td>
-    </tr>
-    <hr>
-</form> -->
-
-<!-- <div>
-  <table>
-    {% csrf_token %}
-<tr
-  hx-get="{% url 'budgetTool:bom_edit' fk=item.project_id pk=item.id %}"
-  hx-swap="outerHTML"
-  >
-  <td><input name='name' value="{{ item.project_id }}"></td>
-  <td><input type="text" value="{{ item.name }}"></td>
-  <td>
-    <button class="btn btn-danger" hx-get="{% url 'budgetTool:bom_edit' fk=item.project_id pk=item.id %}">
-      Cancel
-    </button>
-    <button class="btn btn-danger" hx-put="{% url 'budgetTool:bom_edit' fk=item.project_id pk=item.id %}" hx-include="closest tr">
-      Save
-    </button>
-  </td>
-</tr>
-
-</table>
-</div> -->
-
-<!-- <div>
-
 
 <tr>
-  <td><input name='name' value="{{item.name}}"></td>
-  <td><input name='email' value="{{item.name}}"></td>
-  <td><input name='email' value="{{item.name}}"></td>
-  <td><input name='email' value="{{item.name}}"></td>
-  <td><input name='email' value="{{item.name}}"></td>
-  <td><input name='email' value="{{item.name}}"></td>
-  <td><input name='email' value="{{item.name}}"></td>
-  <td><input name='email' value="{{item.name}}"></td>
-  <td><input name='email' value="{{item.name}}"></td>
-  <td><input name='email' value="{{item.name}}"></td>
-  <td><input name='email' value="{{item.name}}"></td>
-  <td>
-    <button class="btn btn-danger" hx-get="{% url 'budgetTool:bom_edit' fk=item.project_id pk=item.id %}">
-      Cancel
-    </button>
-    <button class="btn btn-danger" hx-put="{% url 'budgetTool:bom_edit' fk=item.project_id pk=item.id %}" hx-include="closest tr">
-      Save
-    </button>
-  </td>
+  <form >
+      {% csrf_token %}
+    <!-- <td>{{item.id}}</td> -->
+    <td>{{bomForm.index}}</td>
+    <td>{{ bomForm.name }}</td>
+    <td>{{ bomForm.estimate_cost }}</td>
+    <td>{{ bomForm.sales_price }}</td>
+    <td>{{ bomForm.quantity }}</td>
+    <td></td>
+    <td></td>
+    <td>{{ bomForm.supplier }}</td>
+    <td>{{ bomForm.actual_cost }}</td>
+    <td>{{ bomForm.Responsible }}</td>
+    <td>{{ bomForm.description }}</td>
+    <td>{{ bomForm.notes }}</td>
+    <td>{{bomForm.bom_category}}</td>
+    <!-- <td>{{ bomForm.project }}</td> -->
+    <td class="text-nowrap">
+      <button 
+      class="btn btn-outline-success" 
+      hx-post="{% url 'budgetTool:bom_edit' fk=item.project_id pk=item.id %} " 
+      hx-include="closest tr"
+      hx-on="htmx:afterRequest: window.location.reload(true)"
+      >Save</button>
+    
+      <button class="btn btn-outline-light" onclick="redirectToCurrentPage()" class="btn btn-secondary">Cancel</button>
+    </td>
+  </form>
 </tr>
-</div> -->
-
-<!-- <form method="post" autocomplete="off">
-  {% csrf_token %}
-  {{bomForm.as_p}}
-  <button type="submit">Submit</button>
-  </form> -->
-
-<div>
-  <form 
-hx-post="{% url 'budgetTool:bom_edit' fk=item.project_id pk=item.id %}"
-hx-on="htmx:afterRequest: window.location.reload(true)"
-hx-target="this">
-    {% csrf_token %}
-    <table class="table-bordered">
-      <tr class="text-nowrap" style="background-color:#BDD7EE;">
-        <th scope="col">#</th>
-        <th scope="col">Part/Item</th>
-        <th scope="col">Cost(Estimate)</th>
-        <th scope="col">List Price</th>
-        <th scope="col">Quantity</th>
-        <th scope="col">Supplier</th>
-        <th scope="col">Cost (Actual)</th>
-        <th scope="col">Responsible</th>
-        <th scope="col">Description</th>
-        <th scope="col">Notes</th>
-        <th scope="col" colspan="3">Category</th>
-        <!-- <th class="table-primary" scope="col"></th>
-        <th class="table-primary" scope="col"></th> -->
-      </tr>
-
-    <tr>
-      <!-- <td>{{item.id}}</td> -->
-      <td>{{bomForm.index}}</td>
-      <td>{{ bomForm.name }}</td>
-      <td>{{ bomForm.estimate_cost }}</td>
-      <td>{{ bomForm.sales_price }}</td>
-      <td>{{ bomForm.quantity }}</td>
-      <td>{{ bomForm.supplier }}</td>
-      <td>{{ bomForm.actual_cost }}</td>
-      <td>{{ bomForm.Responsible }}</td>
-      <td>{{ bomForm.description }}</td>
-      <td>{{ bomForm.notes }}</td>
-      <td>{{bomForm.bom_category}}</td>
-      <!-- <td>{{ bomForm.project }}</td> -->
-      <td><button type="submit" class="btn btn-success">Save</button></td>
-      <td>
-        <button type="button" onclick="redirectToCurrentPage()" class="btn btn-secondary">Cancel</button>
-      </td>
-    </tr>
-  </table>
-</form>
-</div>

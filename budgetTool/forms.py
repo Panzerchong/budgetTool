@@ -49,7 +49,7 @@ class BillModelForm(forms.ModelForm):
             "actual_cost":forms.NumberInput(attrs={'placeholder':"Cost (Actual)",'style': 'width: 100px;'}),
             "Responsible":forms.TextInput(attrs={'placeholder':"Responsible",'style': 'width: 100px;'}),
             "description":forms.TextInput(attrs={'placeholder':"Description",'style': 'width: 100px;'}),
-            "notes":forms.TextInput(attrs={'placeholder':"Notes",'style': 'width: 70px;'}),
+            "notes":forms.Textarea(attrs={'placeholder':"Notes",'style': 'width: 200px; height: 60px;'}),
         }
 
 

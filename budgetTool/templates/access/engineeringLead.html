@@ -72,6 +72,7 @@
           <td><strong>Adjusted for Complexity</strong></td>
           <td>
             <div
+              class="text-success"
               id="adjustComplexityBOM"
               hx-get="{% url 'budgetTool:editProject' pk=project.pk%}"
               hx-params="adjust_BOM"
@@ -111,6 +112,7 @@
           <td class="text-nowrap"><strong>Adjusted for Complexity</strong></td>
           <td>
             <div
+              class="text-success"
               hx-get="{% url 'budgetTool:editProject' pk=project.pk%}"
               hx-params="adjust_Service"
               hx-target="this"

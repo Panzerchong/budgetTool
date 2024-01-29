@@ -7,6 +7,6 @@
     >
     {% csrf_token %}
     <input type="number" name="index" value="{{category.index}}" min="0" autofocus style="width: 50px;">
-    <button class="btn btn-success"> Save</button>
-    <button class="btn btn-secondary" type="button" onclick="redirectToCurrentPage()" > Cancel</button>
+    <button class="btn btn-outline-success"> Save</button>
+    <button class="btn btn-outline-info" type="button" onclick="redirectToCurrentPage()" > Cancel</button>
 </form>
