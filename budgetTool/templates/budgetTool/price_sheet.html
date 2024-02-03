@@ -79,7 +79,7 @@
                   {% if user|user_belongs_to_group:'Admin, Finance' %}
                   <td class="text-nowrap">
                     <button 
-                    class="btn btn-outline-light"
+                    class="btn btn-outline-info"
                     hx-get="{% url 'budgetTool:product_price_edit' pk=line.id fk=vendor.id %}"
                     hx-target="closest tr"
                     hx-swap="outerHTML"
@@ -114,7 +114,7 @@
                 <tr>
                   {% if user|user_belongs_to_group:'Admin, Finance' %}
                   <td>
-                    <button type="button" class="btn btn-outline-light"
+                    <button type="button" class="btn btn-outline-info"
                     hx-get="{% url 'budgetTool:create_product_price' fk=vendor.id %}"
                     hx-target="#addRow_{{forloop.counter}}"
                     hx-swap="beforeend"> Add New Row</button>

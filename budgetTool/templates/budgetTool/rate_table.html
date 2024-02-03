@@ -71,7 +71,7 @@
               {% if user|user_belongs_to_group:'Admin, Finance' %}
               <td class="text-nowrap">
                 <button 
-                class="btn btn-success"
+                class="btn btn-outline-info"
                 hx-get="{% url 'budgetTool:rateCost_edit' pk=line.pk %}"
                 hx-target="#rateCostTable"
                 hx-swap="outerHTML"
@@ -80,7 +80,7 @@
                 </button>
 
                 <button 
-                class="btn btn-danger"
+                class="btn btn-outline-danger"
                 hx-confirm="Are you sure?"
                 hx-get="{% url 'budgetTool:rateCost_delete' pk=line.pk %}"
                 hx-on="htmx:afterRequest: window.location.reload(true)"
@@ -107,7 +107,7 @@
               <tr>
                 {% if user|user_belongs_to_group:'Admin, Finance' %}
                 <td>
-                  <button type="button" class="btn btn-outline-light"
+                  <button type="button" class="btn btn-outline-info"
                   hx-get="{% url 'budgetTool:create_rateTableCost' %}"
                   hx-target="#rateCostTable"
                   hx-swap="beforeend"> Add New Row</button>
