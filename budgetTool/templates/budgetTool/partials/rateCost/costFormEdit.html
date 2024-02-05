@@ -1,37 +1,27 @@
-<div>
+<tr>
 <form 
 hx-post="{% url 'budgetTool:rateCost_edit' pk=item.id %}" 
 hx-on="htmx:afterRequest: window.location.reload(true)"
 hx-target="this"
 class="text-nowrap">
     {% csrf_token %}
-    <table class="table-bordered">
-    <thead>
-    <tr class=" text-center" style="background-color:#BDD7EE;">
-      <th>Name</th>
-      <th>Code</th>
-      <th>Base</th>
-      <th>Labor Rate (In House)</th>
-      <th>Labor Rate (On Site)</th>
-      <th colspan="2">Names</th>
-    </tr>
-  </thead>
-    <tr>
       <td>{{form.name}}</td>
       <td>{{form.code}}</td>
       <td>{{form.base}}</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
       <td>{{form.labor_in_house}}</td>
       <td>{{form.labor_on_site}}</td>
       <td>{{form.employee}}</td>
-      <td>
+      <td class="text-nowrap">
         <button type="submit" class="btn btn-outline-success">Save</button>
         <button type="button"class="btn btn-outline-light" 
           hx-on="click: window.location.reload(true)"
         >Cancel</button>
       </td>
-    </tr>
-  </table>
-
 </form>
-</div>
+</tr>
 

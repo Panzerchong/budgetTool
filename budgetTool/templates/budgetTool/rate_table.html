@@ -73,7 +73,7 @@
                 <button 
                 class="btn btn-outline-info"
                 hx-get="{% url 'budgetTool:rateCost_edit' pk=line.pk %}"
-                hx-target="#rateCostTable"
+                hx-target="closest tr"
                 hx-swap="outerHTML"
                         >
                   Edit
