@@ -1,25 +1,15 @@
-<div>
+<tr>
   <form 
   hx-post="{% url 'budgetTool:product_price_edit' pk=item.id fk=vendor.id %}" 
   hx-on="htmx:afterRequest: window.location.reload(true)"
   hx-target="this"
   class="text-nowrap">
       {% csrf_token %}
-      <table class="table-bordered">
-      <thead>
-      <tr class=" text-center" style="background-color:#BDD7EE;">
-        <th>Item</th>
-        <th>Cost</th>
-        <th>List</th>
-        <th colspan="3">Note</th>
-      </tr>
-    </thead>
-      <tr>
         <td>{{form.item}}</td>
         <td>{{form.cost}}</td>
         <td>{{form.list}}</td>
+        <td></td>
         <td>{{form.note}}</td>
-
         <td>
           <button type="submit" class="btn btn-outline-success">Save</button>  
           <button type="button"class="btn btn-outline-light" 
@@ -27,7 +17,5 @@
             >Cancel</button>
         </td>
       </tr>
-    </table>
-  
   </form>
-  </div>
+</tr>
