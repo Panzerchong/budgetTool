@@ -1,3 +1,8 @@
+.item-wrapper {
+    display: flex;
+    align-items: center; 
+  }
+
 .handle {
     display: inline-block;
     border-top: 3px solid var(--dark);

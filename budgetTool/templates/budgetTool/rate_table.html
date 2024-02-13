@@ -49,7 +49,11 @@
             {% for line in tableCost %}
             <tr data-lookupid="{{line.pk}}" class="text-nowrap">
               <input type='hidden' name='rate_cost_order' value='{{line.pk}}'/>
-              <td>{{line.name}}<span class="handle"></span></td>
+              <td>
+                <div class="item-wrapper">
+                {{line.name}}<span class="handle"></span>
+                </div>
+              </td>
               <td>{{line.code}}</td>
               {% if user|user_belongs_to_group:'Admin, Finance' %}
               <td>$ {{line.base|intcomma}}</td>

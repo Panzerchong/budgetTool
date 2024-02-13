@@ -62,7 +62,11 @@
               {% if line.vendor == vendor %}
               <tr data-lookupid="{{line.pk}}" class="text-nowrap">
                 <input type='hidden' name='price_sheet_order' value='{{line.pk}}'/>
-                  <td>{{line.item}}<span class="handle"></span></td>
+                  <td>
+                    <div class="item-wrapper">
+                    {{line.item}}<span class="handle"></span>
+                    </div>
+                  </td>
                   {% if user|user_belongs_to_group:'Admin, Finance' %}
                   <td>$ {{line.cost|floatformat:2|intcomma}}</td>
                   {% endif %}
