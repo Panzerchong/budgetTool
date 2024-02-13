@@ -532,6 +532,24 @@ def service_edit(request, pk, fk):
     return render(request, "budgetTool/partials/serviceFormEdit.html", context)
  
 def bom_edit(request, pk, fk):
+    if request.user.groups.filter(name="Account Manager").exists():
+        item = get_object_or_404(BillOfMaterials, id=pk, project_id=fk)
+        if request.method == "POST":
+            item.sales_price = request.POST.get('sales_price')
+            item.quantity = request.POST.get('quantity')
+            item.save(update_fields=["sales_price","quantity"])
+            project_update(fk)
+            return HttpResponse("BOM updated successfully")
+        else:
+            bomForm = BillModelForm(instance=item)
+        context = {
+            "item": item,
+            "bomForm": bomForm,
+        }
+        return render(request, "budgetTool/accessControl/accountManager/bomFormEdit.html", context)
+
+
+
     item = get_object_or_404(BillOfMaterials, id=pk, project_id=fk)
     if request.method == "POST":
         request_data = request.POST.copy()
@@ -1115,6 +1133,13 @@ def product_price_edit(request,pk,fk):
         "vendor":vendor,
     }
     return render(request, "budgetTool/partials/productPrice/priceFormEdit.html", context)
+
+def product_price_copy(request,pk):
+    item = get_object_or_404(Product_Price, id=pk)
+    item.pk=None
+    item.save()
+    return HttpResponse("Product Price copied successfully")
+
 
 def product_price_delete(request,pk):
     price=Product_Price.objects.get(id=pk)

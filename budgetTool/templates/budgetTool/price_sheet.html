@@ -90,6 +90,11 @@
                             >
                       Edit
                     </button>
+                    <button class="btn btn-outline-light"
+                    hx-get="{% url 'budgetTool:product_price_copy' pk=line.id %}"
+                    hx-on="htmx:afterRequest: window.location.reload(true)">
+                    Copy
+                    </button>
 
                     <button 
                     class="btn btn-outline-danger"

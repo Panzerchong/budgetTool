@@ -137,14 +137,15 @@
         <tr>
           <td><strong>Quoted</strong></td>
           <td>
-            <div
+            <!-- <div
               class="text-success"
               hx-get="{% url 'budgetTool:editProject' pk=project.pk%}"
               hx-params="quote_Service"
               hx-target="this"
               hx-swap="outerHTML">
               ${{project.quote_Service|intcomma}}
-            </div>
+            </div> -->
+            ${{project.quote_Service|intcomma}}
           </td>
           <td colspan="10"></td>
         </tr>
@@ -152,13 +153,14 @@
         <tr>
           <td><strong>Travel Weekly</strong></td>
           <td>
-            <div
+            <!-- <div
               hx-get="{% url 'budgetTool:editProject' pk=project.pk%}"
               hx-params="travel_weekly"
               hx-target="this"
               hx-swap="outerHTML">
               ${{project.travel_weekly|intcomma}}
-            </div>
+            </div> -->
+            ${{project.travel_weekly|intcomma}}
           </td>
           <td colspan="10"></td>
         </tr>

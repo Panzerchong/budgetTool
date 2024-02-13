@@ -1,0 +1,22 @@
+
+<tr>
+  <form>
+      {% csrf_token %}
+    <!-- <td>{{item.id}}</td> -->
+    <td></td>
+    <td></td>
+    <td>{{ bomForm.sales_price }}</td>
+    <td>{{ bomForm.quantity }}</td>
+    <!-- <td>{{ bomForm.project }}</td> -->
+    <td class="text-nowrap" colspan="10">
+      <button 
+      class="btn btn-outline-success" 
+      hx-post="{% url 'budgetTool:bom_edit' fk=item.project_id pk=item.id %} " 
+      hx-include="closest tr"
+      hx-on="htmx:afterRequest: window.location.reload(true)"
+      >Save</button>
+    
+      <button class="btn btn-outline-light" onclick="redirectToCurrentPage()" class="btn btn-secondary">Cancel</button>
+    </td>
+  </form>
+</tr>
