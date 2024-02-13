@@ -1,10 +1,6 @@
 <tr>
-<form 
-hx-post="{% url 'budgetTool:rateCost_edit' pk=item.id %}" 
-hx-on="htmx:afterRequest: window.location.reload(true)"
-hx-target="this"
-class="text-nowrap">
-    {% csrf_token %}
+<form class="text-nowrap">
+  {% csrf_token %}
       <td>{{form.name}}</td>
       <td>{{form.code}}</td>
       <td>{{form.base}}</td>
@@ -17,10 +13,18 @@ class="text-nowrap">
       <td>{{form.labor_on_site}}</td>
       <td>{{form.employee}}</td>
       <td class="text-nowrap">
-        <button type="submit" class="btn btn-outline-success">Save</button>
+        <button 
+          class="btn btn-outline-success" 
+          hx-post="{% url 'budgetTool:rateCost_edit' pk=item.id %}" 
+          hx-on="htmx:afterRequest: window.location.reload(true)"
+          hx-include="closest tr"
+        >Save</button>
+
         <button type="button"class="btn btn-outline-light" 
           hx-on="click: window.location.reload(true)"
         >Cancel</button>
       </td>
 </form>
 </tr>
+
+
