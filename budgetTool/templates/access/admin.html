@@ -28,12 +28,12 @@
         <tr>
           <td><strong>BOM</strong></td>
 
-          <td>$ {{project.cost_est_bom|floatformat:0|intcomma}}</td>
-          <td>$ {{project.cost_adjusted_bom|floatformat:0|intcomma}}</td>
+          <td>$ {{project.cost_est_bom|floatformat:2|intcomma}}</td>
+          <td>$ {{project.cost_adjusted_bom|floatformat:2|intcomma}}</td>
      
 
-          <td>$ {{project.list_bom|floatformat:0|intcomma}}</td>
-          <td>$ {{project.list_adjusted_bom|floatformat:0|intcomma}}</td>
+          <td>$ {{project.list_bom|floatformat:2|intcomma}}</td>
+          <td>$ {{project.list_adjusted_bom|floatformat:2|intcomma}}</td>
           <td>
             <div
               id="quoteBom"
@@ -42,34 +42,34 @@
               hx-params="quote_BOM"
               hx-target="this"
               hx-swap="outerHTML">
-              $ {{project.quote_BOM|floatformat:0|intcomma}}
+              $ {{project.quote_BOM|floatformat:2|intcomma}}
             </div>
           </td> 
             
 
-          <td>$ {{project.actual_bom|floatformat:0|intcomma}}</td>
+          <td>$ {{project.actual_bom|floatformat:2|intcomma}}</td>
 
         </tr>
 
         <tr>
           <td><strong>Service</strong></td>
 
-          <td>$ {{project.cost_est_service|floatformat:0|intcomma}}</td>
-          <td>$ {{project.cost_adjusted_service|floatformat:0|intcomma}}</td>
+          <td>$ {{project.cost_est_service|floatformat:2|intcomma}}</td>
+          <td>$ {{project.cost_adjusted_service|floatformat:2|intcomma}}</td>
 
-          <td>$ {{project.list_service|floatformat:0|intcomma}}</td>
-          <td>$ {{project.list_adjusted_service|floatformat:0|intcomma}}</td>
+          <td>$ {{project.list_service|floatformat:2|intcomma}}</td>
+          <td>$ {{project.list_adjusted_service|floatformat:2|intcomma}}</td>
           <td>
             <div
             hx-get="{% url 'budgetTool:editProject' pk=project.pk%}"
             hx-params="quote_Service"
             hx-target="this"
             hx-swap="outerHTML">
-            ${{project.quote_Service|floatformat:0|intcomma}}
+            ${{project.quote_Service|floatformat:2|intcomma}}
             </div>
           </td>
 
-          <td>$ {{project.actual_service|floatformat:0|intcomma}}</td>
+          <td>$ {{project.actual_service|floatformat:2|intcomma}}</td>
 
         </tr>
 
@@ -80,14 +80,14 @@
         <tr>
           <td><strong>Total</strong></td>
 
-          <td>$ {{summary.cost_est|floatformat:0|intcomma}}</td>
-          <td>$ {{summary.cost_adjusted|floatformat:0|intcomma}}</td>
+          <td>$ {{summary.cost_est|floatformat:2|intcomma}}</td>
+          <td>$ {{summary.cost_adjusted|floatformat:2|intcomma}}</td>
 
-          <td>$ {{summary.list|floatformat:0|intcomma}}</td>
-          <td>$ {{summary.list_adjusted|floatformat:0|intcomma}}</td>
-          <td>$ {{project.quote_BOM|add:project.quote_Service|floatformat:0|intcomma}}</td>
+          <td>$ {{summary.list|floatformat:2|intcomma}}</td>
+          <td>$ {{summary.list_adjusted|floatformat:2|intcomma}}</td>
+          <td>$ {{project.quote_BOM|add:project.quote_Service|floatformat:2|intcomma}}</td>
 
-          <td>$ {{summary.actual|floatformat:0|intcomma}}</td>
+          <td>$ {{summary.actual|floatformat:2|intcomma}}</td>
 
         </tr>
 
@@ -97,11 +97,11 @@
           <td></td>
           <td></td>
 
-          <td>{{summary.list_margin|floatformat:0}}%</td>
-          <td>{{summary.list_adjusted_margin|floatformat:0}}%</td>
-          <td>{{summary.quoted_margin|floatformat:0}}%</td>
+          <td>{{summary.list_margin|floatformat:2}}%</td>
+          <td>{{summary.list_adjusted_margin|floatformat:2}}%</td>
+          <td>{{summary.quoted_margin|floatformat:2}}%</td>
 
-          <td>{{summary.actual_margin|floatformat:0}}%</td>
+          <td>{{summary.actual_margin|floatformat:2}}%</td>
 
 
       </tbody>
@@ -144,14 +144,14 @@
               {{project.adjust_BOM|mul:100}}%
             </div>
           </td>
-          <td>$ {{project.cost_est_bom|floatformat:0|intcomma}}</td>
-          <td>$ {{project.actual_bom|floatformat:0|intcomma}}</td>
-          <td>$ {{project.list_bom|floatformat:0|intcomma}}</td>
-          <td>$ {{project.list_adjusted_bom|floatformat:0|intcomma}}</td>
-          <td>{{margin.margin_est_bom|floatformat:0}}%</td>
-          <td>{{margin.margin_adjusted_bom|floatformat:0}}%</td>
-          <td>{{margin.margin_actual_bom|floatformat:0}}%</td>
-          <td>{{margin.margin_quoted_bom|floatformat:0}}%</td> 
+          <td>$ {{project.cost_est_bom|floatformat:2|intcomma}}</td>
+          <td>$ {{project.actual_bom|floatformat:2|intcomma}}</td>
+          <td>$ {{project.list_bom|floatformat:2|intcomma}}</td>
+          <td>$ {{project.list_adjusted_bom|floatformat:2|intcomma}}</td>
+          <td>{{margin.margin_est_bom|floatformat:2}}%</td>
+          <td>{{margin.margin_adjusted_bom|floatformat:2}}%</td>
+          <td>{{margin.margin_actual_bom|floatformat:2}}%</td>
+          <td>{{margin.margin_quoted_bom|floatformat:2}}%</td> 
         </tr>
 
         <tr>
@@ -209,11 +209,11 @@
           
           <td>{{project.hours}}</td>
           <td>{{project.hours_adjusted}}</td>
-          <td class="text-nowrap">$ {{project.list_service|floatformat:0|intcomma}}</td>
-          <td class="text-nowrap">$ {{project.list_adjusted_service|floatformat:0|intcomma}}</td>
-          <td class="text-nowrap">$ {{project.cost_est_service|floatformat:0|intcomma}}</td>
-          <td class="text-nowrap">$ {{project.cost_adjusted_service|floatformat:0|intcomma}}</td>
-          <td class="text-nowrap">$ {{project.actual_service|floatformat:0|intcomma}}</td>
+          <td class="text-nowrap">$ {{project.list_service|floatformat:2|intcomma}}</td>
+          <td class="text-nowrap">$ {{project.list_adjusted_service|floatformat:2|intcomma}}</td>
+          <td class="text-nowrap">$ {{project.cost_est_service|floatformat:2|intcomma}}</td>
+          <td class="text-nowrap">$ {{project.cost_adjusted_service|floatformat:2|intcomma}}</td>
+          <td class="text-nowrap">$ {{project.actual_service|floatformat:2|intcomma}}</td>
           <td>{{margin.margin_est_service}}%</td>
           <td>{{margin.margin_adjusted_service}}%</td>
           <td>{{margin.margin_actual_service}}%</td>
@@ -327,7 +327,7 @@
                 {%endwith%}
               </td>
               <td>{{ line.supplier }}</td>
-              <td>${{ line.actual_cost|floatformat:0|intcomma }}</td>
+              <td>${{ line.actual_cost|floatformat:2|intcomma }}</td>
               <td>{{ line.Responsible }}</td>
               <td>{{ line.description }}</td>
               <td>{{ line.notes }}</td>
@@ -475,14 +475,14 @@
                 {% endif %}
               </td>
               <td class="text-center">{{ line.hours_estimated }}</td>
-              <td class="text-center">{{line.hours_adjusted|floatformat:0}}</td>
+              <td class="text-center">{{line.hours_adjusted|floatformat:2}}</td>
               <td class="text-center">{{ line.hours_worked }}</td>
-              <td>${{ line.travel_estimate|floatformat:0|intcomma}}</td>
+              <td>${{ line.travel_estimate|floatformat:2|intcomma}}</td>
               <td>${{ line.travel_actual|intcomma }}</td>
-              <td>${{line.rate_list|floatformat:0}}</td>
+              <td>${{line.rate_list|floatformat:2}}</td>
               <td>${{line.sub_total_list|intcomma}}</td>
               <td>${{line.sub_total_adjusted_list|intcomma}}</td>
-              <td>${{line.rate_cost|floatformat:0}}</td>
+              <td>${{line.rate_cost|floatformat:2}}</td>
               <td>${{line.sub_total_cost_est|intcomma}}</td>
               <td>${{line.sub_total_adjusted_cost_est|intcomma}}</td>
               <td>${{line.cost_actual|intcomma}}</td>
