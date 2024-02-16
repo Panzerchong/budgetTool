@@ -206,6 +206,11 @@ let sortable = Sortable.create(serviceRowOrder, {
 }
 });
 
+function reloadPage() {
+  var scrollPosition = window.scrollY;
+  location.reload();
+  window.scrollTo(0, scrollPosition);
+}
   
 
 

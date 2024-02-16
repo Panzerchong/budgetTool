@@ -1122,6 +1122,7 @@ def product_price_edit(request,pk,fk):
         print(form.data)
 
         if form.is_valid():
+            print("create valid form")
             form.save()
             return HttpResponse("Product Price updated successfully")
     else:
@@ -1134,11 +1135,43 @@ def product_price_edit(request,pk,fk):
     }
     return render(request, "budgetTool/partials/productPrice/priceFormEdit.html", context)
 
-def product_price_copy(request,pk):
+def product_price_copy(request,pk,fk):
     item = get_object_or_404(Product_Price, id=pk)
-    item.pk=None
-    item.save()
-    return HttpResponse("Product Price copied successfully")
+    vendor=Vendor.objects.get(id=fk)
+    if request.method == "POST":
+        request_data = request.POST.copy()
+        cost=float(request_data.get('cost',0))
+        list=float(request_data.get('list',0))
+        margin=(1-cost/list)*100
+        rounded_margin = round(margin,2)
+        request_data['margin']=rounded_margin
+        # mutable_data.appendlist('margin',rounded_margin)
+        request_data.appendlist('vendor',vendor.id)
+        request_data.appendlist('index',100)
+        form=ProductPriceModelForm(request_data) 
+        # print(form.data)
+
+        if form.is_valid():
+            print("valid form")
+            new_item=form.save(commit=False)
+            new_item.pk=None
+            new_item.save()
+            return HttpResponse("Product Price updated successfully")
+    else:
+        form = ProductPriceModelForm(instance=item)
+        
+    context = {
+        "item": item,
+        "form": form,
+        "vendor":vendor,
+    }
+    return render(request, "budgetTool/partials/productPrice/priceFormCopy.html", context)
+
+# def product_price_copy(request,pk):
+#     item = get_object_or_404(Product_Price, id=pk)
+#     item.pk=None
+#     item.save()
+#     return HttpResponse("Product Price copied successfully")
 
 
 def product_price_delete(request,pk):

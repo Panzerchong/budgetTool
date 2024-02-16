@@ -1,0 +1,23 @@
+<tr>
+  <form class="text-nowrap">
+    {% csrf_token %}
+    <td>{{ form.item }}</td>
+    <td>{{ form.cost }}</td>
+    <td>{{ form.list }}</td>
+    <td></td>
+    <td>{{ form.note }}</td>
+    <td>
+      <button
+      class="btn btn-outline-success"
+      hx-post="{% url 'budgetTool:product_price_copy' pk=item.id fk=vendor.id %}" 
+      hx-on="htmx:afterRequest: window.location.reload(true)"
+      hx-include="closest tr"
+      hx-on="htmx:afterRequest: window.location.reload(true)"
+      >Save
+      </button>
+      <button type="button"class="btn btn-outline-light" 
+          hx-on="click: window.location.reload(true)"
+        >Cancel</button>
+    </td>
+  </form>
+</tr>

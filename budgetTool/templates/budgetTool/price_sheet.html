@@ -87,15 +87,21 @@
                     hx-get="{% url 'budgetTool:product_price_edit' pk=line.id fk=vendor.id %}"
                     hx-target="closest tr"
                     hx-swap="outerHTML"
-                            >
-                      Edit
-                    </button>
-                    <button class="btn btn-outline-light"
-                    hx-get="{% url 'budgetTool:product_price_copy' pk=line.id %}"
-                    hx-on="htmx:afterRequest: window.location.reload(true)">
-                    Copy
+                    >Edit
                     </button>
 
+                    <!-- <button class="btn btn-outline-info"
+                    hx-get="{% url 'budgetTool:product_price_copy' pk=line.id fk=vendor.id %}"
+                    hx-on="htmx:afterRequest: reloadPage()">
+                    Copy
+                    </button> --> 
+
+                    <button type="button" class="btn btn-outline-info"
+                    hx-get="{% url 'budgetTool:product_price_copy' pk=line.id fk=vendor.id %}"
+                    hx-target="closest tr"
+                    hx-swap="afterend"> Copy
+                    </button> 
+                    
                     <button 
                     class="btn btn-outline-danger"
                     hx-confirm="Are you sure?"

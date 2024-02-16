@@ -39,3 +39,8 @@ function saveOrdering(table,formInput) {
         });
   });
   
+function reloadPage() {
+    var scrollPosition = window.scrollY;
+    location.reload();
+    window.scrollTo(0, scrollPosition);
+}
