@@ -111,7 +111,6 @@ class Service(models.Model):
     travel_actual=models.IntegerField(blank=True)
     notes=models.CharField(max_length=300,blank=True)
     isOnSite=models.BooleanField(default=False)
-    notes=models.CharField(max_length=300,blank=True)
     #calculated field
     hours_adjusted=models.FloatField(default=0)
     travel_estimate=models.FloatField(default=0)

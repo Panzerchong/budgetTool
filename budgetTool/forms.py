@@ -79,6 +79,7 @@ class ServiceModelForm(forms.ModelForm):
             "isOnSite": forms.CheckboxInput(attrs={'style': 'width: 50px;'}),
             "hours_estimated":forms.NumberInput(attrs={'placeholder':"Hours(Estimate)",'style': 'width: 120px;'}),
             "hours_worked":forms.NumberInput(attrs={'placeholder':"Hours(Worked)",'style': 'width: 120px;'}),
+            "notes":forms.Textarea(attrs={'placeholder':"Notes",'style': 'width: 200px; height: 30px;'}),
             # "rate_list":forms.NumberInput(attrs={'placeholder':"Rate List",'style': 'width: 100px;'}),
             # "rate_cost":forms.NumberInput(attrs={'placeholder':"Rate Cost ",'style': 'width: 100px;'}),
             "travel_actual":forms.NumberInput(attrs={'placeholder':"Travel Actual",'style': 'width: 100px;'}),

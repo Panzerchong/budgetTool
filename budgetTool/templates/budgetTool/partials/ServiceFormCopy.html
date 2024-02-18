@@ -17,7 +17,7 @@
         <td class="text-nowrap" colspan="8">
           <button 
             class="btn btn-outline-success"
-            hx-post="{% url 'budgetTool:service_edit' fk=item.project_id pk=item.id %}"
+            hx-post="{% url 'budgetTool:service_copy' fk=item.project_id pk=item.id %}"
             hx-include="closest tr"
             hx-on="htmx:afterRequest: window.location.reload(true)"
             >Save

@@ -280,7 +280,7 @@
     <tbody id="bomRow">
         {% for categ in existing_bom_category %}
           <tr>
-            <td>
+            <td class="bg-primary">
               <div
                 hx-get="{% url 'budgetTool:bom_category_edit' pk=categ.id %}"
                 hx-params="index"
@@ -289,7 +289,7 @@
                 <strong>{{categ.index}}</strong>
               </div>
             </td>
-            <td class="text-nowrap" colspan="15">
+            <td class="text-nowrap bg-primary" colspan="15">
               <div
                 hx-get="{% url 'budgetTool:bom_category_edit' pk=categ.id %}"
                 hx-params="name"
@@ -307,10 +307,12 @@
               <tr data-lookupid="{{line.pk}}">
               <input type='hidden' name='bom' value='{{line.pk}}'/>
               <td>
+                <div class="item-wrapper">
                 {% if line.index %}
                   {{line.index}}
                 {%endif%}
                 <span class="handle"></span>
+              </div>
               </td>
               <td>{{ line.name }}</td>
               <td>${{line.estimate_cost|intcomma }}</td>
@@ -342,12 +344,17 @@
                   Edit
                 </button>
 
+                <button type="button" class="btn btn-outline-info"
+                hx-get="{% url 'budgetTool:bom_copy' fk=project.pk pk=line.pk %}"
+                hx-target="closest tr"
+                hx-swap="afterend"> Copy
+                </button> 
+
                 <button 
                 class="btn btn-outline-danger"
                 hx-confirm="Are you sure?"
                 hx-get="{% url 'budgetTool:bom_delete' pk=line.pk fk=project.id %}"
                 hx-on="htmx:afterRequest: window.location.reload(true)"
-                
                 >
                   Delete
                 </button>
@@ -406,7 +413,7 @@
 <table class="table table-secondary table-hover table-bordered border-primary" id="serviceTable">
   
   <thead>
-    <tr><th style="background-color:#8EA9DB;" colspan="17" class="text-center">Estimated Labor Hours</th></tr>
+    <tr><th style="background-color:#8EA9DB;" colspan="19" class="text-center">Estimated Labor Hours</th></tr>
 
     <tr style="background-color: #BDD7EE;">
       <th scope="col">#</th>
@@ -424,14 +431,16 @@
       <th scope="col">Rate Cost</th>
       <th scope="col">Sub Total Cost Est</th>
       <th scope="col">Sub Total Adjusted Cost Est</th>
-      <th scope="col" colspan="2">Cost Act</th>
+      <th scope="col" >Cost Act</th>
+      <th scope="col">Notes</th>
+      <th scope="col" colspan="2"></th>
     </tr>
   </thead>
 
     <tbody id="serviceRow">
       {% for categ in service_category %}
         <tr>
-          <td>
+          <td class="bg-primary">
             <div
               hx-get="{% url 'budgetTool:service_category_edit' pk=categ.id %}"
               hx-params="index"
@@ -441,7 +450,7 @@
             </div>
           </td>
           
-          <td class="text-nowrap" colspan="17">
+          <td class="text-nowrap bg-primary" colspan="17">
             <div
             hx-get="{% url 'budgetTool:service_category_edit' pk=categ.id %}"
             hx-params="name"
@@ -486,6 +495,7 @@
               <td>${{line.sub_total_cost_est|intcomma}}</td>
               <td>${{line.sub_total_adjusted_cost_est|intcomma}}</td>
               <td>${{line.cost_actual|intcomma}}</td>
+              <td>{{ line.notes }}</td>
 
               <td class="text-nowrap">
                 <button 
@@ -496,6 +506,12 @@
                 >
                   Edit
                 </button>
+
+                <button type="button" class="btn btn-outline-info"
+                hx-get="{% url 'budgetTool:service_copy' fk=project.pk pk=line.pk %}"
+                hx-target="closest tr"
+                hx-swap="afterend"> Copy
+                </button> 
 
                 <button 
                 class="btn btn-outline-danger"

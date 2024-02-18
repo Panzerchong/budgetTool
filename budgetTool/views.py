@@ -412,6 +412,7 @@ def create_service(request,pk):
             # rate_cost=data['rate_cost']
             travel_actual=data['travel_actual']
             isOnSite=data['isOnSite']
+            notes=data['notes']
             
             for item in rate_table:
                 if item.name == serviceType.name :
@@ -460,6 +461,7 @@ def create_service(request,pk):
                 sub_total_cost_est=sub_total_cost_est,
                 sub_total_adjusted_cost_est=sub_total_adjusted_cost_est,
                 cost_actual=cost_actual,
+                notes=notes,
             )
             project_update(pk)
             return HttpResponse("Service Saved")
@@ -491,6 +493,7 @@ def service_edit(request, pk, fk):
             item.rate_cost = data['rate_cost']
             item.travel_actual = data['travel_actual']
             item.isOnSite = data['isOnSite']
+            item.notes = data['notes']
 
             for rate in rate_table:
                 if item.type.name == rate.name:
@@ -530,7 +533,71 @@ def service_edit(request, pk, fk):
         "form": form,
     }
     return render(request, "budgetTool/partials/serviceFormEdit.html", context)
+
+def service_copy(request, pk, fk):
+    item = get_object_or_404(Service, id=pk, project_id=fk)
+    project=Project.objects.get(id=fk)
+    rate_table=RateTableCost.objects.all()
+
+    if request.method == "POST":
+        request_data = request.POST.copy()
+        request_data['project'] = fk  # Add project to POST data
+        form = ServiceModelForm(request_data)
+
+        if form.is_valid():
+            data=form.cleaned_data
+            item.name = data['name']
+            item.category = data['category']
+            item.type = data['type']
+            item.hours_estimated = data['hours_estimated']
+            item.hours_worked = data['hours_worked']
+            item.rate_list = data['rate_list']
+            item.rate_cost = data['rate_cost']
+            item.travel_actual = data['travel_actual']
+            item.isOnSite = data['isOnSite']
+            item.notes = data['notes']
+
+            for rate in rate_table:
+                if item.type.name == rate.name:
+                    item.rate_cost=rate.labor_cost
+                    if item.isOnSite:
+                        item.rate_list=rate.labor_on_site
+                    else:
+                        item.rate_list=rate.labor_in_house
+                    
+            #calculated field value
+            print(project.adjust_Service)
+            if item.isOnSite:
+                item.travel_estimate=item.hours_estimated*project.travel_weekly/40
+            else:
+                item.travel_estimate=0
+
+            if item.travel_actual == None:
+                item.travel_actual=0
+            if item.hours_worked == None:
+                item.hours_worked=0
+
+            item.hours_adjusted = item.hours_estimated * (1 + project.adjust_Service)
+            item.sub_total_list = item.hours_estimated * item.rate_list + item.travel_estimate
+            item.sub_total_adjusted_list = item.hours_adjusted * item.rate_list + item.travel_estimate
+            item.sub_total_cost_est = item.hours_estimated * item.rate_cost + item.travel_estimate
+            item.sub_total_adjusted_cost_est = item.hours_adjusted * item.rate_cost + item.travel_estimate
+            item.cost_actual = item.hours_worked * item.rate_cost + item.travel_actual
+            item.pk=None
+            item.save()
+            project_update(fk)
+            return HttpResponse("Service copy successfully")
+
+    else:
+        form = ServiceModelForm(instance=item)
+
+    context = {
+        "item": item,
+        "form": form,
+    }
+    return render(request, "budgetTool/partials/serviceFormCopy.html", context)
  
+
 def bom_edit(request, pk, fk):
     if request.user.groups.filter(name="Account Manager").exists():
         item = get_object_or_404(BillOfMaterials, id=pk, project_id=fk)
@@ -568,6 +635,44 @@ def bom_edit(request, pk, fk):
         "bomForm": bomForm,
     }
     return render(request, "budgetTool/partials/bomFormEdit.html", context)
+
+def bom_copy(request, pk, fk):
+    # if request.user.groups.filter(name="Account Manager").exists():
+    #     item = get_object_or_404(BillOfMaterials, id=pk, project_id=fk)
+    #     if request.method == "POST":
+    #         item.sales_price = request.POST.get('sales_price')
+    #         item.quantity = request.POST.get('quantity')
+    #         item.save(update_fields=["sales_price","quantity"])
+    #         project_update(fk)
+    #         return HttpResponse("BOM updated successfully")
+    #     else:
+    #         bomForm = BillModelForm(instance=item)
+    #     context = {
+    #         "item": item,
+    #         "bomForm": bomForm,
+    #     }
+    #     return render(request, "budgetTool/accessControl/accountManager/bomFormEdit.html", context)
+
+    item = get_object_or_404(BillOfMaterials, id=pk, project_id=fk)
+    if request.method == "POST":
+        request_data = request.POST.copy()
+        request_data['project'] = fk  # Add project to POST data
+        if request_data['sales_price'] == "":
+            request_data['sales_price'] = int(float(request_data['estimate_cost']) / 0.6)
+        bomForm = BillModelForm(request_data)
+        if bomForm.is_valid():
+            new_bom =bomForm.save(commit=False)
+            new_bom.pk=None
+            new_bom.save()
+            project_update(fk)
+            return HttpResponse("BOM copy successfully")
+    else:
+        bomForm = BillModelForm(instance=item)
+    context = {
+        "item": item,
+        "bomForm": bomForm,
+    }
+    return render(request, "budgetTool/partials/bomFormCopy.html", context)
 
 def bom_delete(request,pk,fk):
     bom=BillOfMaterials.objects.get(id=pk)
@@ -1156,7 +1261,7 @@ def product_price_copy(request,pk,fk):
             new_item=form.save(commit=False)
             new_item.pk=None
             new_item.save()
-            return HttpResponse("Product Price updated successfully")
+            return HttpResponse("Product Price copy successfully")
     else:
         form = ProductPriceModelForm(instance=item)
         
