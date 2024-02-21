@@ -194,7 +194,7 @@
     <tbody id="bomRow">
         {% for categ in existing_bom_category %}
           <tr>
-            <td>
+            <td class="bg-primary">
               <div
                 hx-get="{% url 'budgetTool:bom_category_edit' pk=categ.id %}"
                 hx-params="index"
@@ -203,7 +203,7 @@
                 <strong>{{categ.index}}</strong>
               </div>
             </td>
-            <td class="text-nowrap" colspan="12">
+            <td class="text-nowrap bg-primary" colspan="12">
               <div
                 hx-get="{% url 'budgetTool:bom_category_edit' pk=categ.id %}"
                 hx-params="name"
@@ -241,7 +241,7 @@
 
               <td class="text-nowrap">
                 <button 
-                class="btn btn-success"
+                class="btn btn btn-outline-info"
                 hx-get="{% url 'budgetTool:bom_edit' fk=project.pk pk=line.pk %}"
                 hx-target="closest tr"
                 hx-swap="outerHTML"
@@ -250,7 +250,7 @@
                 </button>
 
                 <button 
-                class="btn btn-danger"
+                class="btn btn btn-outline-danger"
                 hx-confirm="Are you sure?"
                 hx-get="{% url 'budgetTool:bom_delete' pk=line.pk fk=project.id %}"
                 hx-on="htmx:afterRequest: window.location.reload(true)"
@@ -279,14 +279,14 @@
 <table>
   <tr>
     <td>
-      <button type="button" class="btn btn-primary"
+      <button type="button" class="btn btn-outline-info"
       hx-get="{% url 'budgetTool:create_bom' pk=project.pk%}"
       hx-target="#currentBillTable"
       hx-swap="beforeend"> Add New Row</button>
     </td>    
     
     <td>
-      <button type="button" class="btn btn-primary"
+      <button type="button" class="btn btn-outline-info"
       hx-get="{% url 'budgetTool:create_bom_category' %}"
       hx-target="#currentBillTable"
       hx-swap="beforeend"> Add New Category</button>
@@ -299,7 +299,7 @@
         hx-on="htmx:afterRequest: window.location.reload(true)">
         {% csrf_token %}
         <input type="hidden" id="bomOrderingInput" name="ordering">
-        <button id="bomSaveOrdering" disabled class="btn btn-success" >Save ordering</button>
+        <button id="bomSaveOrdering" disabled class="btn btn-outline-success" >Save ordering</button>
       </form>
     </td>
   </tr>
@@ -336,7 +336,7 @@
     <tbody id="serviceRow">
       {% for categ in service_category %}
         <tr>
-          <td>
+          <td class="bg-primary">
             <div
               hx-get="{% url 'budgetTool:service_category_edit' pk=categ.id %}"
               hx-params="index"
@@ -346,7 +346,7 @@
             </div>
           </td>
           
-          <td class="text-nowrap" colspan="15">
+          <td class="text-nowrap bg-primary" colspan="15">
             <div
             hx-get="{% url 'budgetTool:service_category_edit' pk=categ.id %}"
             hx-params="name"
@@ -396,7 +396,7 @@
 
               <td class="text-nowrap">
                 <button 
-                class="btn btn-success"
+                class="btn btn-outline-info"
                 hx-get="{% url 'budgetTool:service_edit' fk=project.pk pk=line.pk %}"
                 hx-target="closest tr"
                 hx-swap="outerHTML"
@@ -405,7 +405,7 @@
                 </button>
 
                 <button 
-                class="btn btn-danger"
+                class="btn btn-outline-danger"
                 hx-confirm="Are you sure?"
                 hx-get="{% url 'budgetTool:service_delete' pk=line.pk fk=project.id %}"
                 hx-on="htmx:afterRequest: window.location.reload(true)"
@@ -434,7 +434,7 @@
 <table>
   <tr>
     <td>
-      <button type="button" class="btn btn-primary"
+      <button type="button" class="btn btn-outline-info"
       hx-get="{% url 'budgetTool:create_service' pk=project.pk%}"
       hx-target="#currentServiceTable"
       hx-swap="beforeend">
@@ -442,7 +442,7 @@
     </td>
 
     <td>
-      <button type="button" class="btn btn-primary"
+      <button type="button" class="btn btn-outline-info"
       hx-get="{% url 'budgetTool:create_service_category' %}"
       hx-target="#currentServiceTable"
       hx-swap="beforeend"> Add New Category</button>
@@ -455,7 +455,7 @@
       hx-on="htmx:afterRequest: window.location.reload(true)">
       {% csrf_token %}
       <input type="hidden" id="serviceOrderingInput" name="ordering">
-      <button id="saveOrdering" disabled class="btn btn-success" >Save ordering</button>
+      <button id="saveOrdering" disabled class="btn btn-outline-success" >Save ordering</button>
     </form>
     </td>
   </tr>
