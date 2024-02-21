@@ -1,3 +1,4 @@
-__pycache__
+budgetTool/__pycache__
 *.pyc
 budgetTool/__pycache__/models.cpython-311.pyc
+dcrm/__pycache__
