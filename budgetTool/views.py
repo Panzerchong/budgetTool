@@ -866,7 +866,7 @@ def download_excel(request,pk):
     service_page(wb,pk)
 
     response = HttpResponse(content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="test.xlsx"'
+    response['Content-Disposition'] = f'attachment; filename="{project.name}-Project Budget v1.0.0.xlsx"'
     wb.save(response)
 
     return response
