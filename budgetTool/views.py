@@ -1176,10 +1176,47 @@ def price_sheet(request):
         output_field=IntegerField()
     )
     Product_Prices = table.annotate(custom_order=preserved_order).order_by('custom_order')
+    
+    item_length=0
+    cost_length=0
+    margin_length=0
+    note_length=0
+
+    for item in Product_Prices:
+        if len(item.item) > item_length:
+            item_length = len(item.item)
+        if len(str(item.cost)) > cost_length:
+            cost_length = len(str(item.cost))
+        if len(str(item.margin)) > margin_length:
+            margin_length = len(str(item.margin))
+        if item.note and len(item.note) > note_length:
+            note_length = len(item.note)
+
+    print(item_length, cost_length, margin_length)
+
+    if item_length < 10:
+        item_length = 10
+    if cost_length < 10:
+        cost_length = 10
+    if margin_length < 10:
+        margin_length = 10
+    if note_length < 15:
+        note_length = 15
+    elif note_length > 20:
+        note_length = 20
+    
+    item_length *= 10
+    cost_length *= 15
+    margin_length *= 15
+    note_length *= 35
 
     context={
         "vendors":vendors,
         "Product_Prices":Product_Prices,
+        "item_length":item_length,
+        "cost_length":cost_length,
+        "margin_length":margin_length,
+        "note_length":note_length,
     }
 
     return render(request,'budgetTool/price_sheet.html',context)

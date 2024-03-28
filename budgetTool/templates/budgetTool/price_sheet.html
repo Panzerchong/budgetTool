@@ -44,15 +44,15 @@
       </tr>
   
       <tr class=" text-center" style="background-color:#BDD7EE;">
-        <th>Item</th>
+        <th width="{{ item_length }}px">Item   {{ table_length }}</th>
         {% if user|user_belongs_to_group:'Admin, Finance' %}
-        <th>Cost</th>
+        <th width="{{ cost_length }}px">Cost</th>
         {% endif %}
-        <th>List</th>
+        <th width="{{ cost_length }}px">List</th>
         {% if user|user_belongs_to_group:'Admin, Finance' %}
-        <th>Margin</th>
+        <th width="{{ margin_length }}px">Margin</th>
         {% endif %}
-        <th colspan="2">Note</th>
+        <th width="{{ note_length }}px" colspan="2">Note</th>
       </tr>
     </thead>
 
@@ -62,7 +62,7 @@
               {% if line.vendor == vendor %}
               <tr data-lookupid="{{line.pk}}" class="text-nowrap">
                 <input type='hidden' name='price_sheet_order' value='{{line.pk}}'/>
-                  <td>
+                  <td width="{{ item_length }}px">
                     <div class="item-wrapper">
                     {{line.item}}<span class="handle"></span>
                     </div>
@@ -74,14 +74,14 @@
                   {% if user|user_belongs_to_group:'Admin, Finance' %}
                   <td> {{line.margin}} %</td>
                   {% endif %}
-                  <td>
+                  <td width="{{ note_length }}px" style="white-space:normal">
                     {% if line.note %}
                     {{line.note}}
                     {% endif %}
                   </td>
 
                   {% if user|user_belongs_to_group:'Admin, Finance' %}
-                  <td class="text-nowrap">
+                  <td class="text-nowrap" width="50px">
                     <button 
                     class="btn btn-outline-info"
                     hx-get="{% url 'budgetTool:product_price_edit' pk=line.id fk=vendor.id %}"
@@ -150,12 +150,7 @@
               </table>
             </div>
             
-
-             
- 
         {% endfor %}
-
-        <script type="text/javascript" src="{% static 'priceSheet.js'%}"></script>
 
   </body>
 </html>
